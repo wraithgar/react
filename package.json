@@ -7,8 +7,8 @@
   "typings": "index.d.ts",
   "scripts": {
     "start": "cd docs && yarn run develop",
-    "predist": "rm -rf dist",
-    "dist": "NODE_ENV=production rollup -c",
+    "predist": "rm -rf built dist",
+    "dist": "tsc && NODE_ENV=production rollup -c",
     "prepublishOnly": "yarn run dist",
     "lint": "eslint src docs/components",
     "test": "jest -- src",
@@ -44,7 +44,7 @@
     "@styled-system/theme-get": "5.1.2",
     "@testing-library/react": "9.4.0",
     "@types/styled-components": "^4.4.0",
-    "@types/styled-system": "5.1.2",
+    "@types/styled-system": "5.1.9",
     "babel-plugin-macros": "2.6.1",
     "babel-polyfill": "6.26.0",
     "classnames": "^2.2.5",
@@ -60,6 +60,8 @@
     "@babel/plugin-proposal-object-rest-spread": "7.6.2",
     "@babel/preset-env": "7.7.7",
     "@babel/preset-react": "7.6.3",
+    "@types/jest": "25.2.1",
+    "@types/jest-axe": "3.2.2",
     "babel-plugin-add-react-displayname": "0.0.5",
     "babel-plugin-styled-components": "1.10.6",
     "enzyme": "3.10.0",
@@ -79,7 +81,9 @@
     "rollup": "1.25.1",
     "rollup-plugin-babel": "4.3.3",
     "rollup-plugin-commonjs": "10.1.0",
-    "styled-components": "4.4.0"
+    "styled-components": "4.4.0",
+    "ts-jest": "25.4.0",
+    "typescript": "3.8.3"
   },
   "peerDependencies": {
     "react": "^16.8.0",

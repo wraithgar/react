@@ -6,7 +6,7 @@ const plugins = [babel({exclude: 'node_modules/**'}), commonjs()]
 
 export default [
   {
-    input: 'src/index.js',
+    input: 'built/index.js',
     plugins,
     external: ['styled-components', 'react'],
     output: formats.map(format => ({
