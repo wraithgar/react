@@ -15,11 +15,11 @@ function getBorderRadius(props) {
 const Avatar = forwardRef((props, forwardedRef) => {
   return (
     <Box
-      as='img'
+      as="img"
       height={props.size}
       width={props.size}
-      overflow='hidden'Ci
-      verticalAlign='middle'
+      overflow="hidden"
+      verticalAlign="middle"
       sx={mergeCustomStyles(props.sx, {borderRadius: getBorderRadius(props), lineHeight: 'condensedUltra'})}
       {...props}
       ref={forwardedRef}
