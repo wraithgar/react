@@ -2,7 +2,7 @@ import React from 'react'
 import styled, {css} from 'styled-components'
 import {COMMON, get} from '../constants'
 import theme from '../theme'
-import sx from '../sx'
+import {sx} from '../sx'
 
 const tabWrapperStyles = css`
   display: flex;

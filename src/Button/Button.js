@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import sx from '../sx'
+import {sx} from '../sx'
 import {get} from '../constants'
 import theme from '../theme'
 import ButtonBase, {systemStyles} from './ButtonBase'

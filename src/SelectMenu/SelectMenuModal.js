@@ -4,7 +4,7 @@ import styled, {keyframes, css} from 'styled-components'
 import {COMMON, get} from '../constants'
 import {width} from 'styled-system'
 import theme from '../theme'
-import sx from '../sx'
+import {sx} from '../sx'
 
 const animateModal = keyframes`
   0% {

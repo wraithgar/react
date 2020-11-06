@@ -6,7 +6,7 @@ import Details from './Details'
 import {COMMON, get} from './constants'
 import getDirectionStyles from './DropdownStyles'
 import theme from './theme'
-import sx from './sx'
+import {sx} from './sx'
 
 const StyledDetails = styled(Details)`
   position: relative;

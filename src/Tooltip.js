@@ -4,7 +4,7 @@ import classnames from 'classnames'
 import styled from 'styled-components'
 import {COMMON, get} from './constants'
 import theme from './theme'
-import sx from './sx'
+import {sx} from './sx'
 
 function TooltipBase({direction, children, className, text, noDelay, align, wrap, theme, ...rest}) {
   const classes = classnames(

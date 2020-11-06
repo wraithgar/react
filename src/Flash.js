@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import {variant} from 'styled-system'
 import {COMMON, get} from './constants'
 import theme from './theme'
-import sx from './sx'
+import {sx} from './sx'
 
 const schemeMap = {
   red: 'danger',

@@ -1,8 +1,8 @@
+import React, {forwardRef} from 'react'
 import PropTypes from 'prop-types'
-import styled from 'styled-components'
-import {get, COMMON} from './constants'
+import Box from './Box'
 import theme from './theme'
-import sx from './sx'
+import {sx, mergeCustomStyles} from './sx'
 
 function getBorderRadius(props) {
   if (props.square) {
@@ -12,19 +12,20 @@ function getBorderRadius(props) {
   }
 }
 
-const Avatar = styled.img.attrs(props => ({
-  height: props.size,
-  width: props.size,
-  alt: props.alt
-}))`
-  display: inline-block;
-  overflow: hidden; // Ensure page layout in Firefox should images fail to load
-  line-height: ${get('lineHeights.condensedUltra')};
-  vertical-align: middle;
-  border-radius: ${props => getBorderRadius(props)};
-  ${COMMON};
-  ${sx}
-`
+const Avatar = forwardRef((props, forwardedRef) => {
+  return (
+    <Box
+      as='img'
+      height={props.size}
+      width={props.size}
+      overflow='hidden'Ci
+      verticalAlign='middle'
+      sx={mergeCustomStyles(props.sx, {borderRadius: getBorderRadius(props), lineHeight: 'condensedUltra'})}
+      {...props}
+      ref={forwardedRef}
+    />
+  )
+})
 
 Avatar.defaultProps = {
   theme,
@@ -34,7 +35,6 @@ Avatar.defaultProps = {
 }
 
 Avatar.propTypes = {
-  ...COMMON.propTypes,
   size: PropTypes.number,
   square: PropTypes.bool,
   ...sx.propTypes,

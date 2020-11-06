@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import sx from '../sx'
+import {sx} from '../sx'
 import {get, COMMON} from '../constants'
 import theme from '../theme'
 import Box from '../Box'

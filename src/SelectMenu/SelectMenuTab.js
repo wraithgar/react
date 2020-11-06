@@ -5,7 +5,7 @@ import styled, {css} from 'styled-components'
 import {MenuContext} from './SelectMenuContext'
 import {get, COMMON} from '../constants'
 import theme from '../theme'
-import sx from '../sx'
+import {sx} from '../sx'
 
 const tabStyles = css`
   flex: 1;

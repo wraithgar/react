@@ -6,7 +6,7 @@ import {variant} from 'styled-system'
 import theme from './theme'
 import {COMMON, get} from './constants'
 import StyledOcticon from './StyledOcticon'
-import sx from './sx'
+import {sx} from './sx'
 
 const octiconMap = {
   issueOpened: IssueOpenedIcon,

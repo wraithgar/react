@@ -2,7 +2,7 @@ import styled, {css} from 'styled-components'
 import PropTypes from 'prop-types'
 import theme from './theme'
 import {get, COMMON, TYPOGRAPHY, BORDER} from './constants'
-import sx from './sx'
+import {sx} from './sx'
 
 const Header = styled.div`
   z-index: 32;

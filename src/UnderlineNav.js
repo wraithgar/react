@@ -4,7 +4,7 @@ import classnames from 'classnames'
 import styled from 'styled-components'
 import {COMMON, get} from './constants'
 import theme from './theme'
-import sx from './sx'
+import {sx} from './sx'
 
 const ITEM_CLASS = 'UnderlineNav-item'
 const SELECTED_CLASS = 'selected'

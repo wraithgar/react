@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import PropTypes from 'prop-types'
 import {COMMON, LAYOUT, TYPOGRAPHY, get} from '../constants'
 import theme from '../theme'
-import sx from '../sx'
+import {sx} from '../sx'
 
 const ButtonTableList = styled.summary`
   display: inline-block;

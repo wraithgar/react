@@ -8,7 +8,7 @@ import React from 'react'
 import {Relative} from './Position'
 import classnames from 'classnames'
 import theme from './theme'
-import sx from './sx'
+import {sx} from './sx'
 
 const Timeline = styled(Flex)`
   flex-direction: column;

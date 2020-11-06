@@ -6,7 +6,7 @@ import {MenuContext} from './SelectMenuContext'
 import {COMMON, get} from '../constants'
 import StyledOcticon from '../StyledOcticon'
 import theme from '../theme'
-import sx from '../sx'
+import {sx} from '../sx'
 
 export const listItemStyles = css`
   display: flex;

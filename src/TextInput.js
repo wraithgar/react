@@ -7,7 +7,7 @@ import styled, {css} from 'styled-components'
 import {variant, width, minWidth, maxWidth} from 'styled-system'
 import {COMMON, get} from './constants'
 import theme from './theme'
-import sx from './sx'
+import {sx} from './sx'
 
 const sizeVariants = variant({
   variants: {

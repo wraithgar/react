@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import {system} from 'styled-system'
 import {COMMON, TYPOGRAPHY, get} from './constants'
 import theme from './theme'
-import sx from './sx'
+import {sx} from './sx'
 
 const buttonStyles = {
   display: 'inline-block',

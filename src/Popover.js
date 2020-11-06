@@ -4,7 +4,7 @@ import classnames from 'classnames'
 import {COMMON, LAYOUT, POSITION, get} from './constants'
 import theme from './theme'
 import BorderBox from './BorderBox'
-import sx from './sx'
+import {sx} from './sx'
 
 const Popover = styled.div.attrs(({className, caret}) => {
   return {

@@ -1,7 +1,7 @@
 import styled, {css} from 'styled-components'
 import theme from '../theme'
 import {COMMON, get} from '../constants'
-import sx from '../sx'
+import {sx} from '../sx'
 
 const dividerStyles = css`
   padding: ${get('space.1')} ${get('space.3')};

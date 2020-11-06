@@ -3,7 +3,7 @@ import {maxWidth} from 'styled-system'
 import PropTypes from 'prop-types'
 import {TYPOGRAPHY, COMMON} from './constants'
 import theme from './theme'
-import sx from './sx'
+import {sx} from './sx'
 
 const Truncate = styled('div')`
   ${TYPOGRAPHY}

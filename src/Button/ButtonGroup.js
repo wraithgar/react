@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import {get} from '../constants'
 import Box from '../Box'
 import theme from '../theme'
-import sx from '../sx'
+import {sx} from '../sx'
 
 const ButtonGroup = styled(Box)`
   vertical-align: middle;

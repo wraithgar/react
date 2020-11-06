@@ -113,6 +113,7 @@ declare module '@primer/components' {
   export interface AvatarProps extends CommonProps, Omit<React.ImgHTMLAttributes<HTMLImageElement>, 'color'> {
     size?: number
     square?: boolean
+    ref?: React.RefObject<HTMLImgElement> | null
   }
 
   export const Avatar: React.FunctionComponent<AvatarProps>

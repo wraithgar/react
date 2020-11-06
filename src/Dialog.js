@@ -7,7 +7,7 @@ import {XIcon} from '@primer/octicons-react'
 import StyledOcticon from './StyledOcticon'
 import {COMMON, LAYOUT} from './constants'
 import theme from './theme'
-import sx from './sx'
+import {sx} from './sx'
 import Text from './Text'
 import Flex from './Flex'
 

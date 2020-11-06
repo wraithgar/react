@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import {COMMON, FLEX, get} from './constants'
 import theme from './theme'
 import Flex from './Flex'
-import sx from './sx'
+import {sx} from './sx'
 
 const ITEM_CLASS = 'SubNav-item'
 const SELECTED_CLASS = 'selected'

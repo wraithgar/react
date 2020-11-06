@@ -1,7 +1,7 @@
 import styled, {css} from 'styled-components'
 import {COMMON, get} from '../constants'
 import theme from '../theme'
-import sx from '../sx'
+import {sx} from '../sx'
 
 const footerStyles = css`
   margin-top: -1px;

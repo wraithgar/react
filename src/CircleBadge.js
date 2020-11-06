@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import {COMMON, get} from './constants'
 import isNumeric from './utils/isNumeric'
 import theme from './theme'
-import sx from './sx'
+import {sx, mergeCustomStyles} from './sx'
 import StyledOcticon from './StyledOcticon'
 
 const variantSizes = {
@@ -33,7 +33,7 @@ const CircleBadge = styled.div`
 `
 
 CircleBadge.Icon = props => (
-  <StyledOcticon {...props} sx={Object.assign(props.sx, {height: 'auto', maxWidth: '60%', maxHeight: '55%'})} />
+  <StyledOcticon {...props} sx={mergeCustomStyles(props.sx, {height: 'auto', maxWidth: '60%', maxHeight: '55%'})} />
 )
 
 CircleBadge.defaultProps = {
