@@ -14,9 +14,8 @@ It's also possible to use the `useDetails` hook with components other than the P
 ```jsx live
 <State>
   {([]) => {
-    const {getDetailsProps} = useDetails({closeOnOutsideClick: true})
     return (
-      <Details {...getDetailsProps()}>
+      <Details>
         <Button as="summary">Hello</Button>
         This is some content
       </Details>

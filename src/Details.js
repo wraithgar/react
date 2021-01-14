@@ -1,9 +1,11 @@
 import styled from 'styled-components'
+import React, {forwardRef, useRef} from 'react'
 import {COMMON} from './constants'
 import theme from './theme'
 import sx from './sx'
+import useDetails from './hooks/useDetails'
 
-const Details = styled.details`
+const StyledDetails = styled.details`
   & > summary {
     list-style: none;
   }
@@ -14,6 +16,13 @@ const Details = styled.details`
   ${COMMON}
   ${sx};
 `
+
+const Details = forwardRef(({closeOnOutsideClick, defaultOpen, onClickOutside, ...rest}, forwardedRef) => {
+  const backupRef = useRef(null)
+  const ref = forwardedRef ?? backupRef
+  const {getDetailsProps} = useDetails({ref, closeOnOutsideClick, defaultOpen, onClickOutside})
+  return <StyledDetails {...getDetailsProps()} {...rest} />
+})
 
 Details.displayName = 'Details'
 

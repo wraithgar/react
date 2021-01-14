@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {forwardRef, useRef} from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import Button from './Button'
@@ -7,19 +7,19 @@ import {COMMON, get} from './constants'
 import getDirectionStyles from './DropdownStyles'
 import theme from './theme'
 import sx from './sx'
+import useDetails from './hooks/useDetails'
 
 const StyledDetails = styled(Details)`
   position: relative;
   display: inline-block;
 `
 
-const Dropdown = ({children, className, ...rest}) => {
-  return (
-    <StyledDetails closeOnOutsideClick className={className} {...rest}>
-      {children}
-    </StyledDetails>
-  )
-}
+const Dropdown = forwardRef(({className, closeOnOutsideClick, defaultOpen, onClickOutside, ...rest}, forwardedRef) => {
+  const backupRef = useRef(null)
+  const ref = forwardedRef ?? backupRef
+  const {getDetailsProps} = useDetails({ref, closeOnOutsideClick, defaultOpen, onClickOutside})
+  return <StyledDetails className={className} {...rest} {...getDetailsProps()} />
+})
 
 Dropdown.Button = ({children, ...rest}) => {
   return (
