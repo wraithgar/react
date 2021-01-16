@@ -115,7 +115,7 @@ const SelectMenuItem = forwardRef(({children, selected, theme, onClick, ...rest}
     }
   }
   return (
-    <StyledItem ref={itemRef} {...rest} theme={theme} onClick={handleClick} aria-checked={selected}>
+    <StyledItem ref={itemRef} zIndex="-1" {...rest} theme={theme} onClick={handleClick} aria-checked={selected}>
       <StyledOcticon theme={theme} className="SelectMenu-icon SelectMenu-selected-icon" icon={CheckIcon} />
       {children}
     </StyledItem>

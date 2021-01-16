@@ -40,7 +40,7 @@ const StyledSelectMenu = styled.details`
 `
 
 // 'as' is spread out because we don't want users to be able to change the tag.
-const SelectMenu = React.forwardRef(({children, initialTab, as, ...rest}, forwardedRef) => {
+const SelectMenu = React.forwardRef(({children, modalRef, initialTab, as, ...rest}, forwardedRef) => {
   const backupRef = useRef()
   const ref = forwardedRef ?? backupRef
   const [selectedTab, setSelectedTab] = useState(initialTab)
@@ -56,11 +56,11 @@ const SelectMenu = React.forwardRef(({children, initialTab, as, ...rest}, forwar
   const onClickOutside = useCallback(
     (event) => {
       debugger;
-      if (!ref.current.contains(event.target)) {
-        if (!event.defaultPrevented) {
-          setOpen(false)
-        }
+      // return if click happened inside ref, inside modal, or event is preventDefaulted
+      if (ref.current.contains(event.target) || (modalRef.current && modalRef.current.contains(event.target)) || event.defaultPrevented) {
+        return false
       }
+      setOpen(false)
     },
     [ref, setOpen]
   )
