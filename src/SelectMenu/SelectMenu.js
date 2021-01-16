@@ -55,6 +55,7 @@ const SelectMenu = React.forwardRef(({children, initialTab, modalRef, as, ...res
 
   const onClickOutside = useCallback(
     (event) => {
+      debugger;
       if (modalRef.current && !modalRef.current.contains(event.target)) {
         if (!event.defaultPrevented) {
           setOpen(false)
