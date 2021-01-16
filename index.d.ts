@@ -333,6 +333,7 @@ declare module '@primer/components' {
   export interface SelectMenuProps extends Omit<CommonProps, 'as'>, Omit<React.HTMLAttributes<HTMLDivElement>, 'color'> {
     initialTab?: string
     ref?: React.RefObject<HTMLDetailsElement> | null
+    modalRef?: React.ForwardedRef<HTMLElement> | null
   }
 
   export interface SelectMenuModalProps extends CommonProps, StyledSystem.WidthProps, Omit<React.HTMLAttributes<HTMLDivElement>, 'color'> {
