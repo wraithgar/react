@@ -33,7 +33,9 @@ function useDialog({modalRef, overlayRef, isOpen, onDismiss, initialFocusRef, cl
   }, [isOpen, onClickOutside])
 
   useEffect(() => {
+    console.log('use effect is called', {isOpen, initialFocusRef, closeButtonRef})
     if (isOpen) {
+      console.log('and its open')
       if (initialFocusRef && initialFocusRef.current) {
         initialFocusRef.current.focus()
       } else if (closeButtonRef && closeButtonRef.current) {
