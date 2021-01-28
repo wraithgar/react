@@ -1,3 +1,4 @@
+/* eslint-disable no-debugger */
 import {useCallback, useEffect} from 'react'
 
 function visible(el) {
@@ -39,8 +40,10 @@ function useDialog({modalRef, overlayRef, isOpen, onDismiss, initialFocusRef, cl
       // eslint-disable-next-line no-console
       console.log('and its open')
       if (initialFocusRef && initialFocusRef.current) {
+        debugger
         initialFocusRef.current.focus()
       } else if (closeButtonRef && closeButtonRef.current) {
+        debugger
         closeButtonRef.current.focus()
       }
     }
