@@ -7,15 +7,19 @@ import type {FunctionComponent} from 'react'
 type FormGroupProps = SystemCommonProps & SxProp;
 type FormGroupLabelProps = SystemTypographyProps & SystemCommonProps & SxProp
 
-const _FormGroup = styled.div<FormGroupProps>`
+const formGroupDefaultProps = {theme}
+const FormGroup: FunctionComponent<FormGroupProps & typeof formGroupDefaultProps> & Partial<{
+  Label: FunctionComponent<FormGroupLabelProps & typeof labelDefaultProps>
+}> = styled.div<FormGroupProps>`
   margin: ${get('space.3')} 0;
   font-weight: ${get('fontWeights.normal')};
   ${COMMON};
   ${sx};
 `
-_FormGroup.defaultProps = {theme}
+FormGroup.defaultProps = formGroupDefaultProps
 
-const Label = styled.label<FormGroupLabelProps>`
+const labelDefaultProps = {theme}
+FormGroup.Label = styled.label<FormGroupLabelProps>`
   display: block;
   margin: 0 0 ${get('space.2')};
   font-size: ${get('fontSizes.1')};
@@ -24,11 +28,6 @@ const Label = styled.label<FormGroupLabelProps>`
   ${COMMON};
   ${sx};
 `
-Label.defaultProps = {theme}
-
-const FormGroup: FunctionComponent<FormGroupProps> & Partial<{
-  Label: FunctionComponent<FormGroupLabelProps>
-}> = _FormGroup
-FormGroup.Label = Label;
+FormGroup.Label.defaultProps = labelDefaultProps
 
 export default FormGroup as Required<typeof FormGroup>;
