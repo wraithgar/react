@@ -1,25 +1,21 @@
-import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import {COMMON, get, TYPOGRAPHY, SystemCommonProps, SystemTypographyProps} from './constants'
 import theme from './theme'
 import sx, {SxProp} from './sx'
+import type {FunctionComponent} from 'react'
 
-const FormGroup = styled.div<SystemCommonProps & SxProp>`
+type FormGroupProps = SystemCommonProps & SxProp;
+type FormGroupLabelProps = SystemTypographyProps & SystemCommonProps & SxProp
+
+const _FormGroup = styled.div<FormGroupProps>`
   margin: ${get('space.3')} 0;
   font-weight: ${get('fontWeights.normal')};
   ${COMMON};
   ${sx};
 `
+_FormGroup.defaultProps = {theme}
 
-FormGroup.defaultProps = {theme}
-
-FormGroup.propTypes = {
-  children: PropTypes.node,
-  ...COMMON.propTypes,
-  ...sx.propTypes
-}
-
-FormGroup.Label = styled.label<SystemTypographyProps & SystemCommonProps & SxProp>`
+const Label = styled.label<FormGroupLabelProps>`
   display: block;
   margin: 0 0 ${get('space.2')};
   font-size: ${get('fontSizes.1')};
@@ -28,15 +24,11 @@ FormGroup.Label = styled.label<SystemTypographyProps & SystemCommonProps & SxPro
   ${COMMON};
   ${sx};
 `
+Label.defaultProps = {theme}
 
-FormGroup.Label.defaultProps = {
-  theme
-}
+const FormGroup: FunctionComponent<FormGroupProps> & Partial<{
+  Label: FunctionComponent<FormGroupLabelProps>
+}> = _FormGroup
+FormGroup.Label = Label;
 
-FormGroup.Label.propTypes = {
-  ...TYPOGRAPHY.propTypes,
-  ...COMMON.propTypes,
-  ...sx.propTypes
-}
-
-export default FormGroup
+export default FormGroup as Required<typeof FormGroup>;
