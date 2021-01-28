@@ -1,6 +1,6 @@
-import React from "react";
-import { Bar, BarProps } from "./Bar";
-import { ProgressContainer, ProgressContainerProps } from "./ProgressContainer";
+import React from 'react'
+import {Bar, BarProps} from './Bar'
+import {ProgressContainer, ProgressContainerProps} from './ProgressContainer'
 import defaultTheme from '../theme'
 
 export interface ProgressBarProps extends ProgressContainerProps, BarProps {}

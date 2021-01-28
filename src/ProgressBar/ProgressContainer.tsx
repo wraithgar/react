@@ -1,9 +1,8 @@
-import type { PropsWithChildren } from "react";
-import React from "react";
-import { get, WidthProps } from "styled-system";
-import { SystemCommonProps } from "../constants";
-import { StyledSpan } from "../Primitives/StyledSpan";
-import { SxProp } from "../sx";
+import React, {PropsWithChildren} from 'react'
+import {get, WidthProps} from 'styled-system'
+import {SystemCommonProps} from '../constants'
+import {StyledSpan} from '../Primitives/StyledSpan'
+import {SxProp} from '../sx'
 
 const sizeMap = {
   small: '5px',
@@ -16,7 +15,13 @@ export interface ProgressContainerProps extends WidthProps, SystemCommonProps, S
   barSize?: keyof typeof sizeMap
 }
 
-export function ProgressContainer({ sx, inline, barSize = 'default', children, ...props }: PropsWithChildren<ProgressContainerProps>): JSX.Element {
+export function ProgressContainer({
+  sx,
+  inline,
+  barSize = 'default',
+  children,
+  ...props
+}: PropsWithChildren<ProgressContainerProps>): JSX.Element {
   return (
     <StyledSpan
       {...props}
@@ -31,5 +36,5 @@ export function ProgressContainer({ sx, inline, barSize = 'default', children, .
     >
       {children}
     </StyledSpan>
-  );
+  )
 }

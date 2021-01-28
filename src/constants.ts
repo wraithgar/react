@@ -18,25 +18,22 @@ export const get = (key: string) => themeGet(key, getKey(theme, key))
 
 export const COMMON: StyleFn = compose(styledSystem.space, styledSystem.color, styledSystem.display)
 
-export interface SystemCommonProps
-  extends styledSystem.ColorProps,
-    styledSystem.SpaceProps,
-    styledSystem.DisplayProps {
-      theme: typeof theme
-    }
+export interface SystemCommonProps extends styledSystem.ColorProps, styledSystem.SpaceProps, styledSystem.DisplayProps, {
+  theme: typeof theme
+}
 
 COMMON.propTypes = {
   ...systemPropTypes.space,
-  ...systemPropTypes.color,
+  ...systemPropTypes.color
 }
 
 // Typography props
 
 const whiteSpace = system({
   whiteSpace: {
-    property: 'whiteSpace',
+    property: 'whiteSpace'
     // cssProperty: 'whiteSpace',
-  },
+  }
 })
 
 export const TYPOGRAPHY: StyleFn = compose(styledSystem.typography, whiteSpace)
@@ -47,7 +44,7 @@ export interface SystemTypographyProps extends styledSystem.TypographyProps {
 
 TYPOGRAPHY.propTypes = {
   ...systemPropTypes.typography,
-  whiteSpace: PropTypes.oneOf(['normal', 'nowrap', 'pre-wrap', 'pre', 'pre-line']),
+  whiteSpace: PropTypes.oneOf(['normal', 'nowrap', 'pre-wrap', 'pre', 'pre-line'])
 }
 
 // Border props
@@ -58,7 +55,7 @@ export interface SystemBorderProps extends styledSystem.BorderProps, styledSyste
 
 BORDER.propTypes = {
   ...systemPropTypes.border,
-  ...systemPropTypes.shadow,
+  ...systemPropTypes.shadow
 }
 
 // Layout props
