@@ -21,7 +21,9 @@ export const COMMON: StyleFn = compose(styledSystem.space, styledSystem.color, s
 export interface SystemCommonProps
   extends styledSystem.ColorProps,
     styledSystem.SpaceProps,
-    styledSystem.DisplayProps {}
+    styledSystem.DisplayProps {
+      theme: typeof theme
+    }
 
 COMMON.propTypes = {
   ...systemPropTypes.space,
@@ -63,7 +65,7 @@ BORDER.propTypes = {
 
 export const LAYOUT: StyleFn = styledSystem.layout
 
-export interface SystemLayoutProps extends styledSystem.LayoutProps {}
+export type SystemLayoutProps = styledSystem.LayoutProps
 
 LAYOUT.propTypes = systemPropTypes.layout
 
@@ -71,7 +73,7 @@ LAYOUT.propTypes = systemPropTypes.layout
 
 export const POSITION: StyleFn = styledSystem.position
 
-export interface SystemPositionProps extends styledSystem.PositionProps {}
+export type SystemPositionProps = styledSystem.PositionProps
 
 POSITION.propTypes = systemPropTypes.position
 
@@ -79,7 +81,7 @@ POSITION.propTypes = systemPropTypes.position
 
 export const FLEX: StyleFn = styledSystem.flexbox
 
-export interface SystemFlexProps extends styledSystem.FlexboxProps {}
+export type SystemFlexProps = styledSystem.FlexboxProps
 
 FLEX.propTypes = systemPropTypes.flexbox
 
@@ -87,6 +89,6 @@ FLEX.propTypes = systemPropTypes.flexbox
 
 export const GRID: StyleFn = styledSystem.grid
 
-export interface SystemGridProps extends styledSystem.GridProps {}
+export type SystemGridProps = styledSystem.GridProps
 
 GRID.propTypes = systemPropTypes.grid
