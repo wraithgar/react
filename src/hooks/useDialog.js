@@ -33,8 +33,10 @@ function useDialog({modalRef, overlayRef, isOpen, onDismiss, initialFocusRef, cl
   }, [isOpen, onClickOutside])
 
   useEffect(() => {
+    // eslint-disable-next-line no-console
     console.log('use effect is called', {isOpen, initialFocusRef, closeButtonRef})
     if (isOpen) {
+      // eslint-disable-next-line no-console
       console.log('and its open')
       if (initialFocusRef && initialFocusRef.current) {
         initialFocusRef.current.focus()
