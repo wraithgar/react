@@ -34,7 +34,7 @@ function BaseStyles(props: BaseStylesProps) {
   const {children, ...rest} = props
 
   // load polyfill for :focus-visible
-  require('focus-visible')
+  import('focus-visible')
 
   return (
     <Base {...rest} data-portal-root>
