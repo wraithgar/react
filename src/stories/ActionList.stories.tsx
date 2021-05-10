@@ -16,6 +16,7 @@ import React from 'react'
 import styled from 'styled-components'
 import {Label, ThemeProvider} from '..'
 import {ActionList as _ActionList} from '../ActionList'
+import {ChildList} from '../ActionList/ChildList'
 import {Header} from '../ActionList/Header'
 import BaseStyles from '../BaseStyles'
 import sx from '../sx'
@@ -55,23 +56,22 @@ export function ActionsStory(): JSX.Element {
     <>
       <h1>Actions</h1>
       <ErsatzOverlay>
-        <ActionList
-          items={[
-            {
-              leadingVisual: ServerIcon,
-              text: 'Open current Codespace',
-              description:
-                "Your existing Codespace will be opened to its previous state, and you'll be asked to manually switch to new-branch.",
-              descriptionVariant: 'block'
-            },
-            {
-              leadingVisual: PlusCircleIcon,
-              text: 'Create new Codespace',
-              description: 'Create a brand new Codespace with a fresh image and checkout this branch.',
-              descriptionVariant: 'block'
-            }
-          ]}
-        />
+        <ChildList>
+          <ActionList.Group>
+            <ActionList.Item
+              leadingVisual={ServerIcon}
+              text="Open current Codespace"
+              description="Your existing Codespace will be opened to its previous state, and you'll be asked to manually switch to new-branch."
+              descriptionVariant="block"
+            />
+            <ActionList.Item
+              leadingVisual={PlusCircleIcon}
+              text="Create new Codespace"
+              description="Create a brand new Codespace with a fresh image and checkout this branch."
+              descriptionVariant="block"
+            />
+          </ActionList.Group>
+        </ChildList>
       </ErsatzOverlay>
     </>
   )
