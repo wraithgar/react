@@ -61,7 +61,7 @@ export type OverlayProps = {
   onClickOutside: (e: TouchOrMouseEvent) => void
   onEscape: (e: KeyboardEvent) => void
   visibility?: 'visible' | 'hidden'
-  onMount: () => unknown
+  onMount?: () => unknown
 } & Omit<ComponentProps<typeof StyledOverlay>, 'visibility' | keyof SystemPositionProps>
 
 /**
@@ -95,7 +95,7 @@ const Overlay = React.forwardRef<HTMLDivElement, OverlayProps>(
     const overlayRef = useRef<HTMLDivElement>(null)
     const combinedRef = useCombinedRefs(overlayRef, forwardedRef)
     useEffect(() => {
-      onMount()
+      onMount && onMount()
     }, [onMount])
     const overlayProps = useOverlay({
       overlayRef,
