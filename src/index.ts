@@ -159,3 +159,9 @@ export {default as Truncate} from './Truncate'
 export type {TruncateProps} from './Truncate'
 export {default as UnderlineNav} from './UnderlineNav'
 export type {UnderlineNavProps, UnderlineNavLinkProps} from './UnderlineNav'
+
+declare module 'react' {
+  interface Attributes {
+    css?: never
+  }
+}
