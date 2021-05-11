@@ -87,6 +87,9 @@ export const DialogOverlay = () => {
           ignoreClickRefs={[buttonRef]}
           onEscape={closeOverlay}
           onClickOutside={closeOverlay}
+          onMount={() => {
+            confirmButtonRef.current?.focus()
+          }}
           width="sm"
         >
           <Flex flexDirection="column" p={2}>

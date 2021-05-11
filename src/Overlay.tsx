@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import React, {ReactElement, useRef} from 'react'
+import React, {ReactElement, useRef, useEffect} from 'react'
 import {get, COMMON, POSITION, SystemPositionProps, SystemCommonProps} from './constants'
 import {ComponentProps} from './utils/types'
 import {useOverlay, TouchOrMouseEvent} from './hooks'
@@ -61,6 +61,7 @@ export type OverlayProps = {
   onClickOutside: (e: TouchOrMouseEvent) => void
   onEscape: (e: KeyboardEvent) => void
   visibility?: 'visible' | 'hidden'
+  onMount: () => unknown
 } & Omit<ComponentProps<typeof StyledOverlay>, 'visibility' | keyof SystemPositionProps>
 
 /**
@@ -78,12 +79,24 @@ export type OverlayProps = {
  */
 const Overlay = React.forwardRef<HTMLDivElement, OverlayProps>(
   (
-    {onClickOutside, role = 'dialog', initialFocusRef, returnFocusRef, ignoreClickRefs, onEscape, visibility, ...rest},
+    {
+      onClickOutside,
+      role = 'dialog',
+      initialFocusRef,
+      returnFocusRef,
+      ignoreClickRefs,
+      onEscape,
+      onMount,
+      visibility,
+      ...rest
+    },
     forwardedRef
   ): ReactElement => {
     const overlayRef = useRef<HTMLDivElement>(null)
     const combinedRef = useCombinedRefs(overlayRef, forwardedRef)
-
+    useEffect(() => {
+      onMount()
+    }, [onMount])
     const overlayProps = useOverlay({
       overlayRef,
       returnFocusRef,
