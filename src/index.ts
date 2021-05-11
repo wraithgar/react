@@ -162,6 +162,6 @@ export type {UnderlineNavProps, UnderlineNavLinkProps} from './UnderlineNav'
 
 declare module 'react' {
   interface Attributes {
-    css?: never
+    css?: unknown
   }
 }
