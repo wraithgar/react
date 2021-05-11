@@ -96,7 +96,7 @@ const Overlay = React.forwardRef<HTMLDivElement, OverlayProps>(
     const combinedRef = useCombinedRefs(overlayRef, forwardedRef)
     useEffect(() => {
       onMount && onMount()
-    }, [onMount])
+    })
     const overlayProps = useOverlay({
       overlayRef,
       returnFocusRef,
