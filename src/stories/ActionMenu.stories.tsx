@@ -19,6 +19,7 @@ import Link, {LinkProps} from '../Link'
 import Button from '../Button'
 import {ActionList, ItemProps} from '../ActionList'
 import BaseStyles from '../BaseStyles'
+import TextInput from '../TextInput'
 
 const meta: Meta = {
   title: 'Composite components/ActionMenu',
@@ -102,6 +103,7 @@ export function SimpleListStory(): JSX.Element {
               console.log('onMouseDown in the internal Overlay can be useful for controlling event interactions', e)
           }}
           items={[
+            {children: <TextInput tabIndex={-1} />, disabled: true},
             {text: 'New file', trailingText: '⌘O', disabled: true, leadingVisual: ProjectIcon},
             ActionList.Divider,
             {text: 'Copy link', trailingText: 'ctrl+C'},
