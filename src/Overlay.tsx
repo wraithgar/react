@@ -62,6 +62,7 @@ export type OverlayProps = {
   onEscape: (e: KeyboardEvent) => void
   visibility?: 'visible' | 'hidden'
   onMount?: () => unknown
+  afterOpen?: () => unknown
   open?: boolean
 } & Omit<ComponentProps<typeof StyledOverlay>, 'visibility' | keyof SystemPositionProps>
 
@@ -90,6 +91,7 @@ const Overlay = React.forwardRef<HTMLDivElement, OverlayProps>(
       onMount,
       visibility,
       open,
+      afterOpen,
       ...rest
     },
     forwardedRef
@@ -99,6 +101,9 @@ const Overlay = React.forwardRef<HTMLDivElement, OverlayProps>(
     useEffect(() => {
       onMount && onMount()
     })
+    useEffect(() => {
+      afterOpen && afterOpen()
+    }, [open, afterOpen])
     const overlayProps = useOverlay({
       overlayRef,
       returnFocusRef,
