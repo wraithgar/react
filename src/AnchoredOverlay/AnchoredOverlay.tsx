@@ -122,23 +122,22 @@ export const AnchoredOverlay: React.FC<AnchoredOverlayProps> = ({
         onClick: onAnchorClick,
         onKeyDown: onAnchorKeyDown
       })}
-      {open ? (
-        <Overlay
-          initialFocusRef={anchorRef}
-          returnFocusRef={anchorRef}
-          onClickOutside={onClickOutside}
-          onEscape={onEscape}
-          ref={updateOverlayRef}
-          role="listbox"
-          visibility={position ? 'visible' : 'hidden'}
-          height={height}
-          width={width}
-          {...overlayPosition}
-          {...overlayProps}
-        >
-          {children}
-        </Overlay>
-      ) : null}
+      <Overlay
+        initialFocusRef={anchorRef}
+        returnFocusRef={anchorRef}
+        onClickOutside={onClickOutside}
+        onEscape={onEscape}
+        ref={updateOverlayRef}
+        role="listbox"
+        visibility={position ? 'visible' : 'hidden'}
+        height={height}
+        width={width}
+        open={open}
+        {...overlayPosition}
+        {...overlayProps}
+      >
+        {children}
+      </Overlay>
     </>
   )
 }

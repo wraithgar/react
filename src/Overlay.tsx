@@ -62,6 +62,7 @@ export type OverlayProps = {
   onEscape: (e: KeyboardEvent) => void
   visibility?: 'visible' | 'hidden'
   onMount?: () => unknown
+  open?: boolean
 } & Omit<ComponentProps<typeof StyledOverlay>, 'visibility' | keyof SystemPositionProps>
 
 /**
@@ -88,6 +89,7 @@ const Overlay = React.forwardRef<HTMLDivElement, OverlayProps>(
       onEscape,
       onMount,
       visibility,
+      open,
       ...rest
     },
     forwardedRef
@@ -107,14 +109,16 @@ const Overlay = React.forwardRef<HTMLDivElement, OverlayProps>(
     })
     return (
       <Portal>
-        <StyledOverlay
-          {...overlayProps}
-          aria-modal="true"
-          role={role}
-          {...rest}
-          ref={combinedRef}
-          visibility={visibility}
-        />
+        {open && (
+          <StyledOverlay
+            {...overlayProps}
+            aria-modal="true"
+            role={role}
+            {...rest}
+            ref={combinedRef}
+            visibility={visibility}
+          />
+        )}
       </Portal>
     )
   }

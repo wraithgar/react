@@ -47,24 +47,23 @@ export const DropdownOverlay = () => {
       <Button ref={buttonRef} sx={{position: 'relative'}} onClick={() => setIsOpen(!isOpen)}>
         open overlay
       </Button>
-      {isOpen ? (
-        <Overlay
-          returnFocusRef={buttonRef}
-          height="auto"
-          width="sm"
-          ignoreClickRefs={[buttonRef]}
-          onEscape={() => setIsOpen(false)}
-          onClickOutside={() => setIsOpen(false)}
-        >
-          <Flex flexDirection="column" p={2}>
-            <DummyItem>Copy link</DummyItem>
-            <DummyItem>Quote reply</DummyItem>
-            <DummyItem>Reference in new issue</DummyItem>
-            <DummyItem>Edit</DummyItem>
-            <DummyItem>Delete</DummyItem>
-          </Flex>
-        </Overlay>
-      ) : null}
+      <Overlay
+        open={isOpen}
+        returnFocusRef={buttonRef}
+        height="auto"
+        width="sm"
+        ignoreClickRefs={[buttonRef]}
+        onEscape={() => setIsOpen(false)}
+        onClickOutside={() => setIsOpen(false)}
+      >
+        <Flex flexDirection="column" p={2}>
+          <DummyItem>Copy link</DummyItem>
+          <DummyItem>Quote reply</DummyItem>
+          <DummyItem>Reference in new issue</DummyItem>
+          <DummyItem>Edit</DummyItem>
+          <DummyItem>Delete</DummyItem>
+        </Flex>
+      </Overlay>
     </>
   )
 }
@@ -80,27 +79,26 @@ export const DialogOverlay = () => {
       <Button ref={buttonRef} onClick={() => setIsOpen(!isOpen)}>
         open overlay
       </Button>
-      {isOpen ? (
-        <Overlay
-          initialFocusRef={confirmButtonRef}
-          returnFocusRef={buttonRef}
-          ignoreClickRefs={[buttonRef]}
-          onEscape={closeOverlay}
-          onClickOutside={closeOverlay}
-          onMount={() => {
-            confirmButtonRef.current?.focus()
-          }}
-          width="sm"
-        >
-          <Flex flexDirection="column" p={2}>
-            <Text>Are you sure?</Text>
-            <ButtonDanger onClick={closeOverlay}>Cancel</ButtonDanger>
-            <Button onClick={closeOverlay} ref={confirmButtonRef}>
-              Confirm
-            </Button>
-          </Flex>
-        </Overlay>
-      ) : null}
+      <Overlay
+        initialFocusRef={confirmButtonRef}
+        returnFocusRef={buttonRef}
+        ignoreClickRefs={[buttonRef]}
+        onEscape={closeOverlay}
+        onClickOutside={closeOverlay}
+        open={isOpen}
+        onMount={() => {
+          confirmButtonRef.current?.focus()
+        }}
+        width="sm"
+      >
+        <Flex flexDirection="column" p={2}>
+          <Text>Are you sure?</Text>
+          <ButtonDanger onClick={closeOverlay}>Cancel</ButtonDanger>
+          <Button onClick={closeOverlay} ref={confirmButtonRef}>
+            Confirm
+          </Button>
+        </Flex>
+      </Overlay>
     </Position>
   )
 }

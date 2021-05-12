@@ -27,24 +27,23 @@ const TestComponent = ({initialFocus, callback}: TestComponentSettings) => {
         open overlay
       </Button>
       <Button>outside</Button>
-      {isOpen ? (
-        <Overlay
-          initialFocusRef={initialFocus === 'button' ? confirmButtonRef : undefined}
-          returnFocusRef={buttonRef}
-          ignoreClickRefs={[buttonRef]}
-          onEscape={closeOverlay}
-          onClickOutside={closeOverlay}
-          width="sm"
-        >
-          <Flex flexDirection="column" p={2}>
-            <Text>Are you sure?</Text>
-            <ButtonDanger onClick={closeOverlay}>Cancel</ButtonDanger>
-            <Button onClick={closeOverlay} ref={confirmButtonRef}>
-              Confirm
-            </Button>
-          </Flex>
-        </Overlay>
-      ) : null}
+      <Overlay
+        initialFocusRef={initialFocus === 'button' ? confirmButtonRef : undefined}
+        returnFocusRef={buttonRef}
+        ignoreClickRefs={[buttonRef]}
+        onEscape={closeOverlay}
+        onClickOutside={closeOverlay}
+        width="sm"
+        open={isOpen}
+      >
+        <Flex flexDirection="column" p={2}>
+          <Text>Are you sure?</Text>
+          <ButtonDanger onClick={closeOverlay}>Cancel</ButtonDanger>
+          <Button onClick={closeOverlay} ref={confirmButtonRef}>
+            Confirm
+          </Button>
+        </Flex>
+      </Overlay>
     </Position>
   )
 }
