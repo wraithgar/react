@@ -1,10 +1,9 @@
-import React, {useCallback, useEffect, useMemo, useRef} from 'react'
+import React, {MutableRefObject, useCallback, useEffect, useMemo, useRef} from 'react'
 import Overlay, {OverlayProps} from '../Overlay'
 import {useFocusTrap} from '../hooks/useFocusTrap'
 import {FocusZoneHookSettings, useFocusZone} from '../hooks/useFocusZone'
 import {useAnchoredPosition, useRenderForcingRef} from '../hooks'
 import {uniqueId} from '../utils/uniqueId'
-import {useCombinedRefs} from '../hooks/useCombinedRefs'
 
 export interface AnchoredOverlayProps extends Pick<OverlayProps, 'height' | 'width'> {
   /**
@@ -54,18 +53,16 @@ export const AnchoredOverlay: React.FC<AnchoredOverlayProps> = ({
   overlayProps,
   focusZoneSettings
 }) => {
-  let {ref: overlayPropsRef, ...overlayPropsWithoutRef} = overlayProps || {}
+  const {ref: overlayPropsRef, ...overlayPropsWithoutRef} = overlayProps || {}
 
   const anchorRef = useRef<HTMLElement>(null)
   const [overlayRef, updateOverlayRef] = useRenderForcingRef<HTMLDivElement>()
   const anchorId = useMemo(uniqueId, [])
 
   useEffect(() => {
-    function setRef(ref: any, current: any) {
-      ref.current = current
-    }
-    if (overlayPropsRef && typeof overlayPropsRef === 'object') {
-      setRef(overlayPropsRef, overlayRef.current)
+    if (typeof overlayPropsRef === 'object') {
+      const mutableRef = overlayPropsRef as MutableRefObject<HTMLDivElement | null>
+      mutableRef.current = overlayRef.current
     }
   }, [overlayPropsRef, overlayRef])
 
