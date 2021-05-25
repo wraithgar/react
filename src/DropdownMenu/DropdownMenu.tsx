@@ -4,7 +4,6 @@ import {DropdownButton, DropdownButtonProps} from './DropdownButton'
 import {ItemProps} from '../ActionList/Item'
 import {AnchoredOverlay} from '../AnchoredOverlay'
 import {OverlayProps} from '../Overlay'
-
 export interface DropdownMenuProps extends Partial<Omit<GroupedListProps, keyof ListPropsBase>>, ListPropsBase {
   /**
    * A custom function component used to render the anchor element.
@@ -33,6 +32,8 @@ export interface DropdownMenuProps extends Partial<Omit<GroupedListProps, keyof 
    * Props to be spread on the internal `Overlay` component.
    */
   overlayProps?: Partial<OverlayProps>
+
+  ref?: React.RefObject<HTMLElement>
 }
 
 /**
