@@ -1,8 +1,8 @@
 name: 💾 Bundlesize
-on:
-  push:
-    branches-ignore:
-      - main
+on: [pull_request_target]
+
+permissions:
+  checks: write
 
 jobs:
   bundlesize:
@@ -16,8 +16,9 @@ jobs:
       - uses: actions/checkout@v2
         with:
           path: 'new'
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Check Bundle Size Change
-        uses: "BinaryMuse/action-bundlesize@master"
+        uses: 'BinaryMuse/action-bundlesize@master'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
