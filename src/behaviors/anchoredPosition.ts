@@ -139,10 +139,19 @@ export function getAnchoredPosition(
     left: parentElementRect.left + borderLeft
   }
 
+  const {width: floatingElementWidth, height: floatingElementHeight} = floatingElement.getBoundingClientRect()
+  const floatingElementMaxHeight = Number(
+    getComputedStyle(floatingElement).getPropertyValue('max-height').replace(/\D+/g, '')
+  )
+  const floatingElementSize = {
+    width: floatingElementWidth,
+    height: Math.max(floatingElementHeight, floatingElementMaxHeight)
+  }
+
   return pureCalculateAnchoredPosition(
     clippingRect,
     relativeRect,
-    floatingElement.getBoundingClientRect(),
+    floatingElementSize,
     anchorElement instanceof Element ? anchorElement.getBoundingClientRect() : anchorElement,
     getDefaultSettings(settings)
   )
