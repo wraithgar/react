@@ -38,13 +38,13 @@ const animationDuration = 200
 
 function getSlideAnimationStartingVector(anchorSide?: AnchorSide): {x: number; y: number} {
   if (anchorSide?.endsWith('bottom')) {
-    return {x: 0, y: -1}
+    return {x: 0, y: 0}
   } else if (anchorSide?.endsWith('top')) {
-    return {x: 0, y: 1}
+    return {x: 0, y: 0}
   } else if (anchorSide?.endsWith('right')) {
-    return {x: -1, y: 0}
+    return {x: 0, y: 0}
   } else if (anchorSide?.endsWith('left')) {
-    return {x: 1, y: 0}
+    return {x: 0, y: 0}
   }
 
   return {x: 0, y: 0}
