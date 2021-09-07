@@ -7,6 +7,7 @@ import {get} from '../constants'
 import {AnchorSide} from '../behaviors/anchoredPosition'
 import Portal, {registerPortalRoot} from '../Portal'
 import Button from '../Button'
+import Overlay from '../Overlay'
 
 export default {
   title: 'Hooks/useAnchoredPosition',
@@ -316,5 +317,45 @@ export const WithPortal = () => {
         </p>
       </Box>
     </Main>
+  )
+}
+
+export const TestUsage = () => {
+  const [showMenu, setShowMenu] = React.useState(false)
+
+  // Calculate the position of the menu
+  const {floatingElementRef, anchorElementRef, position} = useAnchoredPosition(
+    {
+      side: 'outside-bottom',
+      align: 'start'
+    },
+    [showMenu]
+  )
+
+  // Toggles rendering the menu when the button is clicked
+  const toggleMenu = React.useCallback(() => {
+    setShowMenu(!showMenu)
+  }, [showMenu])
+
+  return (
+    <div style={{'border': '1px solid black'}}>
+      <Box sx={{textAlign: 'right'}}>
+        <ButtonPrimary onClick={toggleMenu} ref={anchorElementRef as React.RefObject<HTMLButtonElement>}>
+          Show the overlay!
+        </ButtonPrimary>
+        {showMenu ? (
+          <Overlay
+            returnFocusRef={anchorElementRef}
+            ref={floatingElementRef as React.RefObject<HTMLDivElement>}
+            style={{top: `${position?.top ?? 0}px`, left: `${position?.left ?? 0}px`}}
+            width={250}
+            height={400}
+            sx={{visibility: position ? 'visible' : 'hidden'}}
+          >
+            An un-constrained overlay!
+          </Overlay>
+        ) : null}
+      </Box>
+    </div>
   )
 }

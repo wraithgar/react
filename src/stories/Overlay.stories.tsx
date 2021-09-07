@@ -44,10 +44,12 @@ export const DropdownOverlay = () => {
   const [isOpen, setIsOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement>(null)
   return (
-    <>
-      <Button ref={buttonRef} sx={{position: 'relative'}} onClick={() => setIsOpen(!isOpen)}>
-        open overlay
-      </Button>
+    <div style={{border: '1px solid black'}}>
+      <div style={{display: 'flex', justifyContent: 'center'}}>
+        <Button ref={buttonRef} onClick={() => setIsOpen(!isOpen)}>
+          open overlay
+        </Button>
+      </div>
       {isOpen ? (
         <Overlay
           returnFocusRef={buttonRef}
@@ -66,7 +68,7 @@ export const DropdownOverlay = () => {
           </Box>
         </Overlay>
       ) : null}
-    </>
+    </div>
   )
 }
 
