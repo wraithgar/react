@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, FocusEventHandler, KeyboardEventHandler, useCallback, useMemo, useRef, useState } from 'react'
+import React, { ChangeEventHandler, FocusEventHandler, KeyboardEventHandler, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {omit, pick} from '@styled-system/props'
 import classnames from 'classnames'
 import styled, {css} from 'styled-components'
@@ -16,6 +16,7 @@ import sx, {SxProp} from './sx'
 import {ComponentProps} from './utils/types'
 import { TokenBaseProps } from './Token/TokenBase'
 import Token from './Token/Token'
+import { Box } from '.'
 
 function scrollIntoViewingArea(
     child: HTMLElement,
@@ -66,11 +67,30 @@ const Input = styled.input`
   color: inherit;
   flex-grow: 1;
   height: 100%;
+  padding: 0;
 
   &:focus {
     outline: 0;
   }
 `
+const InputWrapper = styled.div`
+  position: relative;
+
+  &:after {
+    content: attr(data-autocompleteSuggestion);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    position: absolute;
+    left: 0;
+    top: 1px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    color: rgba(0, 0, 0, 0.5);
+  }
+`;
 
 type StyledWrapperProps = {
   disabled?: boolean
@@ -167,12 +187,17 @@ type TextInputWithTokensInternalProps = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   as?: any // This is a band-aid fix until we have better type support for the `as` prop
   icon?: React.ComponentType<{className?: string}>
+  // TODO: instead of passing `tokens`, consider passing `selectedItems` so there's a clearer relationship
+  // between the tokens in the input and the selected items in the dropdown
   tokens: Token[]
   onTokenRemove: (tokenId: string | number) => void
   selectableItems: ItemInput[]
   onFilterChange: (value: string, e: React.ChangeEvent<HTMLInputElement>) => void
-  onItemSelect: ItemProps['onAction']
-  tokenComponent?: React.FunctionComponent<any> // TODO: change this bitwise `|` to allow props that match any of the token variants
+  onItemSelect: NonNullable<ItemProps['onAction']>
+  tokenComponent?: React.FunctionComponent<any> // TODO: change this bitwise `|` to allow props that match any of the token variants OR do something where we infer the props of the passed token component
+  emptyStateText?: React.ReactNode | false
+  addNewTokenItem?: Omit<ItemInput, 'onAction'> // TODO: Rethink this prop name. It's confusing.
+  onCloseOptionsList?: () => void // TODO: reconsider having this prop at all
 } & ComponentProps<typeof Wrapper> &
   ComponentProps<typeof Input>
 
@@ -192,6 +217,9 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
       onItemSelect,
       onTokenRemove,
       tokenComponent: TokenComponent,
+      emptyStateText,
+      addNewTokenItem,
+      onCloseOptionsList,
       ...rest},
     ref) => {
     const listContainerRef = useRef<HTMLDivElement>(null)
@@ -204,29 +232,44 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
     const wrapperProps = pick(rest)
     const inputProps = omit(rest)
     const [selectedTokenIdx, setSelectedTokenIdx] = useState<number | undefined>()
+    const [inputVal, setInputVal] = useState<string>('');
+    const [showMenu, setShowMenu] = useState(false)
+    const [selectedItems, setSelectedItems] = useState<ItemProps[]>(
+      tokens.map(({id, text}) => ({ id, text }))
+    );
+    const [autocompleteSuggestion, setAutocompleteSuggestion] = useState<string>('');
+    const [highlightedItem, setHighlightedItem] = useState<ItemProps | undefined>();
+
     const {containerRef} = useFocusZone({
-        focusOutBehavior: 'stop',
-        bindKeys: FocusKeys.ArrowHorizontal | FocusKeys.HomeAndEnd
-      })
-    const [showMenu, setShowMenu] = React.useState(false)
+      focusOutBehavior: 'stop',
+      bindKeys: FocusKeys.ArrowHorizontal | FocusKeys.HomeAndEnd
+    })
 
     const closeOptionList = () => {
-        setShowMenu(false);
+      setShowMenu(false);
+      
+      if (onCloseOptionsList) {
+        onCloseOptionsList();
+      }
     }
     const showOptionList = () => {
-        setShowMenu(true);
+      setShowMenu(true);
     }
 
+    const handleTokenRemove = (tokenId: number | string) => {
+      onTokenRemove(tokenId);
+      setSelectedItems(selectedItems.filter(selectedItem => selectedItem.id !== tokenId));
+    }
     const handleTokenFocus: (tokenIdx: number) => FocusEventHandler = (tokenIdx) => () => {
         setSelectedTokenIdx(tokenIdx);
         closeOptionList();
-    };
+    }
     const handleTokenBlur: FocusEventHandler = () => {
         setSelectedTokenIdx(undefined);
     }
     const handleTokenKeyUp: (tokenId: number | string) => KeyboardEventHandler = (tokenId) => (e) => {
         if (e.key === 'Backspace') {
-            onTokenRemove(tokenId);
+          handleTokenRemove(tokenId);
         }
 
         if (e.key === 'Escape') {
@@ -240,16 +283,26 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
     };
     const handleInputChange: ChangeEventHandler<HTMLInputElement> = (e) => {
         onFilterChange(e.currentTarget.value, e);
+        setInputVal(e.currentTarget.value);
     }
-    const handleInputKeyUp: KeyboardEventHandler = (e) => {
-      if (e.currentTarget.value) {
+    const handleInputKeyDown: KeyboardEventHandler = (e) => {
+      if (e.key === 'ArrowRight' && autocompleteSuggestion) {
+        setInputVal(autocompleteSuggestion);
+        // TODO: use hooks or something to always trigger `onFilterChange` when `inputVal` is changed
+        onFilterChange(autocompleteSuggestion, e);
+      }
+
+      if (inputVal) {
         return;
       }
 
       const lastToken = tokens[tokens.length - 1];
 
       if (e.key === 'Backspace') {
-        onTokenRemove(lastToken.id);
+        handleTokenRemove(lastToken.id);
+        setInputVal(`${lastToken.text}` || '');
+        // TODO: use hooks or something to always trigger `onFilterChange` when `inputVal` is changed
+        onFilterChange(lastToken.text || '', e);
       }
     };
     const onInputKeyPress: KeyboardEventHandler = useCallback(
@@ -266,10 +319,49 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
       [activeDescendantRef]
     )
 
-    const itemsToRender: ItemInput[] = selectableItems.map((selectableItem) => ({
-        ...selectableItem,
-        onAction: onItemSelect
-    }));
+    const getSelectedItems = (itemId?: string | number, checked?: boolean) => {
+      const newlySelectedItem = selectableItems.find(item => item.id === itemId);
+
+      if (checked) {
+        return [...selectedItems, ...(newlySelectedItem ? [newlySelectedItem] : [])];
+      }
+
+      return selectedItems.filter(selectedChoice => selectedChoice.id !== itemId);
+    };
+
+    const itemsToRender: ItemInput[] = [
+      // selectable tokens
+      ...selectableItems.map((selectableItem) => ({
+          ...selectableItem,
+          selected: selectableItem.selected || selectedItems.map(item => item.id).includes(selectableItem.id),
+          onAction: (item: ItemProps, e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
+            setSelectedItems(
+              getSelectedItems(
+                item.id,
+                !item.selected
+              ) || []
+            );
+
+            if (!item.selected) {
+              onItemSelect(item, e);
+              setInputVal('');
+              setAutocompleteSuggestion('');
+            } else {
+              handleTokenRemove(item.id !== null && item.id !== undefined ? item.id : '');
+            }
+          }
+      })),
+      // menu item used for creating a token from whatever is in the text input
+      ...(addNewTokenItem
+        ? [{
+            ...addNewTokenItem,
+            onAction: (_item: ItemProps, e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
+              onItemSelect({ text: inputVal, id: `randomlyGeneratedId-${inputVal}` }, e)
+            }
+        }]
+        : []
+      )
+    ];
 
     useFocusZone(
         {
@@ -281,13 +373,24 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
           activeDescendantFocus: combinedInputRef,
           onActiveDescendantChanged: (current, _previous, directlyActivated) => {
             activeDescendantRef.current = current
-    
+            const selectedItem = itemsToRender.find(item => item.id?.toString() === current?.dataset.id);
+            // console.log('current id', current?.dataset.id);
+            setHighlightedItem(selectedItem);
+
             if (current && scrollContainerRef.current && directlyActivated) {
               scrollIntoViewingArea(current, scrollContainerRef.current)
             }
           }
         }
     )
+
+    useEffect(() => {
+      if (highlightedItem?.text?.startsWith(inputVal)) {
+        setAutocompleteSuggestion(highlightedItem.text);
+      } else {
+        setAutocompleteSuggestion('');
+      }
+    }, [highlightedItem, inputVal])
 
     return (
         <Wrapper
@@ -308,43 +411,53 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
                     onKeyUp={handleTokenKeyUp(token.id)}
                     text={token.text || ''} // TODO: just make token.text required
                     isSelected={selectedTokenIdx === i}
-                    handleRemove={() => { onTokenRemove(token.id) }}
+                    handleRemove={() => { handleTokenRemove(token.id) }}
                     variant="xl"
                     fillColor={token.labelColor ? token.labelColor : undefined}
                 />
             )) : null}
 
-            <div ref={listContainerRef}>
+            <InputWrapper data-autocompleteSuggestion={autocompleteSuggestion} ref={listContainerRef}>
                 <Input
                     ref={combinedInputRef}
                     disabled={disabled}
                     onFocus={handleInputFocus}
                     onKeyPress={onInputKeyPress}
-                    onKeyUp={handleInputKeyUp}
+                    onKeyDown={handleInputKeyDown}
                     onChange={handleInputChange}
                     type="text"
+                    value={inputVal}
                     {...inputProps}
                 />
-                {showMenu ? (
+                {showMenu && emptyStateText ? (
                     <Overlay
                         returnFocusRef={combinedInputRef}
                         overrideInitialFocus={true}
-                        preventPortal={true}
+                        preventPortal={true} // TODO: remove this prop and use `portalContainerName={listContainerRef}` instead
                         preventFocusOnOpen={true}
                         onClickOutside={closeOptionList}
                         onEscape={closeOptionList}
                     >
-                        <ActionList selectionVariant="multiple" items={itemsToRender} role="listbox" />
+                        {itemsToRender.length ? (
+                          <ActionList
+                            selectionVariant="multiple"
+                            items={itemsToRender}
+                            role="listbox"
+                          />
+                        ) : (
+                          <Box p={3}>{emptyStateText}</Box>
+                        )}
                     </Overlay>
                 ) : null}
-            </div>
+            </InputWrapper>
         </Wrapper>
     )
   }
 )
 
 TextInputWithTokens.defaultProps = {
-    tokenComponent: Token
+    tokenComponent: Token,
+    emptyStateText: 'No selectable options',
 }
 
 TextInputWithTokens.displayName = 'TextInput'

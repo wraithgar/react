@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react'
 import {Meta} from '@storybook/react'
+import { PlusIcon } from '@primer/octicons-react'
 
 import { BaseStyles, Box, ThemeProvider } from '..'
 import TextInputWithTokens, { TextInputWithTokensProps } from '../TextInputWithTokens';
@@ -12,14 +13,14 @@ interface Token {
 }
 
 const items = [
-    { text: 'zero', id: 8 },
-    { text: 'one', id: 9 },
-    { text: 'two', id: 10 },
-    { text: 'three', id: 11 },
-    { text: 'four', id: 1 },
-    { text: 'five', id: 2 },
-    { text: 'six', id: 3 },
-    { text: 'seven', id: 4 },
+    { text: 'zero', id: 0 },
+    { text: 'one', id: 1 },
+    { text: 'two', id: 2 },
+    { text: 'three', id: 3 },
+    { text: 'four', id: 4 },
+    { text: 'five', id: 5 },
+    { text: 'six', id: 6 },
+    { text: 'seven', id: 7 },
   ]
 
 const labelItems = [
@@ -37,10 +38,22 @@ export default {
 
   decorators: [
     Story => {
+      const [lastKey, setLastKey] = useState('none')
+      const reportKey = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
+        setLastKey(event.key)
+      }, [])
+
       return (
         <ThemeProvider>
           <BaseStyles>
-            <Story />
+            <Box onKeyDownCapture={reportKey}>
+              <Box position="absolute" right={5} top={2}>
+                Last key pressed: {lastKey}
+              </Box>
+              <Box paddingTop={5}>
+                <Story />
+              </Box>
+            </Box>
           </BaseStyles>
         </ThemeProvider>
       )
@@ -76,15 +89,11 @@ function getColorCircle(color: string) {
     }
   }
 
-export const TokenSelect = () => {
+export const Default = () => {
     const [filter, setFilter] = useState<string>('')
     const [tokens, setTokens] = useState<Token[]>(mockTokens)
-    const [lastKey, setLastKey] = useState('none')
-    const reportKey = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
-      setLastKey(event.key)
-    }, [])
-    const selectedTexts = tokens.map((item) => item.text);
-    const filteredItems = items.filter(item => item.text.toLowerCase().startsWith(filter.toLowerCase()) && !selectedTexts.includes(item.text))
+    // const selectedTexts = tokens.map((item) => item.text);
+    const filteredItems = items.filter(item => item.text.toLowerCase().startsWith(filter.toLowerCase())) // && !selectedTexts.includes(item.text)
     const onItemSelect: ItemProps['onAction'] = ({id, text}) => {
         // TODO: just make `id` required
         setTokens([...tokens, {id: id || 'someUniqueId', text}])
@@ -94,32 +103,60 @@ export const TokenSelect = () => {
     };
 
     return (
-        <Box onKeyDownCapture={reportKey}>
-            <Box position="absolute" right={5} top={2}>
-                Last key pressed: {lastKey}
-            </Box>
-            <Box paddingTop={5}>
-                <TextInputWithTokens
-                    onFilterChange={setFilter}
-                    tokens={tokens}
-                    selectableItems={filteredItems}
-                    onItemSelect={onItemSelect}
-                    onTokenRemove={onTokenRemove}
-                />
-            </Box>
-        </Box>
+      <TextInputWithTokens
+          onFilterChange={setFilter}
+          tokens={tokens}
+          selectableItems={filteredItems}
+          onItemSelect={onItemSelect}
+          onTokenRemove={onTokenRemove}
+      />
     )
 };
 
-export const TokenLabelSelect = () => {
+export const ComboboxSortSelectedFirst = () => {
+  const [filter, setFilter] = useState<string>('')
+  const [tokens, setTokens] = useState<Token[]>([])
+  const [selectableItems, setSelectableItems] = useState<ItemProps[]>(items)
+  const filteredItems = selectableItems.filter(item => item?.text?.toLowerCase().startsWith(filter.toLowerCase()))
+  const isItemSelected = (item: ItemProps) => {
+    if (item.selected) {
+      return true;
+    }
+
+    return tokens.some((token) => token.id === item.id)
+  };
+  const onCloseOptionsList = () => {
+    setSelectableItems([...selectableItems].sort((itemA, itemB) => isItemSelected(itemA) === isItemSelected(itemB)
+      ? 0
+      : isItemSelected(itemA)
+        ? -1
+        : 1
+    ))
+  };
+  const onItemSelect: ItemProps['onAction'] = ({id, text}) => {
+    // TODO: just make `id` required
+    setTokens([...tokens, {id: id || 'someUniqueId', text}])
+  };
+  const onTokenRemove: (tokenId: string | number) => void = (tokenId) => {
+    setTokens(tokens.filter(token => token.id !== tokenId))
+  };
+
+  return (
+    <TextInputWithTokens
+        onFilterChange={setFilter}
+        tokens={tokens}
+        selectableItems={filteredItems}
+        onItemSelect={onItemSelect}
+        onTokenRemove={onTokenRemove}
+        onCloseOptionsList={onCloseOptionsList}
+    />
+  )
+};
+
+export const LabelSelect = () => {
     const [filter, setFilter] = useState<string>('')
     const [tokens, setTokens] = useState<Token[]>([])
-    const [lastKey, setLastKey] = useState('none')
-    const reportKey = useCallback((event: React.KeyboardEvent<HTMLDivElement>) => {
-      setLastKey(event.key)
-    }, [])
-    const selectedTexts = tokens.map((item) => item.text);
-    const filteredItems = labelItems.filter(item => item.text.toLowerCase().startsWith(filter.toLowerCase()) && !selectedTexts.includes(item.text))
+    const filteredItems = labelItems.filter(item => item.text.toLowerCase().startsWith(filter.toLowerCase())) // && !selectedTexts.includes(item.text)
     const onItemSelect: ItemProps['onAction'] = ({id, text, labelColor}) => {
         // TODO: just make `id` required
         setTokens([...tokens, {id: id || 'someUniqueId', text, labelColor}])
@@ -129,20 +166,68 @@ export const TokenLabelSelect = () => {
     };
 
     return (
-        <Box onKeyDownCapture={reportKey}>
-            <Box position="absolute" right={5} top={2}>
-                Last key pressed: {lastKey}
-            </Box>
-            <Box paddingTop={5}>
-                <TextInputWithTokens
-                    onFilterChange={setFilter}
-                    tokens={tokens}
-                    selectableItems={filteredItems}
-                    onItemSelect={onItemSelect}
-                    onTokenRemove={onTokenRemove}
-                    tokenComponent={TokenLabel}
-                />
-            </Box>
-        </Box>
+      <TextInputWithTokens
+          onFilterChange={setFilter}
+          tokens={tokens}
+          selectableItems={filteredItems}
+          onItemSelect={onItemSelect}
+          onTokenRemove={onTokenRemove}
+          tokenComponent={TokenLabel}
+      />
     )
+};
+
+export const CreateNewToken = () => {
+  const [filter, setFilter] = useState<string>('')
+  const [tokens, setTokens] = useState<Token[]>([])
+  const [selectableItems, setSelectableItems] = useState<ItemProps[]>([items[0], items[1]])
+  const filteredItems = selectableItems.filter(item => item.text.toLowerCase().startsWith(filter.toLowerCase()))
+  const onItemSelect: ItemProps['onAction'] = ({id, text}) => {
+      // TODO: just make `id` required
+      setTokens([...tokens, {id: id || 'someUniqueId', text}])
+      if (!filteredItems.some(item => item.text === text)) {
+        setSelectableItems([...selectableItems, {id: id || `someUniqueId-${text}`, text, selected: true}])
+      }
+  };
+  const onTokenRemove: (tokenId: string | number) => void = (tokenId) => {
+      setTokens(tokens.filter(token => token.id !== tokenId))
+  };
+
+  return (
+    <TextInputWithTokens
+        onFilterChange={setFilter}
+        tokens={tokens}
+        selectableItems={filteredItems}
+        onItemSelect={onItemSelect}
+        onTokenRemove={onTokenRemove}
+        addNewTokenItem={filter && !filteredItems.some(item => item.text === filter) ? {
+          text: `Add '${filter}'`,
+          leadingVisual: () => (<PlusIcon />)
+        } : undefined}
+    />
+  )
+};
+
+export const ComboboxEmptyStateCustomText = () => {
+  const [filter, setFilter] = useState<string>('')
+  const [tokens, setTokens] = useState<Token[]>([])
+  const filteredItems = [items[0], items[1]].filter(item => item.text.toLowerCase().startsWith(filter.toLowerCase()))
+  const onItemSelect: ItemProps['onAction'] = ({id, text}) => {
+      // TODO: just make `id` required
+      setTokens([...tokens, {id: id || 'someUniqueId', text}])
+  };
+  const onTokenRemove: (tokenId: string | number) => void = (tokenId) => {
+      setTokens(tokens.filter(token => token.id !== tokenId))
+  };
+
+  return (
+    <TextInputWithTokens
+        onFilterChange={setFilter}
+        tokens={tokens}
+        selectableItems={filteredItems}
+        onItemSelect={onItemSelect}
+        onTokenRemove={onTokenRemove}
+        emptyStateText="No tokens match the query"
+    />
+  )
 };
