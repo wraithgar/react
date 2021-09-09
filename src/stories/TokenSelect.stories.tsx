@@ -21,6 +21,8 @@ const items = [
     { text: 'five', id: 5 },
     { text: 'six', id: 6 },
     { text: 'seven', id: 7 },
+    { text: 'twenty', id: 20 },
+    { text: 'twentyone', id: 21 }
   ]
 
 const labelItems = [

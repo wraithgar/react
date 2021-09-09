@@ -81,13 +81,13 @@ export const defaultToken = () => (
 export const profileToken = () => (
     <ExampleCollectionContainer>
         <SingleExampleContainer label="Resting">
-            <TokenProfile avatarSrc="https://avatars.githubusercontent.com/primer" text="Mike Perrotti" />
+            <TokenProfile variant="lg" avatarSrc="https://avatars.githubusercontent.com/mperrotti" text="Mike Perrotti" />
         </SingleExampleContainer>
         <SingleExampleContainer label="w/ onRemove passed">
-            <TokenProfile avatarSrc="https://avatars.githubusercontent.com/primer" text="Mike Perrotti" handleRemove={() => { console.log('remove me') }} />
+            <TokenProfile variant="lg" avatarSrc="https://avatars.githubusercontent.com/mperrotti" text="Mike Perrotti" handleRemove={() => { console.log('remove me') }} />
         </SingleExampleContainer>
         <SingleExampleContainer label="isSelected">
-            <TokenProfile avatarSrc="https://avatars.githubusercontent.com/primer" text="Mike Perrotti" isSelected={true} />
+            <TokenProfile variant="lg" avatarSrc="https://avatars.githubusercontent.com/mperrotti" text="Mike Perrotti" isSelected={true} />
         </SingleExampleContainer>
     </ExampleCollectionContainer>
 )
@@ -126,20 +126,6 @@ export const labelToken = () => (
             </SingleExampleContainer>
         </ExampleCollectionContainer>
     </CollectionOfCollectionsContainer>
-)
-
-export const topicToken = () => (
-    <ExampleCollectionContainer>
-        <SingleExampleContainer label="Resting">
-            <TokenTopic text="Topic Token" />
-        </SingleExampleContainer>
-        <SingleExampleContainer label="w/ onRemove passed">
-            <TokenTopic text="Topic Token" handleRemove={() => { console.log('remove me') }} />
-        </SingleExampleContainer>
-        <SingleExampleContainer label="isSelected">
-            <TokenTopic text="Topic Token" isSelected={true} />
-        </SingleExampleContainer>
-    </ExampleCollectionContainer>
 )
 
 export const sizes = () => (

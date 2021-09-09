@@ -10,15 +10,35 @@ interface Props extends TokenBaseProps {
 
 const tokenBorderWidthPx = 1;
 
+//
+// Very "plain" style - just a border
+//
+// const DefaultToken = styled(TokenBase)`
+//     background-color: ${props => props.isSelected ? get('colors.fade.fg10') : 'transparent'};
+//     border-width: ${tokenBorderWidthPx}px;
+//     border-style: solid;
+//     border-color: ${props => props.isSelected ? get('colors.border.tertiary') : get('colors.border.primary')};
+//     padding-right: ${props => props.handleRemove ? 0 : undefined};
+
+//     > .RemoveTokenButton {
+//         transform: translate(${tokenBorderWidthPx}px, -${tokenBorderWidthPx}px);
+//     }
+// `;
+
 const DefaultToken = styled(TokenBase)`
-    background-color: ${props => props.isSelected ? get('colors.fade.fg10') : 'transparent'};
-    border-width: ${tokenBorderWidthPx}px;
+    background-color: ${get('colors.accent.subtle')};
+    border-color: ${props => props.isSelected ? get('colors.accent.fg') : get('colors.accent.subtle')};
     border-style: solid;
-    border-color: ${props => props.isSelected ? get('colors.border.tertiary') : get('colors.border.primary')};
+    border-width: ${props => props.isSelected ? '1px' : 0};
+    color: ${get('colors.accent.fg')};
     padding-right: ${props => props.handleRemove ? 0 : undefined};
 
+    &:hover {
+        background-color: ${get('colors.accent.muted')};
+    }
+
     > .RemoveTokenButton {
-        transform: translate(${tokenBorderWidthPx}px, -${tokenBorderWidthPx}px);
+        color: ${get('colors.accent.fg')};
     }
 `;
 

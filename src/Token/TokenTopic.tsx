@@ -1,3 +1,7 @@
+// NOTE:
+// I'm proposing we just get rid of this component, but I'm keeping it around just incase we
+// find a reason to make Topic tokens different from the default Token component.
+
 import React from 'react'
 import styled from 'styled-components'
 import { get } from '../constants'
@@ -5,19 +9,19 @@ import TokenBase, { TokenBaseProps } from './TokenBase'
 import RemoveTokenButton from './_RemoveTokenButton'
 
 const DefaultToken = styled(TokenBase)`
-    background-color: ${props => props.isSelected ? get('colors.topicTag.activeBg') : get('colors.topicTag.bg')};
-    border-color: ${get('colors.topicTag.text')};
+    background-color: ${get('colors.accent.subtle')};
+    border-color: ${props => props.isSelected ? get('colors.accent.fg') : get('colors.accent.subtle')};
     border-style: solid;
     border-width: ${props => props.isSelected ? '1px' : 0};
-    color: ${get('colors.topicTag.text')};
+    color: ${get('colors.accent.fg')};
     padding-right: ${props => props.handleRemove ? 0 : undefined};
 
     &:hover {
-        background-color: ${get('colors.topicTag.hoverBg')};
+        background-color: ${get('colors.accent.muted')};
     }
 
     > .RemoveTokenButton {
-        color: ${get('colors.topicTag.text')};
+        color: ${get('colors.accent.fg')};
     }
 `;
 
