@@ -303,6 +303,10 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
         setInputVal(`${lastToken.text}` || '');
         // TODO: use hooks or something to always trigger `onFilterChange` when `inputVal` is changed
         onFilterChange(lastToken.text || '', e);
+        // HACK: for some reason we need to wait a tick for `.select()` to work
+        setTimeout(() => {
+          combinedInputRef?.current?.select();
+        }, 1);
       }
     };
     const onInputKeyPress: KeyboardEventHandler = useCallback(
