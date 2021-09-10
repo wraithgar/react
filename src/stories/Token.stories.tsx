@@ -114,17 +114,6 @@ export const labelToken = () => (
                 </Box>
             </SingleExampleContainer>
         </ExampleCollectionContainer>
-        <ExampleCollectionContainer>
-            <SingleExampleContainer label="Outlined">
-                <TokenLabel text="Mike Perrotti" fillColor="#656BFE" isOutlined={true} />
-            </SingleExampleContainer>
-            <SingleExampleContainer label="Outlined w/ onRemove passed">
-                <TokenLabel text="Mike Perrotti" fillColor="#656BFE" isOutlined={true} handleRemove={() => { console.log('remove me') }} />
-            </SingleExampleContainer>
-            <SingleExampleContainer label="Outlined isSelected">
-                <TokenLabel text="Mike Perrotti" fillColor="#656BFE" isOutlined={true} handleRemove={() => { console.log('remove me') }} isSelected={true} />
-            </SingleExampleContainer>
-        </ExampleCollectionContainer>
     </CollectionOfCollectionsContainer>
 )
 
