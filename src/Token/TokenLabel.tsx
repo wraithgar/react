@@ -50,7 +50,7 @@ const StyledTokenLabel = styled(TokenBase)<Props & LabelStyleProps>`
   padding-right: ${props => props.handleRemove ? 0 : undefined};
   position: relative;
 
-  > .RemoveTokenButton {
+  > ._TokenButton {
     color: currentColor;
     transform: translate(${tokenBorderWidthPx}px, -${tokenBorderWidthPx}px);
   }

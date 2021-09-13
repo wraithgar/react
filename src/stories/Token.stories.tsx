@@ -66,8 +66,14 @@ export const defaultToken = () => (
         <SingleExampleContainer label="Resting">
             <Token text="Default Token" />
         </SingleExampleContainer>
-        <SingleExampleContainer label="w/ onRemove passed">
+        <SingleExampleContainer label="w/ handleRemove passed">
             <Token text="Default Token" handleRemove={() => { console.log('remove me') }} />
+        </SingleExampleContainer>
+        <SingleExampleContainer label="w/ handleAdd passed">
+            <Token text="Default Token" handleAdd={() => { console.log('add me') }} />
+        </SingleExampleContainer>
+        <SingleExampleContainer label="w/ handleAdd and handleRemove passed">
+            <Token text="Default Token" handleAdd={() => { console.log('add me') }} handleRemove={() => { console.log('remove me') }} />
         </SingleExampleContainer>
         <SingleExampleContainer label="w/ leadingVisual passed">
             <Token text="Default Token" leadingVisual={() => <VerifiedIcon size={12} />} />
@@ -83,7 +89,7 @@ export const profileToken = () => (
         <SingleExampleContainer label="Resting">
             <TokenProfile variant="lg" avatarSrc="https://avatars.githubusercontent.com/mperrotti" text="Mike Perrotti" />
         </SingleExampleContainer>
-        <SingleExampleContainer label="w/ onRemove passed">
+        <SingleExampleContainer label="w/ handleRemove passed">
             <TokenProfile variant="lg" avatarSrc="https://avatars.githubusercontent.com/mperrotti" text="Mike Perrotti" handleRemove={() => { console.log('remove me') }} />
         </SingleExampleContainer>
         <SingleExampleContainer label="isSelected">
@@ -101,7 +107,7 @@ export const labelToken = () => (
             <SingleExampleContainer label="Default (#656BFE fill color passed)">
                 <TokenLabel text="Mike Perrotti" fillColor="#656BFE" />
             </SingleExampleContainer>
-            <SingleExampleContainer label="onRemove passed">
+            <SingleExampleContainer label="handleRemove passed">
                 <TokenLabel text="Mike Perrotti" fillColor="#656BFE" handleRemove={() => { console.log('remove me') }} />
             </SingleExampleContainer>
             <SingleExampleContainer label="isSelected">

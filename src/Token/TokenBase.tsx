@@ -15,11 +15,12 @@ export const defaultTokenSize = 'md'
 
 export interface TokenBaseProps extends Omit<React.HTMLProps<HTMLSpanElement | HTMLButtonElement | HTMLAnchorElement>, 'size'> {
     as?: 'button' | 'a' | 'span'
-    isSelected?: boolean
+    handleAdd?: () => void
     handleRemove?: () => void
+    isSelected?: boolean
     tabIndex?: number
-    variant?: TokenSizeKeys
     text: string
+    variant?: TokenSizeKeys
 }
 
 export const tokenHeightPx = 32;

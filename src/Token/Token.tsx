@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { get } from '../constants'
 import TokenBase, { TokenBaseProps } from './TokenBase'
+import AddTokenButton from './_AddTokenButton'
 import RemoveTokenButton from './_RemoveTokenButton'
 
 interface Props extends TokenBaseProps {
@@ -20,7 +21,7 @@ const tokenBorderWidthPx = 1;
 //     border-color: ${props => props.isSelected ? get('colors.border.tertiary') : get('colors.border.primary')};
 //     padding-right: ${props => props.handleRemove ? 0 : undefined};
 
-//     > .RemoveTokenButton {
+//     > ._TokenButton {
 //         transform: translate(${tokenBorderWidthPx}px, -${tokenBorderWidthPx}px);
 //     }
 // `;
@@ -31,13 +32,13 @@ const DefaultToken = styled(TokenBase)`
     border-style: solid;
     border-width: ${props => props.isSelected ? '1px' : 0};
     color: ${get('colors.accent.fg')};
-    padding-right: ${props => props.handleRemove ? 0 : undefined};
+    padding-right: ${props => (props.handleRemove || props.handleAdd) ? 0 : undefined};
 
     &:hover {
         background-color: ${get('colors.accent.muted')};
     }
 
-    > .RemoveTokenButton {
+    > ._TokenButton {
         color: ${get('colors.accent.fg')};
     }
 `;
@@ -57,7 +58,7 @@ const Token: React.FC<Props> = ({
     leadingVisual: LeadingVisual,
     ...tokenBaseProps
 }) => {
-    const { handleRemove, text, as, variant } = tokenBaseProps;
+    const { handleRemove, handleAdd, text, as, variant } = tokenBaseProps;
 
     return (
         <DefaultToken {...tokenBaseProps}>
@@ -72,6 +73,14 @@ const Token: React.FC<Props> = ({
                     parentTokenTag={as || 'span'}
                     tabIndex={-1}
                     onClick={handleRemove}
+                    variant={variant}
+                />
+            ) : null}
+            {handleAdd ? (
+                <AddTokenButton
+                    parentTokenTag={as || 'span'}
+                    tabIndex={-1}
+                    onClick={handleAdd}
                     variant={variant}
                 />
             ) : null}

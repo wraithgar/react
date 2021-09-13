@@ -20,7 +20,7 @@ const DefaultToken = styled(TokenBase)`
         background-color: ${get('colors.accent.muted')};
     }
 
-    > .RemoveTokenButton {
+    > ._TokenButton {
         color: ${get('colors.accent.fg')};
     }
 `;
