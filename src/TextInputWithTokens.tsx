@@ -2,7 +2,7 @@ import React, { ChangeEventHandler, FocusEventHandler, KeyboardEventHandler, use
 import {omit, pick} from '@styled-system/props'
 import classnames from 'classnames'
 import styled, {css} from 'styled-components'
-import {maxWidth, MaxWidthProps, minWidth, MinWidthProps, variant, width, WidthProps} from 'styled-system'
+import { maxWidth, MaxWidthProps, minWidth, MinWidthProps, variant, width, WidthProps} from 'styled-system'
 import { ActionList, ItemProps } from './ActionList'
 import { ItemInput } from './ActionList/List'
 import { FocusKeys } from './behaviors/focusZone'
@@ -17,6 +17,9 @@ import {ComponentProps} from './utils/types'
 import { TokenBaseProps } from './Token/TokenBase'
 import Token from './Token/Token'
 import { Box } from '.'
+import { registerPortalRoot } from './Portal'
+
+const DROPDOWN_PORTAL_CONTAINER_NAME = '__listcontainerportal__';
 
 function scrollIntoViewingArea(
     child: HTMLElement,
@@ -100,6 +103,7 @@ type StyledWrapperProps = {
   block?: boolean
   contrast?: boolean
   variant?: 'small' | 'large'
+  maxHeight?: React.CSSProperties['maxHeight']
 } & SystemCommonProps &
   WidthProps &
   MinWidthProps &
@@ -131,6 +135,15 @@ const Wrapper = styled.span<StyledWrapperProps>`
     } else {
       return css`
         padding: 6px 12px;
+      `
+    }
+  }}
+
+  ${props => {
+    if (props.maxHeight) {
+      return css`
+        max-height: ${props.maxHeight};
+        overflow: auto;
       `
     }
   }}
@@ -200,6 +213,7 @@ type TextInputWithTokensInternalProps = {
   emptyStateText?: React.ReactNode | false
   addNewTokenItem?: Omit<ItemInput, 'onAction'> // TODO: Rethink this prop name. It's confusing.
   onCloseOptionsList?: () => void // TODO: reconsider having this prop at all
+  maxHeight?: React.CSSProperties['maxHeight']
 } & ComponentProps<typeof Wrapper> &
   ComponentProps<typeof Input>
 
@@ -249,6 +263,15 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
         return !(element instanceof HTMLButtonElement)
       }
     })
+
+    const {floatingElementRef, position} = useAnchoredPosition(
+      {
+        side: 'outside-bottom',
+        align: 'start',
+        anchorElementRef: combinedInputRef
+      },
+      [showMenu, tokens]
+    )
 
     const closeOptionList = () => {
       setShowMenu(false);
@@ -400,7 +423,12 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
       }
     }, [highlightedItem, inputVal])
 
+    if (listContainerRef.current) {
+      registerPortalRoot(listContainerRef.current, DROPDOWN_PORTAL_CONTAINER_NAME)
+    }
+
     return (
+      <>
         <Wrapper
             className={wrapperClasses}
             hasIcon={!!IconComponent}
@@ -412,7 +440,7 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
             ref={containerRef}
             {...wrapperProps}
         >
-            <InputWrapper data-autocompleteSuggestion={autocompleteSuggestion} ref={listContainerRef}>
+            <InputWrapper data-autocompleteSuggestion={autocompleteSuggestion}>
                 <Input
                     ref={combinedInputRef}
                     disabled={disabled}
@@ -424,26 +452,6 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
                     value={inputVal}
                     {...inputProps}
                 />
-                {showMenu && emptyStateText ? (
-                    <Overlay
-                        returnFocusRef={combinedInputRef}
-                        overrideInitialFocus={true}
-                        preventPortal={true} // TODO: remove this prop and use `portalContainerName={listContainerRef}` instead
-                        preventFocusOnOpen={true}
-                        onClickOutside={closeOptionList}
-                        onEscape={closeOptionList}
-                    >
-                        {itemsToRender.length ? (
-                          <ActionList
-                            selectionVariant="multiple"
-                            items={itemsToRender}
-                            role="listbox"
-                          />
-                        ) : (
-                          <Box p={3}>{emptyStateText}</Box>
-                        )}
-                    </Overlay>
-                ) : null}
             </InputWrapper>
             {tokens?.length && TokenComponent ? (
               tokens.map((token, i) => (
@@ -461,16 +469,41 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
                 ))
             ) : null}
         </Wrapper>
+        <div ref={listContainerRef}>
+          {showMenu && emptyStateText ? (
+              <Overlay
+                  returnFocusRef={combinedInputRef}
+                  portalContainerName={DROPDOWN_PORTAL_CONTAINER_NAME}
+                  preventFocusOnOpen={true}
+                  onClickOutside={closeOptionList}
+                  onEscape={closeOptionList}
+                  ref={floatingElementRef as React.RefObject<HTMLDivElement>}
+                  top={position?.top}
+                  left={position?.left}
+              >
+                  {itemsToRender.length ? (
+                    <ActionList
+                      selectionVariant="multiple"
+                      items={itemsToRender}
+                      role="listbox"
+                    />
+                  ) : (
+                    <Box p={3}>{emptyStateText}</Box>
+                  )}
+              </Overlay>
+          ) : null}
+        </div>
+      </>
     )
   }
 )
 
 TextInputWithTokens.defaultProps = {
     tokenComponent: Token,
-    emptyStateText: 'No selectable options',
+    emptyStateText: 'No selectable options'
 }
 
-TextInputWithTokens.displayName = 'TextInput'
+TextInputWithTokens.displayName = 'TextInputWithTokens'
 
 export type TextInputWithTokensProps = ComponentProps<typeof TextInputWithTokens>
 export default TextInputWithTokens

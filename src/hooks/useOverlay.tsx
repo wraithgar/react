@@ -10,7 +10,6 @@ export type UseOverlaySettings = {
   onEscape: (e: KeyboardEvent) => void
   onClickOutside: (e: TouchOrMouseEvent) => void
   overlayRef?: React.RefObject<HTMLDivElement>
-  overrideInitialFocus?: boolean
   preventFocusOnOpen?: boolean
 }
 
@@ -25,12 +24,11 @@ export const useOverlay = ({
   onEscape,
   ignoreClickRefs,
   onClickOutside,
-  overrideInitialFocus,
   preventFocusOnOpen
 }: UseOverlaySettings): OverlayReturnProps => {
   const overlayRef = useProvidedRefOrCreate<HTMLDivElement>(_overlayRef)
   if (!preventFocusOnOpen) {
-    useOpenAndCloseFocus({containerRef: overlayRef, returnFocusRef, initialFocusRef, overrideInitialFocus})
+    useOpenAndCloseFocus({containerRef: overlayRef, returnFocusRef, initialFocusRef})
   }
   useOnOutsideClick({containerRef: overlayRef, ignoreClickRefs, onClickOutside})
   useOnEscapePress(onEscape)

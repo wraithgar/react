@@ -90,8 +90,6 @@ export type OverlayProps = {
   top: number
   left: number
   portalContainerName?: string
-  overrideInitialFocus?: boolean
-  preventPortal?: boolean
   preventFocusOnOpen?: boolean
 } & Omit<ComponentProps<typeof StyledOverlay>, 'visibility' | keyof SystemPositionProps>
 
@@ -127,8 +125,6 @@ const Overlay = React.forwardRef<HTMLDivElement, OverlayProps>(
       left,
       anchorSide,
       portalContainerName,
-      overrideInitialFocus,
-      preventPortal,
       preventFocusOnOpen,
       ...rest
     },
@@ -147,7 +143,6 @@ const Overlay = React.forwardRef<HTMLDivElement, OverlayProps>(
       ignoreClickRefs,
       onClickOutside,
       initialFocusRef,
-      overrideInitialFocus,
       preventFocusOnOpen,
     })
 
@@ -179,18 +174,15 @@ const Overlay = React.forwardRef<HTMLDivElement, OverlayProps>(
     ref={combinedRef}
     style={
       {
-        // TODO: pass `top` and `left` props when using Overlay, and remove these commented lines
-        // top: `${top || 0}px`,
-        // left: `${left || 0}px`,
+        top: `${top || 0}px`,
+        left: `${left || 0}px`,
         ...rest.style,
         '--styled-overlay-visibility': visibility
       } as React.CSSProperties
     }
   />;
 
-    return preventPortal ? (
-      styledOverlay
-    ) : (
+    return (
       <Portal containerName={portalContainerName}>
         {styledOverlay}
       </Portal>

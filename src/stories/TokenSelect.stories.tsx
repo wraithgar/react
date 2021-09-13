@@ -64,14 +64,37 @@ export default {
 } as Meta
 
 const mockTokens = [
-    {
-        id: 0,
-        text: 'zero'
-    },
-    {
-        id: 1,
-        text: 'one'
-    },
+  { text: 'zero', id: 0 },
+  { text: 'one', id: 1 },
+];
+
+const mockTokens_long = [
+  { text: 'zero', id: 0 },
+  { text: 'one', id: 1 },
+  { text: 'two', id: 2 },
+  { text: 'three', id: 3 },
+  { text: 'four', id: 4 },
+  { text: 'five', id: 5 },
+  { text: 'six', id: 6 },
+  { text: 'seven', id: 7 },
+  { text: 'eight', id: 8 },
+  { text: 'nine', id: 9 },
+  { text: 'ten', id: 10 },
+  { text: 'eleven', id: 11 },
+  { text: 'duplicatezero', id: 990 },
+  { text: 'duplicateone', id: 991 },
+  { text: 'duplicatetwo', id: 992 },
+  { text: 'duplicatethree', id: 993 },
+  { text: 'duplicatefour', id: 994 },
+  { text: 'duplicatefive', id: 995 },
+  { text: 'duplicatesix', id: 996 },
+  { text: 'duplicateseven', id: 997 },
+  { text: 'duplicateeight', id: 998 },
+  { text: 'duplicatenine', id: 999 },
+  { text: 'duplicateten', id: 1990 },
+  { text: 'duplicateeleven', id: 1991 },
+  { text: 'twenty', id: 20 },
+  { text: 'twentyone', id: 21 }
 ];
 
 function getColorCircle(color: string) {
@@ -231,5 +254,32 @@ export const ComboboxEmptyStateCustomText = () => {
         onTokenRemove={onTokenRemove}
         emptyStateText="No tokens match the query"
     />
+  )
+};
+
+export const ManySelected = () => {
+  const [filter, setFilter] = useState<string>('')
+  const [tokens, setTokens] = useState<Token[]>(mockTokens_long)
+  // const selectedTexts = tokens.map((item) => item.text);
+  const filteredItems = items.filter(item => item.text.toLowerCase().startsWith(filter.toLowerCase())) // && !selectedTexts.includes(item.text)
+  const onItemSelect: ItemProps['onAction'] = ({id, text}) => {
+      // TODO: just make `id` required
+      setTokens([...tokens, {id: id || 'someUniqueId', text}])
+  };
+  const onTokenRemove: (tokenId: string | number) => void = (tokenId) => {
+      setTokens(tokens.filter(token => token.id !== tokenId))
+  };
+
+  return (
+    <div style={{maxWidth: '600px'}}>
+      <TextInputWithTokens
+          onFilterChange={setFilter}
+          tokens={tokens}
+          selectableItems={filteredItems}
+          onItemSelect={onItemSelect}
+          onTokenRemove={onTokenRemove}
+          maxHeight='125px'
+      />
+    </div>
   )
 };
