@@ -65,8 +65,8 @@ const Input = styled.input`
   background-color: transparent;
   -webkit-appearance: none;
   color: inherit;
-  flex-grow: 1;
   height: 100%;
+  width: 100%;
   padding: 0;
 
   &:focus {
@@ -75,6 +75,8 @@ const Input = styled.input`
 `
 const InputWrapper = styled.div`
   position: relative;
+  order: 1;
+  flex-grow: 1;
 
   &:after {
     content: attr(data-autocompleteSuggestion);
@@ -239,10 +241,13 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
     );
     const [autocompleteSuggestion, setAutocompleteSuggestion] = useState<string>('');
     const [highlightedItem, setHighlightedItem] = useState<ItemProps | undefined>();
-
+    
     const {containerRef} = useFocusZone({
-      focusOutBehavior: 'stop',
-      bindKeys: FocusKeys.ArrowHorizontal | FocusKeys.HomeAndEnd
+      focusOutBehavior: 'wrap',
+      bindKeys: FocusKeys.ArrowHorizontal | FocusKeys.HomeAndEnd,
+      focusableElementFilter: element => {
+        return !(element instanceof HTMLButtonElement)
+      }
     })
 
     const closeOptionList = () => {
@@ -378,7 +383,6 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
           onActiveDescendantChanged: (current, _previous, directlyActivated) => {
             activeDescendantRef.current = current
             const selectedItem = itemsToRender.find(item => item.id?.toString() === current?.dataset.id);
-            // console.log('current id', current?.dataset.id);
             setHighlightedItem(selectedItem);
 
             if (current && scrollContainerRef.current && directlyActivated) {
@@ -408,19 +412,6 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
             ref={containerRef}
             {...wrapperProps}
         >
-            {TokenComponent ? tokens?.map((token, i) => (
-                <TokenComponent
-                    onFocus={handleTokenFocus(i)}
-                    onBlur={handleTokenBlur}
-                    onKeyUp={handleTokenKeyUp(token.id)}
-                    text={token.text || ''} // TODO: just make token.text required
-                    isSelected={selectedTokenIdx === i}
-                    handleRemove={() => { handleTokenRemove(token.id) }}
-                    variant="xl"
-                    fillColor={token.labelColor ? token.labelColor : undefined}
-                />
-            )) : null}
-
             <InputWrapper data-autocompleteSuggestion={autocompleteSuggestion} ref={listContainerRef}>
                 <Input
                     ref={combinedInputRef}
@@ -454,6 +445,21 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
                     </Overlay>
                 ) : null}
             </InputWrapper>
+            {tokens?.length && TokenComponent ? (
+              tokens.map((token, i) => (
+                  <TokenComponent
+                      onFocus={handleTokenFocus(i)}
+                      onBlur={handleTokenBlur}
+                      onKeyUp={handleTokenKeyUp(token.id)}
+                      text={token.text || ''} // TODO: just make token.text required
+                      isSelected={selectedTokenIdx === i}
+                      handleRemove={() => { handleTokenRemove(token.id) }}
+                      variant="xl"
+                      fillColor={token.labelColor ? token.labelColor : undefined}
+                      tabIndex={0}
+                  />
+                ))
+            ) : null}
         </Wrapper>
     )
   }
