@@ -16,7 +16,7 @@ import sx, {SxProp} from './sx'
 import {ComponentProps} from './utils/types'
 import { TokenBaseProps } from './Token/TokenBase'
 import Token from './Token/Token'
-import { Box } from '.'
+import { Box, Spinner } from '.'
 import { registerPortalRoot } from './Portal'
 
 const DROPDOWN_PORTAL_CONTAINER_NAME = '__listcontainerportal__';
@@ -214,6 +214,7 @@ type TextInputWithTokensInternalProps = {
   addNewTokenItem?: Omit<ItemInput, 'onAction'> // TODO: Rethink this prop name. It's confusing.
   onCloseOptionsList?: () => void // TODO: reconsider having this prop at all
   maxHeight?: React.CSSProperties['maxHeight']
+  loading?: boolean
 } & ComponentProps<typeof Wrapper> &
   ComponentProps<typeof Input>
 
@@ -236,6 +237,7 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
       emptyStateText,
       addNewTokenItem,
       onCloseOptionsList,
+      loading,
       ...rest},
     ref) => {
     const listContainerRef = useRef<HTMLDivElement>(null)
@@ -481,14 +483,22 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
                   top={position?.top}
                   left={position?.left}
               >
-                  {itemsToRender.length ? (
-                    <ActionList
-                      selectionVariant="multiple"
-                      items={itemsToRender}
-                      role="listbox"
-                    />
+                  {loading ? (
+                    <Box p={3} display="flex" justifyContent="center">
+                      <Spinner />
+                    </Box>
                   ) : (
-                    <Box p={3}>{emptyStateText}</Box>
+                    <>
+                      {itemsToRender.length ? (
+                        <ActionList
+                          selectionVariant="multiple"
+                          items={itemsToRender}
+                          role="listbox"
+                        />
+                      ) : (
+                        <Box p={3}>{emptyStateText}</Box>
+                      )}
+                    </>
                   )}
               </Overlay>
           ) : null}

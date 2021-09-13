@@ -283,3 +283,27 @@ export const ManySelected = () => {
     </div>
   )
 };
+
+export const Loading = () => {
+  const [filter, setFilter] = useState<string>('')
+  const [tokens, setTokens] = useState<Token[]>([])
+  const filteredItems = items.filter(item => item.text.toLowerCase().startsWith(filter.toLowerCase())) // && !selectedTexts.includes(item.text)
+  const onItemSelect: ItemProps['onAction'] = ({id, text}) => {
+      // TODO: just make `id` required
+      setTokens([...tokens, {id: id || 'someUniqueId', text}])
+  };
+  const onTokenRemove: (tokenId: string | number) => void = (tokenId) => {
+      setTokens(tokens.filter(token => token.id !== tokenId))
+  };
+
+  return (
+    <TextInputWithTokens
+        onFilterChange={setFilter}
+        tokens={tokens}
+        selectableItems={filteredItems}
+        onItemSelect={onItemSelect}
+        onTokenRemove={onTokenRemove}
+        loading={true}
+    />
+  )
+};
