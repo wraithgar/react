@@ -56,6 +56,16 @@ export const defaultToken = () => (
         <SingleExampleContainer label="Resting">
             <Token text="Default Token" />
         </SingleExampleContainer>
+        <SingleExampleContainer label="Interactive">
+            <Box display="flex" sx={{
+                alignItems: 'start',
+                gap: get('space.2'),
+            }}>
+                <Token as="a" href="http://google.com/" text="Link" />
+                <Token as="button" onClick={() => console.log('clicked')} text="Button" />
+                <Token as="span" tabIndex={0} onFocus={() => console.log('focused')} text="Focusable Span" />
+            </Box>
+        </SingleExampleContainer>
         <SingleExampleContainer label="w/ handleRemove passed">
             <Token text="Default Token" handleRemove={() => { console.log('remove me') }} />
         </SingleExampleContainer>
@@ -91,21 +101,41 @@ export const profileToken = () => (
 export const labelToken = () => (
     <ExampleCollectionContainer>
         <SingleExampleContainer label="Default (no fill color passed)">
-            <TokenLabel text="Mike Perrotti" />
+            <TokenLabel text="default" />
+        </SingleExampleContainer>
+        <SingleExampleContainer label="Interactive">
+            <Box display="flex" sx={{
+                alignItems: 'start',
+                gap: get('space.2'),
+            }}>
+                <TokenLabel as="a" href="http://google.com/" text="Link" />
+                <TokenLabel as="button" onClick={() => console.log('clicked')} text="Button" />
+                <TokenLabel as="span" tabIndex={0} onFocus={() => console.log('focused')} text="Focusable Span" />
+            </Box>
+        </SingleExampleContainer>
+        <SingleExampleContainer label="Interactive (#656BFE fill color passed)">
+            <Box display="flex" sx={{
+                alignItems: 'start',
+                gap: get('space.2'),
+            }}>
+                <TokenLabel fillColor="#656BFE" as="a" href="http://google.com/" text="Link" />
+                <TokenLabel fillColor="#656BFE" as="button" onClick={() => console.log('clicked')} text="Button" />
+                <TokenLabel fillColor="#656BFE" as="span" tabIndex={0} onFocus={() => console.log('focused')} text="Focusable Span" />
+            </Box>
         </SingleExampleContainer>
         <SingleExampleContainer label="Default (#656BFE fill color passed)">
-            <TokenLabel text="Mike Perrotti" fillColor="#656BFE" />
+            <TokenLabel text="good first issue" fillColor="#656BFE" />
         </SingleExampleContainer>
         <SingleExampleContainer label="handleRemove passed">
-            <TokenLabel text="Mike Perrotti" fillColor="#656BFE" handleRemove={() => { console.log('remove me') }} />
+            <TokenLabel text="good first issue" fillColor="#656BFE" handleRemove={() => { console.log('remove me') }} />
         </SingleExampleContainer>
         <SingleExampleContainer label="isSelected">
-            <TokenLabel text="Mike Perrotti" fillColor="#656BFE" isSelected={true} handleRemove={() => { console.log('remove me') }} />
+            <TokenLabel text="good first issue" fillColor="#656BFE" isSelected={true} handleRemove={() => { console.log('remove me') }} />
         </SingleExampleContainer>
         <SingleExampleContainer label="Automatically picks a readable text color based on fill color">
             <Box display="flex" sx={{ gap: get('space.2') }}>
-                <TokenLabel text="Mike Perrotti" fillColor="#656BFE" />
-                <TokenLabel text="Mike Perrotti" fillColor="#FFF06C" />
+                <TokenLabel text="good first issue" fillColor="#656BFE" />
+                <TokenLabel text="bug" fillColor="#FFF06C" />
             </Box>
         </SingleExampleContainer>
     </ExampleCollectionContainer>

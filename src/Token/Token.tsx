@@ -1,30 +1,13 @@
 import React from 'react'
 import styled from 'styled-components'
 import { get } from '../constants'
-import TokenBase, { TokenBaseProps } from './TokenBase'
+import TokenBase, { isTokenHoverable, TokenBaseProps } from './TokenBase'
 import AddTokenButton from './_AddTokenButton'
 import RemoveTokenButton from './_RemoveTokenButton'
 
 interface Props extends TokenBaseProps {
     leadingVisual?: React.FunctionComponent<any>
 }
-
-const tokenBorderWidthPx = 1;
-
-//
-// Very "plain" style - just a border
-//
-// const DefaultToken = styled(TokenBase)`
-//     background-color: ${props => props.isSelected ? get('colors.fade.fg10') : 'transparent'};
-//     border-width: ${tokenBorderWidthPx}px;
-//     border-style: solid;
-//     border-color: ${props => props.isSelected ? get('colors.border.tertiary') : get('colors.border.primary')};
-//     padding-right: ${props => props.handleRemove ? 0 : undefined};
-
-//     > ._TokenButton {
-//         transform: translate(${tokenBorderWidthPx}px, -${tokenBorderWidthPx}px);
-//     }
-// `;
 
 const DefaultToken = styled(TokenBase)`
     background-color: ${get('colors.accent.subtle')};
@@ -35,7 +18,7 @@ const DefaultToken = styled(TokenBase)`
     padding-right: ${props => (props.handleRemove || props.handleAdd) ? 0 : undefined};
 
     &:hover {
-        background-color: ${get('colors.accent.muted')};
+        background-color: ${props => isTokenHoverable(props) ? get('colors.accent.muted') : undefined};
     }
 
     > ._TokenButton {

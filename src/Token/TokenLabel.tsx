@@ -1,8 +1,3 @@
-// TODO: handle other kinds of labels
-//       This component is only for labels that take a custom color (e.g.: Issue labels),
-//       but there are other kinds of labels in the Primer CSS docs:
-//       https://primer.style/css/Label
-
 import React from 'react'
 import styled from 'styled-components'
 import TokenBase, { TokenBaseProps } from './TokenBase'
@@ -27,7 +22,7 @@ const colorModeConfig = {
 
 interface Props extends TokenBaseProps {
     fillColor?: string
-    isOutlined?: boolean // NOTE: different from `outline` prop on the label component because `isOutlined` sounds more like a boolean prop
+    isOutlined?: boolean // NOTE: different from `outline` prop on the existing Label component because `isOutlined` sounds more like a boolean prop
 }
 
 interface LabelStyleProps {

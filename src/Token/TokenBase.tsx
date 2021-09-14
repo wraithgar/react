@@ -23,7 +23,7 @@ export interface TokenBaseProps extends Omit<React.HTMLProps<HTMLSpanElement | H
     variant?: TokenSizeKeys
 }
 
-export const tokenHeightPx = 32;
+export const isTokenHoverable = ({as = 'span', onClick, onFocus}: TokenBaseProps) => Boolean(onFocus || onClick || ['a', 'button'].includes(as));
 
 const variants = variant<{fontSize: number, height: string, gap: number, paddingLeft: any, paddingRight: number}, TokenSizeKeys>({
     variants: {
@@ -57,32 +57,21 @@ const variants = variant<{fontSize: number, height: string, gap: number, padding
       }
     }
   })
-  
 
-// TODO: if we don't use the props, just style this with `styled` instead of passing `tokenBaseStyles` to `TokenBase`
-const tokenBaseStyles = css`
-    align-items: center;
-    border-radius: 999px;
-    display: inline-flex;
-    font-weight: ${get('fontWeights.bold')};
-    white-space: nowrap;
+const TokenBase = styled.span<TokenBaseProps>`
+  align-items: center;
+  border-radius: 999px;
+  cursor: ${props => isTokenHoverable(props) ? 'pointer' : 'auto'};
+  display: inline-flex;
+  font-weight: ${get('fontWeights.bold')};
+  text-decoration: none;
+  white-space: nowrap;
+  ${variants}
 `;
 
-const TokenBase = styled.span.attrs<TokenBaseProps>(({as, tabIndex, onClick, onFocus, onBlur}) => ({
-    // tabIndex: 
-    //     as === 'span' &&
-    //     [undefined, -1].includes(tabIndex) &&
-    //     (onClick || onFocus || onBlur)
-    //         ? 0
-    //         : tabIndex
-    }))<TokenBaseProps>`
-        ${tokenBaseStyles}
-        ${variants}
-    `;
-
 TokenBase.defaultProps = {
-    as: 'span',
-    variant: defaultTokenSize,
+  as: 'span',
+  variant: defaultTokenSize,
 };
 
 export default TokenBase;
