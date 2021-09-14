@@ -64,6 +64,7 @@ const tokenBaseStyles = css`
     align-items: center;
     border-radius: 999px;
     display: inline-flex;
+    font-weight: ${get('fontWeights.bold')};
     white-space: nowrap;
 `;
 
