@@ -8,6 +8,7 @@ import { ComponentProps } from '../utils/types'
 import { Box, Spinner } from '../';
 import { registerPortalRoot } from '../Portal'
 import { AutocompleteContext } from './AutocompleteContext'
+import { useCombinedRefs } from '../hooks/useCombinedRefs'
 
 const DROPDOWN_PORTAL_CONTAINER_NAME = '__listcontainerportal__';
 
@@ -24,7 +25,6 @@ function scrollIntoViewingArea(
     margin = 8,
     behavior: ScrollBehavior = 'smooth'
   ) {
-    console.log('scrollIntoViewingArea being called')
     const {top: childTop, bottom: childBottom} = child.getBoundingClientRect()
     const {top: containerTop, bottom: containerBottom} = container.getBoundingClientRect()
   
@@ -82,7 +82,6 @@ const AutocompleteMenu = React.forwardRef<HTMLInputElement, AutocompleteMenuInte
     ref) => {
         const {
             activeDescendantRef,
-            // filterFn,
             inputRef,
             inputValue = '',
             setAutocompleteSuggestion,
@@ -99,13 +98,15 @@ const AutocompleteMenu = React.forwardRef<HTMLInputElement, AutocompleteMenuInte
         const [sortedItemIds, setSortedItemIds] = useState<Array<number | string>>(items.map(({id}) => id || id === 0 ? id : ''));
 
         const {floatingElementRef, position} = useAnchoredPosition(
-        {
-            side: 'outside-bottom',
-            align: 'start',
-            anchorElementRef: inputRef
-        },
-        [showMenu, selectedItemIds]
+            {
+                side: 'outside-bottom',
+                align: 'start',
+                anchorElementRef: inputRef
+            },
+            [showMenu, selectedItemIds]
         )
+
+        const combinedOverlayRef = useCombinedRefs(scrollContainerRef, floatingElementRef);
 
         const closeOptionList = () => {
             if (setShowMenu) {
@@ -240,7 +241,7 @@ const AutocompleteMenu = React.forwardRef<HTMLInputElement, AutocompleteMenuInte
                         preventFocusOnOpen={true}
                         onClickOutside={closeOptionList}
                         onEscape={closeOptionList}
-                        ref={floatingElementRef as React.RefObject<HTMLDivElement>}
+                        ref={combinedOverlayRef as React.RefObject<HTMLDivElement>}
                         top={position?.top}
                         left={position?.left}
                         width={width}
