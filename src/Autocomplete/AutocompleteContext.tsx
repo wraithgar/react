@@ -1,5 +1,4 @@
 import { createContext } from 'react'
-import { ItemInput } from '../ActionList/List'
 
 // TODO:
 // - figure out how we can make all of these properties required without having to define them when calling `createContext`
@@ -7,7 +6,6 @@ import { ItemInput } from '../ActionList/List'
 export const AutocompleteContext = createContext<{
     activeDescendantRef?: React.MutableRefObject<HTMLElement | null>
     autocompleteSuggestion?: string;
-    filterFn?: (item: ItemInput, i: number) => boolean;
     inputRef?: React.MutableRefObject<HTMLInputElement | null>
     inputValue?: string
     showMenu?: boolean

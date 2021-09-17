@@ -5,8 +5,6 @@ import { BaseStyles, Box, ThemeProvider } from '..'
 import { ItemProps } from '../ActionList';
 import TextInputTokens from '../TextInputTokens';
 import Autocomplete from '../Autocomplete/Autocomplete';
-import AutocompleteInput from '../Autocomplete/AutocompleteInput';
-import AutocompleteMenu from '../Autocomplete/AutocompleteMenu';
 
 interface Token {
     text?: string;
@@ -89,12 +87,10 @@ function getColorCircle(color: string) {
 export const Default = () => {
     return (
         <Autocomplete>
-          <AutocompleteInput />
-          <AutocompleteMenu
-            selectableItems={items}
+          <Autocomplete.Input />
+          <Autocomplete.Menu
+            items={items}
             selectedItemIds={[]}
-            // onItemSelect={onItemSelect}
-            // onItemDeselect={onItemDeselect}
           />
         </Autocomplete>
     )
@@ -126,13 +122,13 @@ export const TokenSelect = () => {
 
     return (
         <Autocomplete>
-          <AutocompleteInput
+          <Autocomplete.Input
             as={TextInputTokens}
             tokens={tokens}
             onTokenRemove={onTokenRemove}
           />
-          <AutocompleteMenu
-            selectableItems={items}
+          <Autocomplete.Menu
+            items={items}
             selectedItemIds={selectedItemIds}
             onItemSelect={onItemSelect}
             onItemDeselect={onItemDeselect}

@@ -11,8 +11,9 @@ import type * as Polymorphic from "@radix-ui/react-polymorphic";
 import { AutocompleteContext } from './AutocompleteContext';
 import TextInput from '../TextInput';
 import { useCombinedRefs } from '../hooks/useCombinedRefs';
+import { ComponentProps } from '../utils/types';
 
-interface Props {
+type InternalAutocompleteInputProps = {
     as?: React.ComponentType<any>;
 }
 
@@ -23,6 +24,7 @@ const AutocompleteInput = React.forwardRef(
         onChange,
         onKeyDown,
         onKeyPress,
+        value,
         ...props
     }, forwardedRef) => {
         const {
@@ -98,6 +100,12 @@ const AutocompleteInput = React.forwardRef(
             }
         }, [autocompleteSuggestion, inputValue])
 
+        useEffect(() => {
+            if (value && setInputValue) {
+                setInputValue(value.toString());
+            }
+        }, [value]);
+
         return (
             <Component
                 onFocus={handleInputFocus}
@@ -110,6 +118,7 @@ const AutocompleteInput = React.forwardRef(
             />
         );
     }
-) as Polymorphic.ForwardRefComponent<"input", Props>
+) as Polymorphic.ForwardRefComponent<"input", InternalAutocompleteInputProps>
 
+export type AutocompleteInputProps = ComponentProps<typeof AutocompleteInput>
 export default AutocompleteInput;

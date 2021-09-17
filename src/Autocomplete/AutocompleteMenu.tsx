@@ -3,7 +3,7 @@ import { ActionList, ItemProps } from '../ActionList'
 import { ItemInput } from '../ActionList/List'
 import { useAnchoredPosition } from '../hooks'
 import { useFocusZone } from '../hooks/useFocusZone'
-import Overlay from '../Overlay'
+import Overlay, { OverlayProps } from '../Overlay'
 import { ComponentProps } from '../utils/types'
 import { Box, Spinner } from '../';
 import { registerPortalRoot } from '../Portal'
@@ -24,6 +24,7 @@ function scrollIntoViewingArea(
     margin = 8,
     behavior: ScrollBehavior = 'smooth'
   ) {
+    console.log('scrollIntoViewingArea being called')
     const {top: childTop, bottom: childBottom} = child.getBoundingClientRect()
     const {top: containerTop, bottom: containerBottom} = container.getBoundingClientRect()
   
@@ -42,54 +43,60 @@ function scrollIntoViewingArea(
   }
 
 type AutocompleteMenuInternalProps = {
-  selectableItems: ItemInput[]
+  items: ItemInput[]
   selectedItemIds: Array<string | number>
   // TODO: come up with a better name for this prop
   selectedSortFn?: (itemIdA: string | number, itemIdB: string | number) => number
   // TODO: combine `onItemSelect` and `onItemDeselect` into 1 prop
-  onItemSelect: NonNullable<ItemProps['onAction']>
-  onItemDeselect: NonNullable<ItemProps['onAction']>
+  onItemSelect?: NonNullable<ItemProps['onAction']>
+  onItemDeselect?: NonNullable<ItemProps['onAction']>
   emptyStateText?: React.ReactNode | false
   addNewItem?: Omit<ItemInput, 'onAction'> // TODO: Rethink this prop name. It's confusing.
-  onCloseOptionsList?: () => void // TODO: reconsider having this prop at all
-  maxHeight?: React.CSSProperties['maxHeight']
   loading?: boolean
   selectionVariant?: 'single' | 'multiple'
+  filterFn?: (item: ItemInput, i: number) => boolean;
 }
+
+const defaultItemFilter = (filterValue: string) => (item: ItemInput, _i: number) =>
+  Boolean(item?.text?.toLowerCase().startsWith((filterValue).toLowerCase()));
 
 // TODO:
 // insteaad of using `forwardRef`, just use a regular Functional Component
 // get rid of unused props
-const AutocompleteMenu = React.forwardRef<HTMLInputElement, AutocompleteMenuInternalProps>(
+const AutocompleteMenu = React.forwardRef<HTMLInputElement, AutocompleteMenuInternalProps & Pick<OverlayProps, 'width' | 'height' | 'maxHeight'>>(
   ({
-      selectableItems,
+      items,
       selectedItemIds,
       selectedSortFn,
       onItemSelect,
       onItemDeselect,
       emptyStateText,
       addNewItem,
-      onCloseOptionsList,
       loading,
       selectionVariant,
+      filterFn: externalFilterFn,
+      width,
+      height,
+      maxHeight,
     },
     ref) => {
         const {
             activeDescendantRef,
-            filterFn,
+            // filterFn,
             inputRef,
-            inputValue,
+            inputValue = '',
             setAutocompleteSuggestion,
             setShowMenu,
             setInputValue,
             setIsMenuDirectlyActivated,
             showMenu,
         } = useContext(AutocompleteContext)
+        const filterFn = externalFilterFn ? externalFilterFn : defaultItemFilter(inputValue);
         const listContainerRef = useRef<HTMLDivElement>(null)
         const scrollContainerRef = useRef<HTMLDivElement>(null)
         const [highlightedItem, setHighlightedItem] = useState<ItemProps & { isDirectlyActivated: boolean } | undefined>();
         // TODO: clean up this mess by making id required on ItemProps
-        const [sortedItemIds, setSortedItemIds] = useState<Array<number | string>>(selectableItems.map(({id}) => id || id === 0 ? id : ''));
+        const [sortedItemIds, setSortedItemIds] = useState<Array<number | string>>(items.map(({id}) => id || id === 0 ? id : ''));
 
         const {floatingElementRef, position} = useAnchoredPosition(
         {
@@ -100,24 +107,19 @@ const AutocompleteMenu = React.forwardRef<HTMLInputElement, AutocompleteMenuInte
         [showMenu, selectedItemIds]
         )
 
-        // TODO: replace this with the fn from the AutocompleteContext
         const closeOptionList = () => {
             if (setShowMenu) {
                 setShowMenu(false);
             }
-            
-            if (onCloseOptionsList) {
-                onCloseOptionsList();
-            }
         }
 
-        const isItemSelected = (itemId: string | number) => selectableItems.find(
+        const isItemSelected = (itemId: string | number) => items.find(
                 (selectableItem) => selectableItem.id === itemId
             )?.selected || selectedItemIds.includes(itemId)
 
         const itemsToRender: ItemInput[] = [
             // selectable tokens
-            ...selectableItems.map((selectableItem) => {
+            ...items.map((selectableItem) => {
                 return ({
                     ...selectableItem,
                     //TODO: just make `id` required
@@ -164,9 +166,9 @@ const AutocompleteMenu = React.forwardRef<HTMLInputElement, AutocompleteMenuInte
             ...(addNewItem
                 ? [{
                     ...addNewItem,
-                    onAction: (_item: ItemProps, e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
-                    onItemSelect({ text: inputValue, id: `randomlyGeneratedId-${inputValue}` }, e)
-                    }
+                    onAction: onItemSelect ? (_item: ItemProps, e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
+                        onItemSelect({ text: inputValue, id: `randomlyGeneratedId-${inputValue}` }, e)
+                    } : undefined
                 }]
                 : []
             )
@@ -241,6 +243,9 @@ const AutocompleteMenu = React.forwardRef<HTMLInputElement, AutocompleteMenuInte
                         ref={floatingElementRef as React.RefObject<HTMLDivElement>}
                         top={position?.top}
                         left={position?.left}
+                        width={width}
+                        height={height}
+                        maxHeight={maxHeight}
                     >
                         {loading ? (
                             <Box p={3} display="flex" justifyContent="center">

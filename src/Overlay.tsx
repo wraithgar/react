@@ -9,7 +9,7 @@ import {useCombinedRefs} from './hooks/useCombinedRefs'
 import {AnchorSide} from './behaviors/anchoredPosition'
 import {useTheme} from './ThemeProvider'
 
-type StyledOverlayProps = {
+export type StyledOverlayProps = {
   width?: keyof typeof widthMap
   height?: keyof typeof heightMap
   maxHeight?: keyof Omit<typeof heightMap, 'auto' | 'initial'>
