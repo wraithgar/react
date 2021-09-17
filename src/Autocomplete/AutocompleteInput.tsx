@@ -46,6 +46,12 @@ const AutocompleteInput = React.forwardRef(
             }
         };
 
+        const handleInputBlur: FocusEventHandler = () => {
+            if (setShowMenu) {
+                setShowMenu(false);
+            }
+        };
+
         const handleInputChange: ChangeEventHandler<HTMLInputElement> = (e) => {
             if (setInputValue) {
                 setInputValue(e.currentTarget.value);
@@ -109,6 +115,7 @@ const AutocompleteInput = React.forwardRef(
         return (
             <Component
                 onFocus={handleInputFocus}
+                onBlur={handleInputBlur}
                 onChange={handleInputChange}
                 onKeyDown={handleInputKeyDown}
                 onKeyPress={onInputKeyPress}
