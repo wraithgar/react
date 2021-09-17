@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, FocusEventHandler, KeyboardEventHandler, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { FocusEventHandler, KeyboardEventHandler, useRef, useState } from 'react'
 import {omit, pick} from '@styled-system/props'
 import classnames from 'classnames'
 import styled, {css} from 'styled-components'
@@ -198,10 +198,8 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
     // this class is necessary to style FilterSearch, plz no touchy!
     const wrapperClasses = classnames(className, 'TextInput-wrapper')
     const wrapperProps = pick(rest)
-    const { onChange, onFocus, onKeyDown, value, ...inputPropsRest } = omit(rest)
+    const { onFocus, onKeyDown, ...inputPropsRest } = omit(rest)
     const [selectedTokenIdx, setSelectedTokenIdx] = useState<number | undefined>()
-    const [inputVal, setInputVal] = useState<string>(value);
-    const [autocompleteSuggestion, setAutocompleteSuggestion] = useState<string>('');
     
     const {containerRef} = useFocusZone({
       focusOutBehavior: 'wrap',
@@ -214,12 +212,15 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
     const handleTokenRemove = (tokenId: number | string) => {
       onTokenRemove(tokenId);
     }
+
     const handleTokenFocus: (tokenIdx: number) => FocusEventHandler = (tokenIdx) => () => {
         setSelectedTokenIdx(tokenIdx);
     }
+
     const handleTokenBlur: FocusEventHandler = () => {
         setSelectedTokenIdx(undefined);
     }
+
     const handleTokenKeyUp: (tokenId: number | string) => KeyboardEventHandler = (tokenId) => (e) => {
         if (e.key === 'Backspace') {
           handleTokenRemove(tokenId);
@@ -237,19 +238,12 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
 
         setSelectedTokenIdx(undefined);
     };
-    const handleInputChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-        if (onChange) {
-            onChange(e);
-        }
-
-        setInputVal(e.currentTarget.value);
-    }
     const handleInputKeyDown: KeyboardEventHandler = (e) => {
         if (onKeyDown) {
             onKeyDown(e);
         }
 
-        if (inputVal) {
+        if (combinedInputRef.current?.value) {
             return;
         }
 
@@ -257,10 +251,14 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
 
         if (e.key === 'Backspace') {
             handleTokenRemove(lastToken.id);
-            // HACK: adding an extra space so that when I backspace, it doesn't delete the last letter
-            setInputVal(`${lastToken.text} ` || ' ');
-            // TODO: use hooks or something to always trigger `onFilterChange` when `inputVal` is changed
-            // onFilterChange(lastToken.text || '', e);
+
+            if (combinedInputRef.current) {
+              // TODO: eliminate the first hack by making changes to the Autocomplete component
+              // HACKS:
+              // 1. Directly setting `combinedInputRef.current.value` instead of updating state because the autocomplete highlight behavior doesn't work correctly if we update the value with a setState action in onChange
+              // 2. Adding an extra space so that when I backspace, it doesn't delete the last letter
+              combinedInputRef.current.value = `${lastToken.text} `;
+            }
 
             // HACK: for some reason we need to wait a tick for `.select()` to work
             setTimeout(() => {
@@ -282,15 +280,13 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
             ref={containerRef}
             {...wrapperProps}
         >
-            <InputWrapper data-autocompleteSuggestion={autocompleteSuggestion}>
+            <InputWrapper>
                 <Input
                     ref={combinedInputRef}
                     disabled={disabled}
                     onFocus={handleInputFocus}
                     onKeyDown={handleInputKeyDown}
-                    onChange={handleInputChange}
                     type="text"
-                    value={inputVal}
                     {...inputPropsRest}
                 />
             </InputWrapper>

@@ -1,12 +1,9 @@
-import {
-    ChangeEventHandler,
-    createContext,
-    FocusEventHandler,
-    KeyboardEventHandler
-} from 'react'
-import { ItemProps } from '../ActionList'
+import { createContext } from 'react'
 import { ItemInput } from '../ActionList/List'
 
+// TODO:
+// - figure out how we can make all of these properties required without having to define them when calling `createContext`
+// - figure out how we can reduce the number of properties that need to be passed
 export const AutocompleteContext = createContext<{
     activeDescendantRef?: React.MutableRefObject<HTMLElement | null>
     autocompleteSuggestion?: string;
@@ -17,7 +14,8 @@ export const AutocompleteContext = createContext<{
     setAutocompleteSuggestion?: React.Dispatch<React.SetStateAction<string>>
     setShowMenu?: React.Dispatch<React.SetStateAction<boolean>>
     setInputValue?: React.Dispatch<React.SetStateAction<string>>
-    // selectedItems?: ItemProps[]
-    // setSelectedItems?: React.Dispatch<React.SetStateAction<ItemProps[]>>
+    // TODO: figure out if we could eliminate `isMenuDirectlyActivated` state and setState action from this Context
+    isMenuDirectlyActivated?: boolean
+    setIsMenuDirectlyActivated?: React.Dispatch<React.SetStateAction<boolean>>
 }>({})
   

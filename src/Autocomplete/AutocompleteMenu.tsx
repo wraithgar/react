@@ -81,10 +81,11 @@ const AutocompleteMenu = React.forwardRef<HTMLInputElement, AutocompleteMenuInte
             setAutocompleteSuggestion,
             setShowMenu,
             setInputValue,
+            setIsMenuDirectlyActivated,
         } = useContext(AutocompleteContext)
         const listContainerRef = useRef<HTMLDivElement>(null)
         const scrollContainerRef = useRef<HTMLDivElement>(null)
-        const [highlightedItem, setHighlightedItem] = useState<ItemProps | undefined>();
+        const [highlightedItem, setHighlightedItem] = useState<ItemProps & { isDirectlyActivated: boolean } | undefined>();
         // TODO: clean up this mess by making id required on ItemProps
         const [sortedItemIds, setSortedItemIds] = useState<Array<number | string>>(selectableItems.map(({id}) => id || id === 0 ? id : ''));
 
@@ -147,8 +148,7 @@ const AutocompleteMenu = React.forwardRef<HTMLInputElement, AutocompleteMenuInte
             )
         ];
 
-        useFocusZone(
-            {
+        useFocusZone({
             containerRef: listContainerRef,
             focusOutBehavior: 'wrap',
             focusableElementFilter: element => {
@@ -156,25 +156,30 @@ const AutocompleteMenu = React.forwardRef<HTMLInputElement, AutocompleteMenuInte
             },
             activeDescendantFocus: inputRef,
             onActiveDescendantChanged: (current, _previous, directlyActivated) => {
-                if (activeDescendantRef && current) {
-                    activeDescendantRef.current = current
+                if (activeDescendantRef) {
+                    activeDescendantRef.current = current || null
                 }
-                const selectedItem = itemsToRender.find(item => item.id?.toString() === current?.dataset.id);
-                setHighlightedItem(selectedItem);
+                if (current) {
+                    const selectedItem = itemsToRender.find(item => item.id?.toString() === current?.dataset.id);
+                    setHighlightedItem({...selectedItem, isDirectlyActivated: directlyActivated});
+    
+                    if (setIsMenuDirectlyActivated) {
+                        setIsMenuDirectlyActivated(directlyActivated);
+                    }
+                }
 
                 if (current && scrollContainerRef.current && directlyActivated) {
                     scrollIntoViewingArea(current, scrollContainerRef.current)
                 }
             }
-            }
-        )
+        })
 
         useEffect(() => {
             if (!setAutocompleteSuggestion) {
                 return;
             }
 
-            if (inputValue && highlightedItem?.text?.startsWith(inputValue)) {
+            if (highlightedItem?.text?.startsWith(inputValue || '')) {
                 setAutocompleteSuggestion(highlightedItem.text);
             } else {
                 setAutocompleteSuggestion('');
@@ -196,6 +201,9 @@ const AutocompleteMenu = React.forwardRef<HTMLInputElement, AutocompleteMenuInte
 
             return acc;
         }, {});
+        const sortedAndFilteredItemsToRender = [...(filterFn ? itemsToRender.filter(filterFn) : itemsToRender)].sort((a, b) =>
+            itemSortOrderData[a.id] - itemSortOrderData[b.id]
+        );
         
         return (
             <div ref={listContainerRef}>
@@ -211,23 +219,21 @@ const AutocompleteMenu = React.forwardRef<HTMLInputElement, AutocompleteMenuInte
                         left={position?.left}
                     >
                         {loading ? (
-                        <Box p={3} display="flex" justifyContent="center">
-                            <Spinner />
-                        </Box>
+                            <Box p={3} display="flex" justifyContent="center">
+                                <Spinner />
+                            </Box>
                         ) : (
-                        <>
-                            {itemsToRender.length ? (
-                            <ActionList
-                                selectionVariant="multiple"
-                                items={[...(filterFn ? itemsToRender.filter(filterFn) : itemsToRender)].sort((a, b) =>
-                                    itemSortOrderData[a.id] - itemSortOrderData[b.id]
+                            <>
+                                {sortedAndFilteredItemsToRender.length ? (
+                                    <ActionList
+                                        selectionVariant="multiple"
+                                        items={sortedAndFilteredItemsToRender}
+                                        role="listbox"
+                                    />
+                                ) : (
+                                    <Box p={3}>{emptyStateText}</Box>
                                 )}
-                                role="listbox"
-                            />
-                            ) : (
-                            <Box p={3}>{emptyStateText}</Box>
-                            )}
-                        </>
+                            </>
                         )}
                     </Overlay>
                 ) : null}

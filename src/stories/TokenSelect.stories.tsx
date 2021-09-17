@@ -119,9 +119,9 @@ export const Default = () => {
     const [tokens, setTokens] = useState<Token[]>(mockTokens)
     // const selectedTexts = tokens.map((item) => item.text);
     const filteredItems = items.filter(item => item.text.toLowerCase().startsWith(filter.toLowerCase())) // && !selectedTexts.includes(item.text)
-    const onItemSelect: ItemProps['onAction'] = ({id, text}) => {
+    const onItemSelect: ItemProps['onAction'] = ({id = 'someUniqueId', text}) => {
         // TODO: just make `id` required
-        setTokens([...tokens, {id: id || 'someUniqueId', text}])
+        setTokens([...tokens, {id, text}])
     };
     const onTokenRemove: (tokenId: string | number) => void = (tokenId) => {
         setTokens(tokens.filter(token => token.id !== tokenId))
@@ -158,9 +158,9 @@ export const ComboboxSortSelectedFirst = () => {
         : 1
     ))
   };
-  const onItemSelect: ItemProps['onAction'] = ({id, text}) => {
+  const onItemSelect: ItemProps['onAction'] = ({id = 'someUniqueId', text}) => {
     // TODO: just make `id` required
-    setTokens([...tokens, {id: id || 'someUniqueId', text}])
+    setTokens([...tokens, {id, text}])
   };
   const onTokenRemove: (tokenId: string | number) => void = (tokenId) => {
     setTokens(tokens.filter(token => token.id !== tokenId))

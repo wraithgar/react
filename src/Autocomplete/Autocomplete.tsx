@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { ItemProps } from '../ActionList'
 import { ItemInput } from '../ActionList/List'
 import { AutocompleteContext } from './AutocompleteContext'
@@ -17,6 +17,7 @@ const Autocomplete: React.FC<Props> = ({ children, filterValue = '', filterFn: e
     const [inputValue, setInputValue] = useState<string>(filterValue);
     const [showMenu, setShowMenu] = useState(false)
     const [autocompleteSuggestion, setAutocompleteSuggestion] = useState<string>('');
+    const [isMenuDirectlyActivated, setIsMenuDirectlyActivated] = useState<boolean>(false);
 
     return (
       <AutocompleteContext.Provider value={{
@@ -25,10 +26,12 @@ const Autocomplete: React.FC<Props> = ({ children, filterValue = '', filterFn: e
         filterFn: externalFilterFn ? externalFilterFn : defaultItemFilter(inputValue),
         inputRef,
         inputValue,
+        isMenuDirectlyActivated,
         showMenu,
         setAutocompleteSuggestion,
         setInputValue,
         setShowMenu,
+        setIsMenuDirectlyActivated
       }}>
         {children}
       </AutocompleteContext.Provider>

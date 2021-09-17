@@ -3,7 +3,9 @@ import React, {
     FocusEventHandler,
     KeyboardEventHandler,
     useCallback,
-    useContext
+    useContext,
+    useEffect,
+    useState
 } from 'react'
 import type * as Polymorphic from "@radix-ui/react-polymorphic";
 import { AutocompleteContext } from './AutocompleteContext';
@@ -25,12 +27,15 @@ const AutocompleteInput = React.forwardRef(
     }, forwardedRef) => {
         const {
             activeDescendantRef,
-            autocompleteSuggestion,
+            autocompleteSuggestion = '',
             inputRef,
+            inputValue = '',
+            isMenuDirectlyActivated,
             setInputValue,
             setShowMenu,
         } = useContext(AutocompleteContext);
         const combinedInputRef = useCombinedRefs(inputRef, forwardedRef);
+        const [highlightRemainingText, setHighlightRemainingText] = useState<boolean>(true);
 
         const handleInputFocus: FocusEventHandler = () => {
             if (setShowMenu) {
@@ -43,9 +48,16 @@ const AutocompleteInput = React.forwardRef(
                 setInputValue(e.currentTarget.value);
             }
         }
+
         const handleInputKeyDown: KeyboardEventHandler = (e) => {
-            if (setInputValue && e.key === 'ArrowRight' && autocompleteSuggestion) {
-                setInputValue(autocompleteSuggestion);
+            if (e.key === 'Backspace') {
+                setHighlightRemainingText(false);
+            }
+        };
+
+        const handleInputKeyUp: KeyboardEventHandler = (e) => {
+            if (e.key === 'Backspace') {
+                setHighlightRemainingText(true);
             }
         };
 
@@ -63,12 +75,31 @@ const AutocompleteInput = React.forwardRef(
             [activeDescendantRef]
         )
 
+        useEffect(() => {
+            if (!inputRef?.current) {
+                return;
+            }
+
+            if (!autocompleteSuggestion) {
+                inputRef.current.value = inputValue;
+            }
+
+            if (highlightRemainingText && autocompleteSuggestion && (inputValue || isMenuDirectlyActivated)) {
+                inputRef.current.value = autocompleteSuggestion;
+      
+                if (autocompleteSuggestion.toLowerCase().indexOf(inputValue.toLowerCase()) === 0) {
+                    inputRef.current.setSelectionRange(inputValue.length, autocompleteSuggestion.length);
+                }
+            }
+        }, [autocompleteSuggestion, inputValue])
+
         return (
             <Component
                 onFocus={handleInputFocus}
                 onChange={handleInputChange}
                 onKeyDown={handleInputKeyDown}
                 onKeyPress={onInputKeyPress}
+                onKeyUp={handleInputKeyUp}
                 ref={combinedInputRef}
                 {...props}
             />

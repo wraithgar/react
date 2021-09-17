@@ -86,6 +86,20 @@ function getColorCircle(color: string) {
     }
   }
 
+export const Default = () => {
+    return (
+        <Autocomplete>
+          <AutocompleteInput />
+          <AutocompleteMenu
+            selectableItems={items}
+            selectedItemIds={[]}
+            // onItemSelect={onItemSelect}
+            // onItemDeselect={onItemDeselect}
+          />
+        </Autocomplete>
+    )
+};
+
 export const TokenSelect = () => {
     // TODO: consider migrating this boilerplate to a hook
     const [tokens, setTokens] = useState<Token[]>(mockTokens)
