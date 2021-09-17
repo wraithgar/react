@@ -136,6 +136,7 @@ export const TokenSelect = () => {
             selectedItemIds={selectedItemIds}
             onItemSelect={onItemSelect}
             onItemDeselect={onItemDeselect}
+            selectionVariant="multiple"
           />
         </Autocomplete>
     )

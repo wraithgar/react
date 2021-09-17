@@ -33,6 +33,7 @@ const AutocompleteInput = React.forwardRef(
             isMenuDirectlyActivated,
             setInputValue,
             setShowMenu,
+            showMenu,
         } = useContext(AutocompleteContext);
         const combinedInputRef = useCombinedRefs(inputRef, forwardedRef);
         const [highlightRemainingText, setHighlightRemainingText] = useState<boolean>(true);
@@ -46,6 +47,10 @@ const AutocompleteInput = React.forwardRef(
         const handleInputChange: ChangeEventHandler<HTMLInputElement> = (e) => {
             if (setInputValue) {
                 setInputValue(e.currentTarget.value);
+            }
+
+            if (setShowMenu && !showMenu) {
+                setShowMenu(true);
             }
         }
 

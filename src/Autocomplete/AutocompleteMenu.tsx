@@ -54,6 +54,7 @@ type AutocompleteMenuInternalProps = {
   onCloseOptionsList?: () => void // TODO: reconsider having this prop at all
   maxHeight?: React.CSSProperties['maxHeight']
   loading?: boolean
+  selectionVariant?: 'single' | 'multiple'
 }
 
 // TODO:
@@ -69,7 +70,8 @@ const AutocompleteMenu = React.forwardRef<HTMLInputElement, AutocompleteMenuInte
       emptyStateText,
       addNewItem,
       onCloseOptionsList,
-      loading
+      loading,
+      selectionVariant,
     },
     ref) => {
         const {
@@ -77,11 +79,11 @@ const AutocompleteMenu = React.forwardRef<HTMLInputElement, AutocompleteMenuInte
             filterFn,
             inputRef,
             inputValue,
-            showMenu,
             setAutocompleteSuggestion,
             setShowMenu,
             setInputValue,
             setIsMenuDirectlyActivated,
+            showMenu,
         } = useContext(AutocompleteContext)
         const listContainerRef = useRef<HTMLDivElement>(null)
         const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -119,19 +121,41 @@ const AutocompleteMenu = React.forwardRef<HTMLInputElement, AutocompleteMenuInte
                 return ({
                     ...selectableItem,
                     //TODO: just make `id` required
-                    selected: isItemSelected(selectableItem.id),
+                    selected: selectionVariant === 'multiple' ? isItemSelected(selectableItem.id) : undefined,
                     onAction: (item: ItemProps, e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
-                        if (!item.selected) {
-                            onItemSelect(item, e);
 
-                            if (setInputValue) {
-                                setInputValue('');
+                        // TODO: clean up all of these `if/else` statements
+                        if (item.selected) {
+                            // TODO: make `onItemDeselect` optional
+                            if (onItemDeselect) {
+                                onItemDeselect(item, e);
                             }
-                            if (setAutocompleteSuggestion) {
-                                setAutocompleteSuggestion('');
-                            }
+
                         } else {
-                            onItemDeselect(item, e);
+                            // TODO: make `onItemSelect` optional
+                            if (onItemSelect) {
+                                onItemSelect(item, e);
+                            }
+
+                            if (selectionVariant === 'multiple') {
+                                if (setInputValue) {
+                                    setInputValue('');
+                                }
+    
+                                if (setAutocompleteSuggestion) {
+                                    setAutocompleteSuggestion('');
+                                }
+                            }
+                        }
+
+                        if (selectionVariant === 'single') {
+                            if (setShowMenu) {
+                                setShowMenu(false)
+                            }
+    
+                            if (inputRef?.current) {
+                                inputRef.current.setSelectionRange(inputRef.current.value.length, inputRef.current.value.length);
+                            }
                         }
                     }
                 })}
@@ -243,7 +267,8 @@ const AutocompleteMenu = React.forwardRef<HTMLInputElement, AutocompleteMenuInte
 )
 
 AutocompleteMenu.defaultProps = {
-    emptyStateText: 'No selectable options'
+    emptyStateText: 'No selectable options',
+    selectionVariant: 'single',
 }
 
 AutocompleteMenu.displayName = 'AutocompleteMenu'
