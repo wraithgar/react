@@ -49,7 +49,6 @@ const InputWrapper = styled.div`
   flex-grow: 1;
 
   &:after {
-    content: attr(data-autocompleteSuggestion);
     pointer-events: none;
     display: flex;
     align-items: center;
@@ -200,14 +199,36 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
     const wrapperProps = pick(rest)
     const { onFocus, onKeyDown, ...inputPropsRest } = omit(rest)
     const [selectedTokenIdx, setSelectedTokenIdx] = useState<number | undefined>()
-    
     const {containerRef} = useFocusZone({
       focusOutBehavior: 'wrap',
       bindKeys: FocusKeys.ArrowHorizontal | FocusKeys.HomeAndEnd,
       focusableElementFilter: element => {
         return !(element instanceof HTMLButtonElement)
-      }
-    })
+      },
+      getNextFocusable: (direction, from, event) => {
+        if (!selectedTokenIdx && selectedTokenIdx !== 0) {
+          return undefined
+        }
+
+        let nextIndex = selectedTokenIdx + 1;
+
+        if (direction === 'next') {
+          console.log('direction is next');
+          nextIndex += 1;
+        }
+
+        if (direction === 'previous') {
+          console.log('direction is previous');
+          nextIndex -= 1;
+        }
+
+        if (nextIndex > tokens.length || nextIndex < 1) {
+          return combinedInputRef.current || undefined;
+        }
+
+        return containerRef?.current?.children[nextIndex] as HTMLElement
+      },
+    }, [selectedTokenIdx])
 
     const handleTokenRemove = (tokenId: number | string) => {
       onTokenRemove(tokenId);

@@ -65,6 +65,10 @@ export default {
 const mockTokens = [
   { text: 'zero', id: 0 },
   { text: 'one', id: 1 },
+  { text: 'two', id: 2 },
+  { text: 'three', id: 3 },
+  { text: 'four', id: 4 },
+
 ];
 
 function getColorCircle(color: string) {
