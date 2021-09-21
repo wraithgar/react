@@ -2,27 +2,26 @@ import React from 'react'
 import styled from 'styled-components'
 import { get } from '../constants'
 import TokenBase, { isTokenHoverable, TokenBaseProps } from './TokenBase'
-import AddTokenButton from './_AddTokenButton'
 import RemoveTokenButton from './_RemoveTokenButton'
 
 interface Props extends TokenBaseProps {
     leadingVisual?: React.FunctionComponent<any>
 }
 
+const tokenBorderWidthPx = 1;
+
 const DefaultToken = styled(TokenBase)`
-    background-color: ${get('colors.accent.subtle')};
-    border-color: ${props => props.isSelected ? get('colors.accent.fg') : get('colors.accent.subtle')};
+    background-color: ${get('colors.neutral.subtle')};
+    border-color: ${props => props.isSelected ? get('colors.fg.default') : get('colors.border.subtle')};
     border-style: solid;
-    border-width: ${props => props.isSelected ? '1px' : 0};
-    color: ${get('colors.accent.fg')};
+    border-width: 1px;
+    color: ${props => props.isSelected ? get('colors.fg.default') : get('colors.fg.muted')};
     padding-right: ${props => (props.handleRemove || props.handleAdd) ? 0 : undefined};
 
     &:hover {
-        background-color: ${props => isTokenHoverable(props) ? get('colors.accent.muted') : undefined};
-    }
-
-    > ._TokenButton {
-        color: ${get('colors.accent.fg')};
+        background-color: ${props => isTokenHoverable(props) ? get('colors.neutral.muted') : undefined};
+        box-shadow: ${props => isTokenHoverable(props) ? get('colors.shadow.medium') : undefined};
+        color: ${props => isTokenHoverable(props) ? get('colors.fg.default') : undefined};
     }
 `;
 
@@ -56,17 +55,10 @@ const Token: React.FC<Props> = ({
             <TokenTextContainer>{text}</TokenTextContainer>
             {handleRemove ? (
                 <RemoveTokenButton
+                    borderOffset={tokenBorderWidthPx}
                     parentTokenTag={as || 'span'}
                     tabIndex={-1}
                     onClick={handleRemove}
-                    variant={variant}
-                />
-            ) : null}
-            {handleAdd ? (
-                <AddTokenButton
-                    parentTokenTag={as || 'span'}
-                    tabIndex={-1}
-                    onClick={handleAdd}
                     variant={variant}
                 />
             ) : null}

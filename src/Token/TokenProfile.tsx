@@ -13,7 +13,6 @@ interface Props extends TokenBaseProps {
 const StyledToken = styled(Token)`
     padding-left: ${get('space.1')};
 `;
-// ${get('space.1')}
 
 const TokenProfile: React.FC<Props> = ({
     avatarSrc,

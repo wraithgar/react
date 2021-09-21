@@ -35,7 +35,6 @@ interface LabelStyleProps {
 
 const tokenBorderWidthPx = 1;
 
-// TODO: do a nicer `isSelected` style
 const StyledTokenLabel = styled(TokenBase)<Props & LabelStyleProps>`
   background-color: ${props => props.bgColor};
   border-width: ${tokenBorderWidthPx}px;
@@ -46,11 +45,6 @@ const StyledTokenLabel = styled(TokenBase)<Props & LabelStyleProps>`
   overflow: hidden;
   padding-right: ${props => props.handleRemove ? 0 : undefined};
   position: relative;
-
-  > ._TokenButton {
-    color: currentColor;
-    transform: translate(${tokenBorderWidthPx}px, -${tokenBorderWidthPx}px);
-  }
 `;
 
 // TODO: make this text truncate
@@ -120,6 +114,7 @@ const TokenLabel: React.FC<Props> = ({
             <TokenTextContainer>{text}</TokenTextContainer>
             {handleRemove ? (
                 <RemoveTokenButton
+                    borderOffset={tokenBorderWidthPx}
                     parentTokenTag={as || 'span'}
                     tabIndex={-1}
                     onClick={handleRemove}

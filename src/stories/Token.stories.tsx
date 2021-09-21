@@ -69,12 +69,6 @@ export const defaultToken = () => (
         <SingleExampleContainer label="w/ handleRemove passed">
             <Token text="Default Token" handleRemove={() => { console.log('remove me') }} />
         </SingleExampleContainer>
-        <SingleExampleContainer label="w/ handleAdd passed">
-            <Token text="Default Token" handleAdd={() => { console.log('add me') }} />
-        </SingleExampleContainer>
-        <SingleExampleContainer label="w/ handleAdd and handleRemove passed">
-            <Token text="Default Token" handleAdd={() => { console.log('add me') }} handleRemove={() => { console.log('remove me') }} />
-        </SingleExampleContainer>
         <SingleExampleContainer label="w/ leadingVisual passed">
             <Token text="Default Token" leadingVisual={() => <VerifiedIcon size={12} />} />
         </SingleExampleContainer>

@@ -4,6 +4,7 @@ import { get } from '../constants'
 import { tokenSizes, TokenSizeKeys, defaultTokenSize } from "./TokenBase"
 
 export interface TokenButtonProps {
+    borderOffset?: number
     parentTokenTag: 'span' | 'button' | 'a'
     variant?: TokenSizeKeys
 }
@@ -32,6 +33,7 @@ export const variants = variant({
 export const tokenButtonStyles = css`
     background-color: transparent;
     font-family: inherit;
+    color: currentColor;
     cursor: pointer;
     user-select: none;
     appearance: none;
