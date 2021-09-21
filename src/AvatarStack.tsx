@@ -2,7 +2,7 @@ import classnames from 'classnames'
 import React from 'react'
 import styled from 'styled-components'
 import {COMMON, get, SystemCommonProps} from './constants'
-import {Box} from '.'
+import {Box, CounterLabel} from '.'
 import sx, {SxProp} from './sx'
 import {ComponentProps} from './utils/types'
 
@@ -14,67 +14,33 @@ type StyledAvatarStackWrapperProps = {
 const AvatarStackWrapper = styled.span<StyledAvatarStackWrapperProps>`
   display: flex;
   position: relative;
-  height: 20px;
-  min-width: ${props => (props.count === 1 ? '20px' : props.count === 2 ? '30px' : '38px')};
+  height: 24px;
+  min-width: ${props => (props.count === 1 ? '24px' : props.count === 2 ? '44px' : '38px')};
 
-  .pc-AvatarItem {
+  .pc-AvatarItemWrapper {
     flex-shrink: 0;
-    height: 20px;
-    width: 20px;
-    box-shadow: 0 0 0 1px ${get('colors.canvas.default')};
-    margin-left: -11px;
-    position: relative;
-    overflow: hidden;
-    transition: margin 0.2s ease-in-out, opacity 0.2s ease-in-out, visibility 0.2s ease-in-out,
+    margin-left: -${get('space.1')};
+    transition: padding 0.6s cubic-bezier(0.68, -0.6, 0.32, 1.6), opacity 0.2s ease-in-out, visibility 0.2s ease-in-out,
       box-shadow 0.1s ease-in-out;
-
     &:first-child {
       margin-left: 0;
     }
-    &:nth-child(n + 4) {
-      display: none;
-    }
   }
 
-  &.pc-AvatarStack--two {
-    min-width: 30px;
-    .pc-AvatarItem {
-      &:nth-child(n + 3) {
-        display: none;
-      }
-    }
-  }
-
-  &.pc-AvatarStack--three-plus {
-    min-width: 38px;
-    .pc-AvatarItem {
-      &:nth-child(3) {
-        opacity: ${100 - 3 * 15}%;
-        margin-left: -17px;
-      }
-      &:nth-child(4) {
-        opacity: ${100 - 4 * 15}%;
-        margin-left: -17px;
-      }
-      &:nth-child(5) {
-        opacity: ${100 - 5 * 15}%;
-        margin-left: -17px;
-      }
-      &:nth-child(n + 4) {
-        display: block;
-      }
-      &:nth-child(n + 6) {
-        opacity: 0;
-        visibility: hidden;
-      }
-    }
+  .pc-AvatarItem {
+    flex-shrink: 0;
+    height: 24px;
+    width: 24px;
+    box-shadow: 0 0 0 1px ${get('colors.canvas.default')};
+    position: relative;
+    overflow: hidden;
   }
 
   &.pc-AvatarStack--right {
     justify-content: flex-end;
-    .pc-AvatarItem {
+    .pc-AvatarItemWrapper {
       margin-left: 0 !important;
-      margin-right: -11px;
+      margin-right: -${get('space.1')};
 
       &:first-child {
         margin-right: 0;
@@ -83,45 +49,15 @@ const AvatarStackWrapper = styled.span<StyledAvatarStackWrapperProps>`
 
     .pc-AvatarStackBody {
       flex-direction: row-reverse;
-
-      &:hover {
-        .pc-AvatarItem {
-          margin-right: ${get('space.1')}!important;
-          margin-left: 0 !important;
-
-          &:first-child {
-            margin-right: 0 !important;
-          }
-        }
-      }
     }
   }
 
-  &.pc-AvatarStack--three-plus.pc-AvatarStack--right {
-    .pc-AvatarItem {
-      &:nth-child(3) {
-        margin-right: -17px;
-      }
-      &:nth-child(4) {
-        margin-right: -17px;
-      }
-      &:nth-child(5) {
-        margin-right: -17px;
-      }
-    }
-  }
+  .pc-AvatarItemWrapper:hover {
+    padding-left: ${get('space.2')};
+    padding-right: ${get('space.2')};
 
-  .pc-AvatarStackBody:hover {
-    width: auto;
-
-    .pc-AvatarItem {
-      margin-left: ${get('space.1')};
-      opacity: 100%;
-      visibility: visible;
-      box-shadow: 0 0 0 4px ${get('colors.canvas.default')};
-      &:first-child {
-        margin-left: 0;
-      }
+    &:first-child {
+      padding-right: 0;
     }
   }
 
@@ -131,10 +67,14 @@ const AvatarStackWrapper = styled.span<StyledAvatarStackWrapperProps>`
 const transformChildren = (children: React.ReactNode) => {
   return React.Children.map(children, (child, index) => {
     if (!React.isValidElement(child)) return child
-    return React.cloneElement(child, {
-      className: classnames(child.props.className, 'pc-AvatarItem'),
-      sx: {zIndex: 10 - index, ...child.props.sx}
-    })
+    return (
+      <Box className="pc-AvatarItemWrapper">
+        {React.cloneElement(child, {
+          className: classnames(child.props.className, 'pc-AvatarItem'),
+          sx: {zIndex: 10 - index, ...child.props.sx}
+        })}
+      </Box>
+    )
   })
 }
 
@@ -151,8 +91,11 @@ const AvatarStack = ({children, alignRight, ...rest}: AvatarStackProps) => {
   })
   return (
     <AvatarStackWrapper count={count} className={wrapperClassNames} {...rest}>
-      <Box position="absolute" display="flex" width="38px" className="pc-AvatarStackBody">
+      <Box position="absolute" display="flex" className="pc-AvatarStackBody">
         {transformChildren(children)}
+        <Box>
+          <CounterLabel sx={{padding: '6px 8px', marginRight: '-4px'}}>+21</CounterLabel>
+        </Box>
       </Box>
     </AvatarStackWrapper>
   )
