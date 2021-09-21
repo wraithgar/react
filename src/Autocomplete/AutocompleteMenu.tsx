@@ -43,18 +43,50 @@ function scrollIntoViewingArea(
   }
 
 type AutocompleteMenuInternalProps = {
-  items: ItemInput[]
-  selectedItemIds: Array<string | number>
-  // TODO: come up with a better name for this prop
-  selectedSortFn?: (itemIdA: string | number, itemIdB: string | number) => number
-  // TODO: combine `onItemSelect` and `onItemDeselect` into 1 prop
-  onItemSelect?: NonNullable<ItemProps['onAction']>
-  onItemDeselect?: NonNullable<ItemProps['onAction']>
-  emptyStateText?: React.ReactNode | false
+  /**
+   * A menu item that is used to allow users make a selection that is not available in the array passed to the `items` prop.
+   * This menu item gets appended to the end of the list of options.
+   */
   addNewItem?: Omit<ItemInput, 'onAction'> // TODO: Rethink this prop name. It's confusing.
+  /**
+   * The text that appears in the menu when there are no options in the array passed to the `items` prop.
+   */
+  emptyStateText?: React.ReactNode | false
+  /**
+   * A custom function used to filter the options in the array passed to the `items` prop.
+   * By default, we filter out items that don't match the value of the autocomplete text input. The default filter is not case-sensitive.
+   */
+  filterFn?: (item: ItemInput, i: number) => boolean
+  /**
+   * The options for field values that are displayed in the dropdown menu.
+   * One or more may be selected depending on the value of the `selectionVariant` prop.
+   */
+  items: ItemInput[]
+  /**
+   * The function that is called when an item in the list is de-selected
+   */
+  onItemDeselect?: NonNullable<ItemProps['onAction']> // TODO: combine `onItemSelect` and `onItemDeselect` into 1 prop? // TODO: pass a default function value
+  /**
+   * The function that is called when an item in the list is selected
+   */
+  onItemSelect?: NonNullable<ItemProps['onAction']> // TODO: combine `onItemSelect` and `onItemDeselect` into 1 prop? // TODO: pass a default function value
+  /**
+   * Whether the data is loaded for the menu items
+   */
   loading?: boolean
+  /**
+   * The IDs of the selected items
+   */
+  selectedItemIds: Array<string | number> // TODO: try and eliminate the need for a `selectedItemIds` prop
+  /**
+   * The sort function that is applied to the options in the array passed to the `items` prop after the user closes the menu.
+   * By default, selected items are sorted to the top after the user closes the menu.
+   */
+  selectedSortFn?: (itemIdA: string | number, itemIdB: string | number) => number // TODO: come up with a better name for this prop. maybe "sortOnCloseFn"
+  /**
+   * Whether there can be one item selected from the menu or multiple items selected from the menu
+   */
   selectionVariant?: 'single' | 'multiple'
-  filterFn?: (item: ItemInput, i: number) => boolean;
 }
 
 const defaultItemFilter = (filterValue: string) => (item: ItemInput, _i: number) =>

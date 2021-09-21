@@ -164,6 +164,7 @@ interface Token {
     id: string | number;
 }
 
+// TODO: extend TextInput props
 type TextInputWithTokensInternalProps = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   as?: any // This is a band-aid fix until we have better type support for the `as` prop

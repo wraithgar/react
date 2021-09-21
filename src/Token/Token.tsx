@@ -38,6 +38,9 @@ const LeadingVisualContainer = styled('span')`
 `;
 
 const Token: React.FC<Props> = ({
+    /**
+     * A function that renders a component before the token text
+     */
     leadingVisual: LeadingVisual,
     ...tokenBaseProps
 }) => {

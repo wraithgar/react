@@ -21,8 +21,10 @@ const colorModeConfig = {
 };
 
 interface Props extends TokenBaseProps {
+    /**
+     * The color that corresponds to the label
+     */
     fillColor?: string
-    isOutlined?: boolean // NOTE: different from `outline` prop on the existing Label component because `isOutlined` sounds more like a boolean prop
 }
 
 interface LabelStyleProps {
@@ -58,7 +60,6 @@ const TokenTextContainer = styled('span')`
 `;
 
 const TokenLabel: React.FC<Props> = ({
-    isOutlined,
     fillColor,
     isSelected,
     ...tokenBaseProps

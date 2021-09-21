@@ -12,7 +12,7 @@ interface Token {
 }
 
 const items = [
-    { text: 'zero', id: 0 },
+    { text: 'zero', id: 0, disabled: true },
     { text: 'one', id: 1 },
     { text: 'two', id: 2 },
     { text: 'three', id: 3 },
