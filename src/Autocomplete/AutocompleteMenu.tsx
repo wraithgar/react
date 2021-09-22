@@ -23,6 +23,17 @@ const getDefaultSortFn = (isItemSelectedFn: (itemId: string | number) => boolean
             ? -1
             : 1;
 
+function getDefaultItemFilter<T extends MandateProps<ItemProps, 'id'>>(filterValue: string) {
+    return function (item: T, _i: number) {
+        return Boolean(
+            item.text
+                ?.toLowerCase()
+                .startsWith((filterValue)
+                .toLowerCase())
+        )
+    }
+}
+
 // TODO: DRY this out - it's also in FilteredActionList
 function scrollIntoViewingArea(
     child: HTMLElement,
@@ -45,7 +56,7 @@ function scrollIntoViewingArea(
     }
   
     // either completely in view or outside viewing area on both ends, don't scroll
-  }
+}
 
 type AutocompleteMenuInternalProps<T extends MandateProps<ItemProps, 'id'>> = {
   /**
@@ -99,17 +110,6 @@ type AutocompleteMenuInternalProps<T extends MandateProps<ItemProps, 'id'>> = {
   selectionVariant?: 'single' | 'multiple'
 }
 
-function defaultItemFilter<T extends MandateProps<ItemProps, 'id'>>(filterValue: string) {
-    return function (item: T, _i: number) {
-        return Boolean(
-            item.text
-                ?.toLowerCase()
-                .startsWith((filterValue)
-                .toLowerCase())
-        )
-    }
-}
-
 function AutocompleteMenu<T extends MandateProps<ItemProps, 'id'>>({
     items,
     selectedItemIds,
@@ -135,7 +135,7 @@ function AutocompleteMenu<T extends MandateProps<ItemProps, 'id'>>({
         setIsMenuDirectlyActivated,
         showMenu,
     } = useContext(AutocompleteContext)
-    const filterFn = externalFilterFn ? externalFilterFn : defaultItemFilter<T>(inputValue);
+    const filterFn = externalFilterFn ? externalFilterFn : getDefaultItemFilter<T>(inputValue);
     const listContainerRef = useRef<HTMLDivElement>(null)
     const scrollContainerRef = useRef<HTMLDivElement>(null)
     const [highlightedItem, setHighlightedItem] = useState<T>();
@@ -170,37 +170,28 @@ function AutocompleteMenu<T extends MandateProps<ItemProps, 'id'>>({
                 id: selectableItem.id,
                 selected: selectionVariant === 'multiple' ? isItemSelected(selectableItem.id) : undefined,
                 onAction: (item: T, e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
-
-                    // TODO: clean up all of these `if/else` statements
-                    if (item.selected) {
-                        if (onItemDeselect) {
-                            onItemDeselect(item, e);
-                        }
-
-                    } else {
+                    const handleItemSelection = () => {
                         if (onItemSelect) {
                             onItemSelect(item, e);
+                        } else {
+                            setInputValue && setInputValue(item.text || '')
                         }
 
                         if (selectionVariant === 'multiple') {
-                            if (setInputValue) {
-                                setInputValue('');
-                            }
-
-                            if (setAutocompleteSuggestion) {
-                                setAutocompleteSuggestion('');
-                            }
+                            setInputValue && setInputValue('');
+                            setAutocompleteSuggestion && setAutocompleteSuggestion('');
                         }
                     }
 
-                    if (selectionVariant === 'single') {
-                        if (setShowMenu) {
-                            setShowMenu(false)
-                        }
+                    if (item.selected) {
+                        onItemDeselect && onItemDeselect(item, e)
+                    } else {
+                        handleItemSelection();
+                    }
 
-                        if (inputRef?.current) {
-                            inputRef.current.setSelectionRange(inputRef.current.value.length, inputRef.current.value.length);
-                        }
+                    if (selectionVariant === 'single') {
+                        setShowMenu && setShowMenu(false)
+                        inputRef?.current?.setSelectionRange(inputRef.current.value.length, inputRef.current.value.length);
                     }
                 }
             })}
