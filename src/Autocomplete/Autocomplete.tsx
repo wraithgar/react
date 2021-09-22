@@ -8,10 +8,10 @@ import AutocompleteMenu from './AutocompleteMenu';
 const Autocomplete: React.FC = ({ children }) => {
     const activeDescendantRef = useRef<HTMLElement>(null)
     const inputRef = useRef<HTMLInputElement>(null)
-    const [inputValue, setInputValue] = useState<string>('');
+    const [inputValue, setInputValue] = useState<string>('')
     const [showMenu, setShowMenu] = useState(false)
-    const [autocompleteSuggestion, setAutocompleteSuggestion] = useState<string>('');
-    const [isMenuDirectlyActivated, setIsMenuDirectlyActivated] = useState<boolean>(false);
+    const [autocompleteSuggestion, setAutocompleteSuggestion] = useState<string>('')
+    const [isMenuDirectlyActivated, setIsMenuDirectlyActivated] = useState<boolean>(false)
 
     return (
       <AutocompleteContext.Provider value={{

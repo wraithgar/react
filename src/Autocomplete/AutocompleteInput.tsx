@@ -50,6 +50,7 @@ const AutocompleteInput = React.forwardRef(
             // HACK: wait a tick and check the focused element before hiding the autocomplete menu
             // this prevents the menu from hiding when the user is clicking an option in the Autoselect.Menu,
             // but still hides the menu when the user blurs the input by tabbing out or clicking somewhere else on the page
+            // COLEHELP
             setTimeout(() => {
                 if (setShowMenu && document.activeElement !== combinedInputRef.current) {
                     setShowMenu(false);

@@ -6,7 +6,7 @@ import { TokenBaseProps, defaultTokenSize, tokenSizes } from './TokenBase'
 import Token from './Token'
 import { Avatar } from '..'
 
-interface Props extends TokenBaseProps {
+export interface TokenProfileProps extends TokenBaseProps {
     avatarSrc: string
 }
 
@@ -14,7 +14,7 @@ const StyledToken = styled(Token)`
     padding-left: ${get('space.1')};
 `;
 
-const TokenProfile: React.FC<Props> = ({
+const TokenProfile: React.FC<TokenProfileProps> = ({
     avatarSrc,
     variant,
     ...rest

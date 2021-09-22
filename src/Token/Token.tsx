@@ -4,7 +4,7 @@ import { get } from '../constants'
 import TokenBase, { isTokenHoverable, TokenBaseProps } from './TokenBase'
 import RemoveTokenButton from './_RemoveTokenButton'
 
-interface Props extends TokenBaseProps {
+export interface TokenProps extends TokenBaseProps {
     leadingVisual?: React.FunctionComponent<any>
 }
 
@@ -36,14 +36,14 @@ const LeadingVisualContainer = styled('span')`
     line-height: 0;
 `;
 
-const Token: React.FC<Props> = ({
+const Token: React.FC<TokenProps> = ({
     /**
      * A function that renders a component before the token text
      */
     leadingVisual: LeadingVisual,
     ...tokenBaseProps
 }) => {
-    const { handleRemove, handleAdd, text, as, variant } = tokenBaseProps;
+    const { handleRemove, text, as, variant } = tokenBaseProps;
 
     return (
         <DefaultToken {...tokenBaseProps}>

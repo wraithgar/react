@@ -1,18 +1,36 @@
 import React, { useCallback, useState } from 'react'
-import {Meta} from '@storybook/react'
+import { Meta } from '@storybook/react'
 
 import { BaseStyles, Box, ThemeProvider } from '..'
-import { ItemProps } from '../ActionList';
 import TextInputTokens from '../TextInputTokens';
 import Autocomplete from '../Autocomplete/Autocomplete';
+import TokenLabel from '../Token/TokenLabel';
 
-interface Token {
-    text?: string;
-    id: string | number;
+type Datum = {
+  id: string | number;
+  text?: string;
+  fillColor?: string
+};
+
+function getColorCircle(color: string) {
+  return function () {
+    return (
+      <Box
+        bg={color}
+        borderColor={color}
+        width={14}
+        height={14}
+        borderRadius={10}
+        margin="auto"
+        borderWidth="1px"
+        borderStyle="solid"
+      />
+    )
+  }
 }
 
-const items = [
-    { text: 'zero', id: 0, disabled: true },
+const items: Datum[] = [
+    { text: 'zero', id: 0 },
     { text: 'one', id: 1 },
     { text: 'two', id: 2 },
     { text: 'three', id: 3 },
@@ -22,16 +40,24 @@ const items = [
     { text: 'seven', id: 7 },
     { text: 'twenty', id: 20 },
     { text: 'twentyone', id: 21 }
-  ]
+]
 
 const labelItems = [
-    { leadingVisual: getColorCircle('#a2eeef'), text: 'enhancement', id: 1, labelColor: '#a2eeef' },
-    { leadingVisual: getColorCircle('#d73a4a'), text: 'bug', id: 2, labelColor: '#d73a4a' },
-    { leadingVisual: getColorCircle('#0cf478'), text: 'good first issue', id: 3, labelColor: '#0cf478' },
-    { leadingVisual: getColorCircle('#ffd78e'), text: 'design', id: 4, labelColor: '#ffd78e' },
-    { leadingVisual: getColorCircle('#ff0000'), text: 'blocker', id: 5, labelColor: '#ff0000' },
-    { leadingVisual: getColorCircle('#a4f287'), text: 'backend', id: 6, labelColor: '#a4f287' },
-    { leadingVisual: getColorCircle('#8dc6fc'), text: 'frontend', id: 7, labelColor: '#8dc6fc' },
+  { leadingVisual: getColorCircle('#a2eeef'), text: 'enhancement', id: 1, fillColor: '#a2eeef' },
+  { leadingVisual: getColorCircle('#d73a4a'), text: 'bug', id: 2, fillColor: '#d73a4a' },
+  { leadingVisual: getColorCircle('#0cf478'), text: 'good first issue', id: 3, fillColor: '#0cf478' },
+  { leadingVisual: getColorCircle('#ffd78e'), text: 'design', id: 4, fillColor: '#ffd78e' },
+  { leadingVisual: getColorCircle('#ff0000'), text: 'blocker', id: 5, fillColor: '#ff0000' },
+  { leadingVisual: getColorCircle('#a4f287'), text: 'backend', id: 6, fillColor: '#a4f287' },
+  { leadingVisual: getColorCircle('#8dc6fc'), text: 'frontend', id: 7, fillColor: '#8dc6fc' },
+];
+
+const mockTokens: Datum[] = [
+  { text: 'zero', id: 0 },
+  { text: 'one', id: 1 },
+  { text: 'two', id: 2 },
+  { text: 'three', id: 3 },
+  { text: 'four', id: 4 },
 ];
 
 export default {
@@ -62,31 +88,6 @@ export default {
   ]
 } as Meta
 
-const mockTokens = [
-  { text: 'zero', id: 0 },
-  { text: 'one', id: 1 },
-  { text: 'two', id: 2 },
-  { text: 'three', id: 3 },
-  { text: 'four', id: 4 },
-
-];
-
-function getColorCircle(color: string) {
-    return function () {
-      return (
-        <Box
-          bg={color}
-          borderColor={color}
-          width={14}
-          height={14}
-          borderRadius={10}
-          margin="auto"
-          borderWidth="1px"
-          borderStyle="solid"
-        />
-      )
-    }
-  }
 
 export const Default = () => {
     return (
@@ -101,38 +102,69 @@ export const Default = () => {
 };
 
 export const TokenSelect = () => {
+  // TODO: consider migrating this boilerplate to a hook
+  const [tokens, setTokens] = useState<Datum[]>(mockTokens)
+  const selectedTokenIds = tokens.map(token => token.id);
+  const [selectedItemIds, setSelectedItemIds] = useState<Array<string | number>>(selectedTokenIds);
+  const onTokenRemove: (tokenId: string | number) => void = (tokenId) => {
+      setTokens(tokens.filter(token => token.id !== tokenId));
+      setSelectedItemIds(selectedItemIds.filter(id => id !== tokenId));
+  };
+  const onItemSelect: (item: Datum) => void = (item) => {
+      setTokens([...tokens, item])
+      setSelectedItemIds([...selectedItemIds, item.id])
+  };
+  const onItemDeselect: (item: Datum) => void = (item) => {
+    onTokenRemove(item.id)
+    setSelectedItemIds(selectedItemIds.filter(selectedItemId => selectedItemId !== item.id))
+  };
+
+  return (
+      <Autocomplete>
+        <Autocomplete.Input
+          as={TextInputTokens}
+          tokens={tokens}
+          onTokenRemove={onTokenRemove}
+        />
+        <Autocomplete.Menu
+          items={items}
+          selectedItemIds={selectedItemIds}
+          onItemSelect={onItemSelect}
+          onItemDeselect={onItemDeselect}
+          selectionVariant="multiple"
+        />
+      </Autocomplete>
+  )
+};
+
+export const TokenLabelSelect = () => {
     // TODO: consider migrating this boilerplate to a hook
-    const [tokens, setTokens] = useState<Token[]>(mockTokens)
+    const [tokens, setTokens] = useState<Datum[]>([])
     const selectedTokenIds = tokens.map(token => token.id);
-    const [selectedItemIds, setSelectedItemIds] = useState<Array<number | string>>(selectedTokenIds);
+    const [selectedItemIds, setSelectedItemIds] = useState<Array<string | number>>(selectedTokenIds);
     const onTokenRemove: (tokenId: string | number) => void = (tokenId) => {
         setTokens(tokens.filter(token => token.id !== tokenId));
         setSelectedItemIds(selectedItemIds.filter(id => id !== tokenId));
     };
-    const onItemSelect: ItemProps['onAction'] = ({id, text}) => {
-        // TODO: just make `id` required
-        if (id || id === 0) {
-            setTokens([...tokens, {id, text}])
-            setSelectedItemIds([...selectedItemIds, id])
-        }
+    const onItemSelect: (item: Datum) => void = (item) => {
+        setTokens([...tokens, item])
+        setSelectedItemIds([...selectedItemIds, item.id])
     };
-    const onItemDeselect: ItemProps['onAction'] = ({id}) => {
-        // TODO: just make `id` required
-        if (id || id === 0) {
-            onTokenRemove(id)
-            setSelectedItemIds(selectedItemIds.filter(selectedItemId => selectedItemId !== id))
-        }
+    const onItemDeselect: (item: Datum) => void = (item) => {
+      onTokenRemove(item.id)
+      setSelectedItemIds(selectedItemIds.filter(selectedItemId => selectedItemId !== item.id))
     };
 
     return (
         <Autocomplete>
           <Autocomplete.Input
             as={TextInputTokens}
+            tokenComponent={TokenLabel}
             tokens={tokens}
             onTokenRemove={onTokenRemove}
           />
           <Autocomplete.Menu
-            items={items}
+            items={labelItems}
             selectedItemIds={selectedItemIds}
             onItemSelect={onItemSelect}
             onItemDeselect={onItemDeselect}

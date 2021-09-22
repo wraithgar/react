@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { ActionList, ItemProps } from '../ActionList'
-import { ItemInput } from '../ActionList/List'
 import { useAnchoredPosition } from '../hooks'
 import { useFocusZone } from '../hooks/useFocusZone'
 import Overlay, { OverlayProps } from '../Overlay'
@@ -9,6 +8,11 @@ import { Box, Spinner } from '../';
 import { registerPortalRoot } from '../Portal'
 import { AutocompleteContext } from './AutocompleteContext'
 import { useCombinedRefs } from '../hooks/useCombinedRefs'
+
+type MandateProps<T extends {}, K extends keyof T> = Omit<T, K> & {
+    [MK in K]-?: NonNullable<T[MK]>
+}
+type OnAction<T> = (item: T, event: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => void;
 
 const DROPDOWN_PORTAL_CONTAINER_NAME = '__listcontainerportal__';
 
@@ -19,6 +23,7 @@ const getDefaultSortFn = (isItemSelectedFn: (itemId: string | number) => boolean
             ? -1
             : 1;
 
+// TODO: DRY this out - it's also in FilteredActionList
 function scrollIntoViewingArea(
     child: HTMLElement,
     container: HTMLElement,
@@ -42,12 +47,12 @@ function scrollIntoViewingArea(
     // either completely in view or outside viewing area on both ends, don't scroll
   }
 
-type AutocompleteMenuInternalProps = {
+type AutocompleteMenuInternalProps<T extends MandateProps<ItemProps, 'id'>> = {
   /**
    * A menu item that is used to allow users make a selection that is not available in the array passed to the `items` prop.
    * This menu item gets appended to the end of the list of options.
    */
-  addNewItem?: Omit<ItemInput, 'onAction'> // TODO: Rethink this prop name. It's confusing.
+  addNewItem?: OnAction<T> // TODO: Rethink this prop name. It's confusing.
   /**
    * The text that appears in the menu when there are no options in the array passed to the `items` prop.
    */
@@ -56,20 +61,22 @@ type AutocompleteMenuInternalProps = {
    * A custom function used to filter the options in the array passed to the `items` prop.
    * By default, we filter out items that don't match the value of the autocomplete text input. The default filter is not case-sensitive.
    */
-  filterFn?: (item: ItemInput, i: number) => boolean
+  filterFn?: (item: T, i: number) => boolean
   /**
    * The options for field values that are displayed in the dropdown menu.
    * One or more may be selected depending on the value of the `selectionVariant` prop.
    */
-  items: ItemInput[]
+  items: T[]
   /**
    * The function that is called when an item in the list is de-selected
    */
-  onItemDeselect?: NonNullable<ItemProps['onAction']> // TODO: combine `onItemSelect` and `onItemDeselect` into 1 prop? // TODO: pass a default function value
+  // TODO: in the component, pass a default function value
+  onItemDeselect?: OnAction<T>
   /**
    * The function that is called when an item in the list is selected
    */
-  onItemSelect?: NonNullable<ItemProps['onAction']> // TODO: combine `onItemSelect` and `onItemDeselect` into 1 prop? // TODO: pass a default function value
+  // TODO: in the component, pass a default function value
+  onItemSelect?: OnAction<T>
   /**
    * Whether the data is loaded for the menu items
    */
@@ -77,232 +84,253 @@ type AutocompleteMenuInternalProps = {
   /**
    * The IDs of the selected items
    */
-  selectedItemIds: Array<string | number> // TODO: try and eliminate the need for a `selectedItemIds` prop
+  // TODO: try and eliminate the need for a `selectedItemIds` prop
+  // COLEHELP
+  selectedItemIds: Array<string | number>
   /**
    * The sort function that is applied to the options in the array passed to the `items` prop after the user closes the menu.
    * By default, selected items are sorted to the top after the user closes the menu.
    */
-  selectedSortFn?: (itemIdA: string | number, itemIdB: string | number) => number // TODO: come up with a better name for this prop. maybe "sortOnCloseFn"
+  // TODO: come up with a better name for this prop. maybe "sortOnCloseFn"
+  selectedSortFn?: (itemIdA: string | number, itemIdB: string | number) => number
   /**
    * Whether there can be one item selected from the menu or multiple items selected from the menu
    */
   selectionVariant?: 'single' | 'multiple'
 }
 
-const defaultItemFilter = (filterValue: string) => (item: ItemInput, _i: number) =>
-  Boolean(item?.text?.toLowerCase().startsWith((filterValue).toLowerCase()));
-
-// TODO:
-// insteaad of using `forwardRef`, just use a regular Functional Component
-// get rid of unused props
-const AutocompleteMenu = React.forwardRef<HTMLInputElement, AutocompleteMenuInternalProps & Pick<OverlayProps, 'width' | 'height' | 'maxHeight'>>(
-  ({
-      items,
-      selectedItemIds,
-      selectedSortFn,
-      onItemSelect,
-      onItemDeselect,
-      emptyStateText,
-      addNewItem,
-      loading,
-      selectionVariant,
-      filterFn: externalFilterFn,
-      width,
-      height,
-      maxHeight,
-    },
-    ref) => {
-        const {
-            activeDescendantRef,
-            inputRef,
-            inputValue = '',
-            setAutocompleteSuggestion,
-            setShowMenu,
-            setInputValue,
-            setIsMenuDirectlyActivated,
-            showMenu,
-        } = useContext(AutocompleteContext)
-        const filterFn = externalFilterFn ? externalFilterFn : defaultItemFilter(inputValue);
-        const listContainerRef = useRef<HTMLDivElement>(null)
-        const scrollContainerRef = useRef<HTMLDivElement>(null)
-        const [highlightedItem, setHighlightedItem] = useState<ItemProps & { isDirectlyActivated: boolean } | undefined>();
-        // TODO: clean up this mess by making id required on ItemProps
-        const [sortedItemIds, setSortedItemIds] = useState<Array<number | string>>(items.map(({id}) => id || id === 0 ? id : ''));
-
-        const {floatingElementRef, position} = useAnchoredPosition(
-            {
-                side: 'outside-bottom',
-                align: 'start',
-                anchorElementRef: inputRef
-            },
-            [showMenu, selectedItemIds]
-        )
-
-        const combinedOverlayRef = useCombinedRefs(scrollContainerRef, floatingElementRef);
-
-        const closeOptionList = () => {
-            if (setShowMenu) {
-                setShowMenu(false);
-            }
-        }
-
-        const isItemSelected = (itemId: string | number) => items.find(
-                (selectableItem) => selectableItem.id === itemId
-            )?.selected || selectedItemIds.includes(itemId)
-
-        const itemsToRender: ItemInput[] = [
-            // selectable tokens
-            ...items.map((selectableItem) => {
-                return ({
-                    ...selectableItem,
-                    //TODO: just make `id` required
-                    selected: selectionVariant === 'multiple' ? isItemSelected(selectableItem.id) : undefined,
-                    onAction: (item: ItemProps, e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
-
-                        // TODO: clean up all of these `if/else` statements
-                        if (item.selected) {
-                            // TODO: make `onItemDeselect` optional
-                            if (onItemDeselect) {
-                                onItemDeselect(item, e);
-                            }
-
-                        } else {
-                            // TODO: make `onItemSelect` optional
-                            if (onItemSelect) {
-                                onItemSelect(item, e);
-                            }
-
-                            if (selectionVariant === 'multiple') {
-                                if (setInputValue) {
-                                    setInputValue('');
-                                }
-    
-                                if (setAutocompleteSuggestion) {
-                                    setAutocompleteSuggestion('');
-                                }
-                            }
-                        }
-
-                        if (selectionVariant === 'single') {
-                            if (setShowMenu) {
-                                setShowMenu(false)
-                            }
-    
-                            if (inputRef?.current) {
-                                inputRef.current.setSelectionRange(inputRef.current.value.length, inputRef.current.value.length);
-                            }
-                        }
-                    }
-                })}
-            ),
-            // menu item used for creating a token from whatever is in the text input
-            ...(addNewItem
-                ? [{
-                    ...addNewItem,
-                    onAction: onItemSelect ? (_item: ItemProps, e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
-                        onItemSelect({ text: inputValue, id: `randomlyGeneratedId-${inputValue}` }, e)
-                    } : undefined
-                }]
-                : []
-            )
-        ];
-
-        useFocusZone({
-            containerRef: listContainerRef,
-            focusOutBehavior: 'wrap',
-            focusableElementFilter: element => {
-                return !(element instanceof HTMLInputElement)
-            },
-            activeDescendantFocus: inputRef,
-            onActiveDescendantChanged: (current, _previous, directlyActivated) => {
-                if (activeDescendantRef) {
-                    activeDescendantRef.current = current || null
-                }
-                if (current) {
-                    const selectedItem = itemsToRender.find(item => item.id?.toString() === current?.dataset.id);
-                    setHighlightedItem({...selectedItem, isDirectlyActivated: directlyActivated});
-    
-                    if (setIsMenuDirectlyActivated) {
-                        setIsMenuDirectlyActivated(directlyActivated);
-                    }
-                }
-
-                if (current && scrollContainerRef.current && directlyActivated) {
-                    scrollIntoViewingArea(current, scrollContainerRef.current)
-                }
-            }
-        })
-
-        useEffect(() => {
-            if (!setAutocompleteSuggestion) {
-                return;
-            }
-
-            if (highlightedItem?.text?.startsWith(inputValue || '')) {
-                setAutocompleteSuggestion(highlightedItem.text);
-            } else {
-                setAutocompleteSuggestion('');
-            }
-        }, [highlightedItem, inputValue])
-
-        useEffect(() => {
-            setSortedItemIds(
-                [...sortedItemIds].sort(selectedSortFn ? selectedSortFn : getDefaultSortFn(isItemSelected))
-            )
-        }, [showMenu])
-
-        if (listContainerRef.current) {
-            registerPortalRoot(listContainerRef.current, DROPDOWN_PORTAL_CONTAINER_NAME)
-        }
-
-        const itemSortOrderData = sortedItemIds.reduce<Record<string | number, number>>((acc, curr, i) => {
-            acc[curr] = i;
-
-            return acc;
-        }, {});
-        const sortedAndFilteredItemsToRender = [...(filterFn ? itemsToRender.filter(filterFn) : itemsToRender)].sort((a, b) =>
-            itemSortOrderData[a.id] - itemSortOrderData[b.id]
-        );
-        
-        return (
-            <div ref={listContainerRef}>
-                {showMenu && emptyStateText ? (
-                    <Overlay
-                        returnFocusRef={inputRef}
-                        portalContainerName={DROPDOWN_PORTAL_CONTAINER_NAME}
-                        preventFocusOnOpen={true}
-                        onClickOutside={closeOptionList}
-                        onEscape={closeOptionList}
-                        ref={combinedOverlayRef as React.RefObject<HTMLDivElement>}
-                        top={position?.top}
-                        left={position?.left}
-                        width={width}
-                        height={height}
-                        maxHeight={maxHeight}
-                    >
-                        {loading ? (
-                            <Box p={3} display="flex" justifyContent="center">
-                                <Spinner />
-                            </Box>
-                        ) : (
-                            <>
-                                {sortedAndFilteredItemsToRender.length ? (
-                                    <ActionList
-                                        selectionVariant="multiple"
-                                        items={sortedAndFilteredItemsToRender}
-                                        role="listbox"
-                                    />
-                                ) : (
-                                    <Box p={3}>{emptyStateText}</Box>
-                                )}
-                            </>
-                        )}
-                    </Overlay>
-                ) : null}
-            </div>
+function defaultItemFilter<T extends MandateProps<ItemProps, 'id'>>(filterValue: string) {
+    return function (item: T, _i: number) {
+        return Boolean(
+            item.text
+                ?.toLowerCase()
+                .startsWith((filterValue)
+                .toLowerCase())
         )
     }
-)
+}
+
+function AutocompleteMenu<T extends MandateProps<ItemProps, 'id'>>({
+    items,
+    selectedItemIds,
+    selectedSortFn,
+    onItemSelect,
+    onItemDeselect,
+    emptyStateText,
+    addNewItem,
+    loading,
+    selectionVariant,
+    filterFn: externalFilterFn,
+    width,
+    height,
+    maxHeight,
+  }: AutocompleteMenuInternalProps<T> & Pick<OverlayProps, 'width' | 'height' | 'maxHeight'>) {
+    const {
+        activeDescendantRef,
+        inputRef,
+        inputValue = '',
+        setAutocompleteSuggestion,
+        setShowMenu,
+        setInputValue,
+        setIsMenuDirectlyActivated,
+        showMenu,
+    } = useContext(AutocompleteContext)
+    const filterFn = externalFilterFn ? externalFilterFn : defaultItemFilter<T>(inputValue);
+    const listContainerRef = useRef<HTMLDivElement>(null)
+    const scrollContainerRef = useRef<HTMLDivElement>(null)
+    const [highlightedItem, setHighlightedItem] = useState<T>();
+    const [sortedItemIds, setSortedItemIds] = useState<Array<number | string>>(items.map(({id}) => id));
+
+    const {floatingElementRef, position} = useAnchoredPosition(
+        {
+            side: 'outside-bottom',
+            align: 'start',
+            anchorElementRef: inputRef
+        },
+        [showMenu, selectedItemIds]
+    )
+
+    const combinedOverlayRef = useCombinedRefs(scrollContainerRef, floatingElementRef);
+
+    const closeOptionList = () => {
+        if (setShowMenu) {
+            setShowMenu(false);
+        }
+    }
+
+    const isItemSelected = (itemId: string | number) => items.find(
+            (selectableItem) => selectableItem.id === itemId
+        )?.selected || selectedItemIds.includes(itemId)
+
+    const itemsToRender = [
+        // selectable tokens
+        ...items.map((selectableItem) => {
+            return ({
+                ...selectableItem,
+                id: selectableItem.id,
+                selected: selectionVariant === 'multiple' ? isItemSelected(selectableItem.id) : undefined,
+                onAction: (item: T, e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
+
+                    // TODO: clean up all of these `if/else` statements
+                    if (item.selected) {
+                        if (onItemDeselect) {
+                            onItemDeselect(item, e);
+                        }
+
+                    } else {
+                        if (onItemSelect) {
+                            onItemSelect(item, e);
+                        }
+
+                        if (selectionVariant === 'multiple') {
+                            if (setInputValue) {
+                                setInputValue('');
+                            }
+
+                            if (setAutocompleteSuggestion) {
+                                setAutocompleteSuggestion('');
+                            }
+                        }
+                    }
+
+                    if (selectionVariant === 'single') {
+                        if (setShowMenu) {
+                            setShowMenu(false)
+                        }
+
+                        if (inputRef?.current) {
+                            inputRef.current.setSelectionRange(inputRef.current.value.length, inputRef.current.value.length);
+                        }
+                    }
+                }
+            })}
+        ),
+
+        // menu item used for creating a token from whatever is in the text input
+        ...(addNewItem
+            ? [{
+                ...addNewItem,
+                id: 'addNewItemTrigger',
+                onAction: onItemSelect ? (item: T, e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
+                    // TODO: get rid of typecast
+                    //       w/o it, I get error `assignable to the constraint of type 'T', but 'T' could be instantiated with a different subtype of constraint 'MandateProps<ItemProps, "id">'`
+                    // COLEHELP
+                    onItemSelect({
+                        text: inputValue,
+                        id: item.id
+                    } as T, e)
+                } : undefined
+            }]
+            : []
+        )
+    ];
+
+    useFocusZone({
+        containerRef: listContainerRef,
+        focusOutBehavior: 'wrap',
+        focusableElementFilter: element => {
+            return !(element instanceof HTMLInputElement)
+        },
+        activeDescendantFocus: inputRef,
+        onActiveDescendantChanged: (current, _previous, directlyActivated) => {
+            if (activeDescendantRef) {
+                activeDescendantRef.current = current || null
+            }
+            if (current) {
+                const selectedItem = itemsToRender.find(item => item.id.toString() === current?.dataset.id);
+                // TODO: fix error `assignable to the constraint of type 'T', but 'T' could be instantiated with a different subtype of constraint 'MandateProps<ItemProps, "id">'`
+                // COLEHELP
+                setHighlightedItem(selectedItem as T);
+
+                if (setIsMenuDirectlyActivated) {
+                    setIsMenuDirectlyActivated(directlyActivated);
+                }
+            }
+
+            if (current && scrollContainerRef.current && directlyActivated) {
+                scrollIntoViewingArea(current, scrollContainerRef.current)
+            }
+        }
+    })
+
+    useEffect(() => {
+        if (!setAutocompleteSuggestion) {
+            return;
+        }
+
+        if (highlightedItem?.text?.startsWith(inputValue || '')) {
+            setAutocompleteSuggestion(highlightedItem.text);
+        } else {
+            setAutocompleteSuggestion('');
+        }
+    }, [highlightedItem, inputValue])
+
+    useEffect(() => {
+        setSortedItemIds(
+            [...sortedItemIds].sort(selectedSortFn ? selectedSortFn : getDefaultSortFn(isItemSelected))
+        )
+    }, [showMenu])
+
+    if (listContainerRef.current) {
+        registerPortalRoot(listContainerRef.current, DROPDOWN_PORTAL_CONTAINER_NAME)
+    }
+
+    const itemSortOrderData = sortedItemIds.reduce<Record<string | number, number>>((acc, curr, i) => {
+        acc[curr] = i;
+
+        return acc;
+    }, {});
+
+    const sortedAndFilteredItemsToRender = [
+        ...(filterFn ? itemsToRender.filter(
+            // TODO: get rid of typecast
+            //       w/o it, I get error `assignable to the constraint of type 'T', but 'T' could be instantiated with a different subtype of constraint 'MandateProps<ItemProps, "id">'`
+            // COLEHELP
+            (item, i) => filterFn(item as T, i)
+        ) : itemsToRender)].sort((a, b) =>
+            itemSortOrderData[a.id] - itemSortOrderData[b.id]
+        );
+
+    return (
+        <div ref={listContainerRef}>
+            {showMenu && emptyStateText ? (
+                <Overlay
+                    returnFocusRef={inputRef}
+                    portalContainerName={DROPDOWN_PORTAL_CONTAINER_NAME}
+                    preventFocusOnOpen={true}
+                    onClickOutside={closeOptionList}
+                    onEscape={closeOptionList}
+                    ref={combinedOverlayRef as React.RefObject<HTMLDivElement>}
+                    top={position?.top}
+                    left={position?.left}
+                    width={width}
+                    height={height}
+                    maxHeight={maxHeight}
+                >
+                    {loading ? (
+                        <Box p={3} display="flex" justifyContent="center">
+                            <Spinner />
+                        </Box>
+                    ) : (
+                        <>
+                            {sortedAndFilteredItemsToRender.length ? (
+                                <ActionList
+                                    selectionVariant="multiple"
+                                    // TODO: get rid of typecast
+                                    // COLEHELP
+                                    items={sortedAndFilteredItemsToRender as ItemProps[]}
+                                    role="listbox"
+                                />
+                            ) : (
+                                <Box p={3}>{emptyStateText}</Box>
+                            )}
+                        </>
+                    )}
+                </Overlay>
+            ) : null}
+        </div>
+    )
+}
 
 AutocompleteMenu.defaultProps = {
     emptyStateText: 'No selectable options',

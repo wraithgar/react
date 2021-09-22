@@ -20,7 +20,7 @@ const colorModeConfig = {
     }
 };
 
-interface Props extends TokenBaseProps {
+export interface TokenLabelProps extends TokenBaseProps {
     /**
      * The color that corresponds to the label
      */
@@ -35,7 +35,7 @@ interface LabelStyleProps {
 
 const tokenBorderWidthPx = 1;
 
-const StyledTokenLabel = styled(TokenBase)<Props & LabelStyleProps>`
+const StyledTokenLabel = styled(TokenBase)<TokenLabelProps & LabelStyleProps>`
   background-color: ${props => props.bgColor};
   border-width: ${tokenBorderWidthPx}px;
   border-style: solid;
@@ -53,7 +53,7 @@ const TokenTextContainer = styled('span')`
     z-index: 1;
 `;
 
-const TokenLabel: React.FC<Props> = ({
+const TokenLabel: React.FC<TokenLabelProps> = ({
     fillColor,
     isSelected,
     ...tokenBaseProps

@@ -9,7 +9,9 @@ import { useCombinedRefs } from './hooks/useCombinedRefs'
 import { useFocusZone } from './hooks/useFocusZone'
 import sx, {SxProp} from './sx'
 import {ComponentProps} from './utils/types'
-import Token from './Token/Token'
+import Token, { TokenProps } from './Token/Token'
+import { TokenLabelProps } from './Token/TokenLabel'
+import { TokenProfileProps } from './Token/TokenProfile'
 
 const sizeVariants = variant({
   variants: {
@@ -159,26 +161,22 @@ const Wrapper = styled.span<StyledWrapperProps>`
   ${sx};
 `
 
-interface Token {
-    text?: string;
-    id: string | number;
-}
+type AnyTokenProps = Partial<TokenProps & TokenLabelProps & TokenProfileProps>
+type TokenDatum = Omit<AnyTokenProps, 'id'> & { id: number | string; }
 
 // TODO: extend TextInput props
 type TextInputWithTokensInternalProps = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   as?: any // This is a band-aid fix until we have better type support for the `as` prop
   icon?: React.ComponentType<{className?: string}>
-  // TODO: instead of passing `tokens`, consider passing `selectedItems` so there's a clearer relationship
-  // between the tokens in the input and the selected items in the dropdown
-  tokens: Token[]
+  tokens: TokenDatum[]
   onTokenRemove: (tokenId: string | number) => void
-  tokenComponent?: React.FunctionComponent<any> // TODO: change this bitwise `|` to allow props that match any of the token variants OR do something where we infer the props of the passed token component
+  tokenComponent?: React.ComponentType<TokenProps | TokenLabelProps | TokenProfileProps>
   maxHeight?: React.CSSProperties['maxHeight']
 } & ComponentProps<typeof Wrapper> &
   ComponentProps<typeof Input>
 
-// using forwardRef is important so that other components (ex. SelectMenu) can autofocus the input
+// using forwardRef is important so that other components (ex. Autocomplete) can use the ref
 const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithTokensInternalProps>(
   ({
       icon: IconComponent,
@@ -214,12 +212,10 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
         let nextIndex = selectedTokenIdx + 1;
 
         if (direction === 'next') {
-          console.log('direction is next');
           nextIndex += 1;
         }
 
         if (direction === 'previous') {
-          console.log('direction is previous');
           nextIndex -= 1;
         }
 
@@ -231,7 +227,7 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
       },
     }, [selectedTokenIdx])
 
-    const handleTokenRemove = (tokenId: number | string) => {
+    const handleTokenRemove = (tokenId: TokenDatum['id']) => {
       onTokenRemove(tokenId);
     }
 
@@ -243,7 +239,7 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
         setSelectedTokenIdx(undefined);
     }
 
-    const handleTokenKeyUp: (tokenId: number | string) => KeyboardEventHandler = (tokenId) => (e) => {
+    const handleTokenKeyUp: (tokenId: TokenDatum['id']) => KeyboardEventHandler = (tokenId) => (e) => {
         if (e.key === 'Backspace') {
           handleTokenRemove(tokenId);
         }
@@ -276,8 +272,11 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
 
             if (combinedInputRef.current) {
               // TODO: eliminate the first hack by making changes to the Autocomplete component
+              // COLEHELP 
+              //
               // HACKS:
-              // 1. Directly setting `combinedInputRef.current.value` instead of updating state because the autocomplete highlight behavior doesn't work correctly if we update the value with a setState action in onChange
+              // 1. Directly setting `combinedInputRef.current.value` instead of updating state because the autocomplete 
+              //    highlight behavior doesn't work correctly if we update the value with a setState action in onChange
               // 2. Adding an extra space so that when I backspace, it doesn't delete the last letter
               combinedInputRef.current.value = `${lastToken.text} `;
             }
@@ -313,17 +312,18 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
                 />
             </InputWrapper>
             {tokens?.length && TokenComponent ? (
-              tokens.map((token, i) => (
+              tokens.map(({id, ...tokenRest}, i) => (
+                  // TODO: fix this TS error that occurs because `avatarSrc` is required on TokenProfile
+                  // COLEHELP
                   <TokenComponent
                       onFocus={handleTokenFocus(i)}
                       onBlur={handleTokenBlur}
-                      onKeyUp={handleTokenKeyUp(token.id)}
-                      text={token.text || ''} // TODO: just make token.text required
+                      onKeyUp={handleTokenKeyUp(id)}
                       isSelected={selectedTokenIdx === i}
-                      handleRemove={() => { handleTokenRemove(token.id) }}
+                      handleRemove={() => { handleTokenRemove(id) }}
                       variant="xl"
-                      fillColor={token.labelColor ? token.labelColor : undefined}
                       tabIndex={0}
+                      {...tokenRest}
                   />
                 ))
             ) : null}
