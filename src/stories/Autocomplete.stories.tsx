@@ -1,16 +1,18 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Meta } from '@storybook/react'
 
 import { BaseStyles, Box, ThemeProvider } from '..'
-import TextInputTokens from '../TextInputTokens';
-import Autocomplete from '../Autocomplete/Autocomplete';
-import TokenLabel from '../Token/TokenLabel';
+import TextInputTokens from '../TextInputTokens'
+import Autocomplete from '../Autocomplete/Autocomplete'
+import TokenLabel from '../Token/TokenLabel'
+import { getDefaultItemFilter } from '../Autocomplete/AutocompleteMenu'
 
 type Datum = {
-  id: string | number;
-  text?: string;
+  id: string | number
+  text?: string
   fillColor?: string
-};
+  selected?: boolean
+}
 
 function getColorCircle(color: string) {
   return function () {
@@ -32,7 +34,9 @@ function getColorCircle(color: string) {
 const items: Datum[] = [
     { text: 'zero', id: 0 },
     { text: 'one', id: 1 },
+    { text: 'twe', id: 22 },
     { text: 'two', id: 2 },
+    { text: 'twb', id: 23 },
     { text: 'three', id: 3 },
     { text: 'four', id: 4 },
     { text: 'five', id: 5 },
@@ -50,15 +54,14 @@ const labelItems = [
   { leadingVisual: getColorCircle('#ff0000'), text: 'blocker', id: 5, fillColor: '#ff0000' },
   { leadingVisual: getColorCircle('#a4f287'), text: 'backend', id: 6, fillColor: '#a4f287' },
   { leadingVisual: getColorCircle('#8dc6fc'), text: 'frontend', id: 7, fillColor: '#8dc6fc' },
-];
+]
 
 const mockTokens: Datum[] = [
   { text: 'zero', id: 0 },
   { text: 'one', id: 1 },
-  { text: 'two', id: 2 },
   { text: 'three', id: 3 },
   { text: 'four', id: 4 },
-];
+]
 
 export default {
   title: 'Prototyping/Autocomplete',
@@ -99,25 +102,25 @@ export const Default = () => {
           />
         </Autocomplete>
     )
-};
+}
 
-export const TokenSelect = () => {
+export const MultiSelectWithTokenInput = () => {
   // TODO: consider migrating this boilerplate to a hook
   const [tokens, setTokens] = useState<Datum[]>(mockTokens)
-  const selectedTokenIds = tokens.map(token => token.id);
-  const [selectedItemIds, setSelectedItemIds] = useState<Array<string | number>>(selectedTokenIds);
+  const selectedTokenIds = tokens.map(token => token.id)
+  const [selectedItemIds, setSelectedItemIds] = useState<Array<string | number>>(selectedTokenIds)
   const onTokenRemove: (tokenId: string | number) => void = (tokenId) => {
-      setTokens(tokens.filter(token => token.id !== tokenId));
-      setSelectedItemIds(selectedItemIds.filter(id => id !== tokenId));
-  };
+      setTokens(tokens.filter(token => token.id !== tokenId))
+      setSelectedItemIds(selectedItemIds.filter(id => id !== tokenId))
+  }
   const onItemSelect: (item: Datum) => void = (item) => {
       setTokens([...tokens, item])
       setSelectedItemIds([...selectedItemIds, item.id])
-  };
+  }
   const onItemDeselect: (item: Datum) => void = (item) => {
     onTokenRemove(item.id)
     setSelectedItemIds(selectedItemIds.filter(selectedItemId => selectedItemId !== item.id))
-  };
+  }
 
   return (
       <Autocomplete>
@@ -135,41 +138,106 @@ export const TokenSelect = () => {
         />
       </Autocomplete>
   )
-};
+}
 
-export const TokenLabelSelect = () => {
-    // TODO: consider migrating this boilerplate to a hook
-    const [tokens, setTokens] = useState<Datum[]>([])
-    const selectedTokenIds = tokens.map(token => token.id);
-    const [selectedItemIds, setSelectedItemIds] = useState<Array<string | number>>(selectedTokenIds);
-    const onTokenRemove: (tokenId: string | number) => void = (tokenId) => {
-        setTokens(tokens.filter(token => token.id !== tokenId));
-        setSelectedItemIds(selectedItemIds.filter(id => id !== tokenId));
-    };
-    const onItemSelect: (item: Datum) => void = (item) => {
-        setTokens([...tokens, item])
-        setSelectedItemIds([...selectedItemIds, item.id])
-    };
-    const onItemDeselect: (item: Datum) => void = (item) => {
-      onTokenRemove(item.id)
-      setSelectedItemIds(selectedItemIds.filter(selectedItemId => selectedItemId !== item.id))
-    };
+export const MultiSelectAddNewItem = () => {
+  const [localItemsState, setLocalItemsState] = useState<Datum[]>(items);
+  const [filterVal, setFilterVal] = useState<string>('');
+  const [tokens, setTokens] = useState<Datum[]>(mockTokens)
+  const selectedTokenIds = tokens.map(token => token.id)
+  const [selectedItemIds, setSelectedItemIds] = useState<Array<string | number>>(selectedTokenIds)
+  const onTokenRemove: (tokenId: string | number) => void = (tokenId) => {
+      setTokens(tokens.filter(token => token.id !== tokenId))
+      setSelectedItemIds(selectedItemIds.filter(id => id !== tokenId))
+  }
+  const onItemSelect: (item: Datum) => void = (item) => {
+      setTokens([...tokens, item])
+      setSelectedItemIds([...selectedItemIds, item.id])
+      
+      if (!localItemsState.some(localItem => localItem.id === item.id)) {
+        setLocalItemsState([
+          ...localItemsState,
+          item
+        ])
+      }
+  }
+  const onItemDeselect: (item: Datum) => void = (item) => {
+    onTokenRemove(item.id)
+    setSelectedItemIds(selectedItemIds.filter(selectedItemId => selectedItemId !== item.id))
+  }
 
-    return (
-        <Autocomplete>
-          <Autocomplete.Input
-            as={TextInputTokens}
-            tokenComponent={TokenLabel}
-            tokens={tokens}
-            onTokenRemove={onTokenRemove}
-          />
-          <Autocomplete.Menu
-            items={labelItems}
-            selectedItemIds={selectedItemIds}
-            onItemSelect={onItemSelect}
-            onItemDeselect={onItemDeselect}
-            selectionVariant="multiple"
-          />
-        </Autocomplete>
-    )
-};
+  return (
+      <Autocomplete>
+        <Autocomplete.Input
+          as={TextInputTokens}
+          tokens={tokens}
+          onTokenRemove={onTokenRemove}
+          onChange={e => {
+            setFilterVal(e.currentTarget.value)
+          }}
+        />
+        <Autocomplete.Menu
+          addNewItem={
+            filterVal && 
+            !localItemsState.map(localItem => localItem.text).includes(filterVal)
+              ? {
+                text: `Add '${filterVal}'`,
+                handleAddItem: (item) => {
+                  onItemSelect({
+                    ...item,
+                    text: filterVal,
+                    selected: true
+                  })
+                  setFilterVal('');
+                }
+              }
+            : undefined
+          }
+          items={localItemsState}
+          selectedItemIds={selectedItemIds}
+          onItemSelect={onItemSelect}
+          onItemDeselect={onItemDeselect}
+          selectionVariant="multiple"
+
+        />
+      </Autocomplete>
+  )
+}
+
+// TODO: remove this when I'm done testing token select functionality
+// export const TokenLabelSelect = () => {
+//     // TODO: consider migrating this boilerplate to a hook
+//     const [tokens, setTokens] = useState<Datum[]>([])
+//     const selectedTokenIds = tokens.map(token => token.id);
+//     const [selectedItemIds, setSelectedItemIds] = useState<Array<string | number>>(selectedTokenIds);
+//     const onTokenRemove: (tokenId: string | number) => void = (tokenId) => {
+//         setTokens(tokens.filter(token => token.id !== tokenId));
+//         setSelectedItemIds(selectedItemIds.filter(id => id !== tokenId));
+//     };
+//     const onItemSelect: (item: Datum) => void = (item) => {
+//         setTokens([...tokens, item])
+//         setSelectedItemIds([...selectedItemIds, item.id])
+//     };
+//     const onItemDeselect: (item: Datum) => void = (item) => {
+//       onTokenRemove(item.id)
+//       setSelectedItemIds(selectedItemIds.filter(selectedItemId => selectedItemId !== item.id))
+//     };
+
+//     return (
+//         <Autocomplete>
+//           <Autocomplete.Input
+//             as={TextInputTokens}
+//             tokenComponent={TokenLabel}
+//             tokens={tokens}
+//             onTokenRemove={onTokenRemove}
+//           />
+//           <Autocomplete.Menu
+//             items={labelItems}
+//             selectedItemIds={selectedItemIds}
+//             onItemSelect={onItemSelect}
+//             onItemDeselect={onItemDeselect}
+//             selectionVariant="multiple"
+//           />
+//         </Autocomplete>
+//     )
+// };

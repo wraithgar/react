@@ -3,6 +3,7 @@ import { createContext } from 'react'
 // TODO:
 // - figure out how we can make all of these properties required without having to define them when calling `createContext`
 // - figure out how we can reduce the number of properties that need to be passed
+// COLEHELP
 export const AutocompleteContext = createContext<{
     activeDescendantRef?: React.MutableRefObject<HTMLElement | null>
     autocompleteSuggestion?: string;

@@ -59,6 +59,10 @@ const AutocompleteInput = React.forwardRef(
         };
 
         const handleInputChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+            if (onChange) {
+                onChange(e);
+            }
+
             if (setInputValue) {
                 setInputValue(e.currentTarget.value);
             }
@@ -99,13 +103,18 @@ const AutocompleteInput = React.forwardRef(
                 return;
             }
 
+            // resets input value to being empty after a selection has been made
             if (!autocompleteSuggestion) {
                 inputRef.current.value = inputValue;
             }
 
+            // TODO: fix bug where this function prevents `onChange` from being triggered if the highlighted item text
+            //       is the same as what I'm typing
+            //       e.g.: typing 'tw' highights 'two', but when I 'two', the text input change does not get triggered
+            // COLEHELP
             if (highlightRemainingText && autocompleteSuggestion && (inputValue || isMenuDirectlyActivated)) {
                 inputRef.current.value = autocompleteSuggestion;
-      
+
                 if (autocompleteSuggestion.toLowerCase().indexOf(inputValue.toLowerCase()) === 0) {
                     inputRef.current.setSelectionRange(inputValue.length, autocompleteSuggestion.length);
                 }

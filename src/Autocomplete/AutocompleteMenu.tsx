@@ -8,6 +8,8 @@ import { Box, Spinner } from '../';
 import { registerPortalRoot } from '../Portal'
 import { AutocompleteContext } from './AutocompleteContext'
 import { useCombinedRefs } from '../hooks/useCombinedRefs'
+import { PlusIcon } from '@primer/octicons-react'
+import { uniqueId } from '../utils/uniqueId'
 
 type MandateProps<T extends {}, K extends keyof T> = Omit<T, K> & {
     [MK in K]-?: NonNullable<T[MK]>
@@ -63,7 +65,8 @@ type AutocompleteMenuInternalProps<T extends MandateProps<ItemProps, 'id'>> = {
    * A menu item that is used to allow users make a selection that is not available in the array passed to the `items` prop.
    * This menu item gets appended to the end of the list of options.
    */
-  addNewItem?: OnAction<T> // TODO: Rethink this prop name. It's confusing.
+  // TODO: rethink this part of the component API. this is kind of weird and confusing to use
+  addNewItem?: Omit<T, 'onAction' | 'leadingVisual' | 'id'> & {handleAddItem: (item: Omit<T, 'onAction' | 'leadingVisual'>) => void} // TODO: Rethink this prop name. It's confusing.
   /**
    * The text that appears in the menu when there are no options in the array passed to the `items` prop.
    */
@@ -110,21 +113,19 @@ type AutocompleteMenuInternalProps<T extends MandateProps<ItemProps, 'id'>> = {
   selectionVariant?: 'single' | 'multiple'
 }
 
-function AutocompleteMenu<T extends MandateProps<ItemProps, 'id'>>({
-    items,
-    selectedItemIds,
-    selectedSortFn,
-    onItemSelect,
-    onItemDeselect,
-    emptyStateText,
-    addNewItem,
-    loading,
-    selectionVariant,
-    filterFn: externalFilterFn,
-    width,
-    height,
-    maxHeight,
-  }: AutocompleteMenuInternalProps<T> & Pick<OverlayProps, 'width' | 'height' | 'maxHeight'>) {
+function getDefaultOnItemSelectFn<T extends MandateProps<ItemProps, 'id'>>(setInputValueFn?: React.Dispatch<React.SetStateAction<string>>): OnAction<T> {
+    if (setInputValueFn) {
+        return function ({text = ''}) {
+            setInputValueFn(text)
+        }
+    }
+
+    return ({text}) => {
+        console.error(`getDefaultOnItemSelectFn could not be called with ${text} because a function to set the text input was undefined`);
+    }
+}
+
+function AutocompleteMenu<T extends MandateProps<ItemProps, 'id'>>(props: AutocompleteMenuInternalProps<T> & Pick<OverlayProps, 'width' | 'height' | 'maxHeight'>) {
     const {
         activeDescendantRef,
         inputRef,
@@ -135,7 +136,21 @@ function AutocompleteMenu<T extends MandateProps<ItemProps, 'id'>>({
         setIsMenuDirectlyActivated,
         showMenu,
     } = useContext(AutocompleteContext)
-    const filterFn = externalFilterFn ? externalFilterFn : getDefaultItemFilter<T>(inputValue);
+    const {
+        items,
+        selectedItemIds,
+        selectedSortFn,
+        onItemSelect = getDefaultOnItemSelectFn(setInputValue),
+        onItemDeselect,
+        emptyStateText,
+        addNewItem,
+        loading,
+        selectionVariant,
+        filterFn = getDefaultItemFilter(inputValue),
+        width,
+        height,
+        maxHeight,
+    } = props;
     const listContainerRef = useRef<HTMLDivElement>(null)
     const scrollContainerRef = useRef<HTMLDivElement>(null)
     const [highlightedItem, setHighlightedItem] = useState<T>();
@@ -158,11 +173,9 @@ function AutocompleteMenu<T extends MandateProps<ItemProps, 'id'>>({
         }
     }
 
-    const isItemSelected = (itemId: string | number) => items.find(
-            (selectableItem) => selectableItem.id === itemId
-        )?.selected || selectedItemIds.includes(itemId)
+    const isItemSelected = (itemId: string | number) => selectedItemIds.includes(itemId)
 
-    const itemsToRender = [
+    const selectableItems = [
         // selectable tokens
         ...items.map((selectableItem) => {
             return ({
@@ -171,49 +184,27 @@ function AutocompleteMenu<T extends MandateProps<ItemProps, 'id'>>({
                 selected: selectionVariant === 'multiple' ? isItemSelected(selectableItem.id) : undefined,
                 onAction: (item: T, e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
                     const handleItemSelection = () => {
-                        if (onItemSelect) {
-                            onItemSelect(item, e);
-                        } else {
-                            setInputValue && setInputValue(item.text || '')
-                        }
+                        onItemSelect(item, e)
 
                         if (selectionVariant === 'multiple') {
-                            setInputValue && setInputValue('');
-                            setAutocompleteSuggestion && setAutocompleteSuggestion('');
+                            setInputValue && setInputValue('')
+                            setAutocompleteSuggestion && setAutocompleteSuggestion('')
                         }
                     }
 
                     if (item.selected) {
                         onItemDeselect && onItemDeselect(item, e)
                     } else {
-                        handleItemSelection();
+                        handleItemSelection()
                     }
 
                     if (selectionVariant === 'single') {
                         setShowMenu && setShowMenu(false)
-                        inputRef?.current?.setSelectionRange(inputRef.current.value.length, inputRef.current.value.length);
+                        inputRef?.current?.setSelectionRange(inputRef.current.value.length, inputRef.current.value.length)
                     }
                 }
             })}
         ),
-
-        // menu item used for creating a token from whatever is in the text input
-        ...(addNewItem
-            ? [{
-                ...addNewItem,
-                id: 'addNewItemTrigger',
-                onAction: onItemSelect ? (item: T, e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
-                    // TODO: get rid of typecast
-                    //       w/o it, I get error `assignable to the constraint of type 'T', but 'T' could be instantiated with a different subtype of constraint 'MandateProps<ItemProps, "id">'`
-                    // COLEHELP
-                    onItemSelect({
-                        text: inputValue,
-                        id: item.id
-                    } as T, e)
-                } : undefined
-            }]
-            : []
-        )
     ];
 
     useFocusZone({
@@ -228,10 +219,8 @@ function AutocompleteMenu<T extends MandateProps<ItemProps, 'id'>>({
                 activeDescendantRef.current = current || null
             }
             if (current) {
-                const selectedItem = itemsToRender.find(item => item.id.toString() === current?.dataset.id);
-                // TODO: fix error `assignable to the constraint of type 'T', but 'T' could be instantiated with a different subtype of constraint 'MandateProps<ItemProps, "id">'`
-                // COLEHELP
-                setHighlightedItem(selectedItem as T);
+                const selectedItem = selectableItems.find(item => item.id.toString() === current?.dataset.id);
+                setHighlightedItem(selectedItem)
 
                 if (setIsMenuDirectlyActivated) {
                     setIsMenuDirectlyActivated(directlyActivated);
@@ -249,7 +238,7 @@ function AutocompleteMenu<T extends MandateProps<ItemProps, 'id'>>({
             return;
         }
 
-        if (highlightedItem?.text?.startsWith(inputValue || '')) {
+        if (highlightedItem?.text?.startsWith(inputValue)) {
             setAutocompleteSuggestion(highlightedItem.text);
         } else {
             setAutocompleteSuggestion('');
@@ -272,15 +261,35 @@ function AutocompleteMenu<T extends MandateProps<ItemProps, 'id'>>({
         return acc;
     }, {});
 
-    const sortedAndFilteredItemsToRender = [
-        ...(filterFn ? itemsToRender.filter(
+    const sortedAndFilteredItemsToRender =
+        selectableItems.filter(
             // TODO: get rid of typecast
             //       w/o it, I get error `assignable to the constraint of type 'T', but 'T' could be instantiated with a different subtype of constraint 'MandateProps<ItemProps, "id">'`
             // COLEHELP
             (item, i) => filterFn(item as T, i)
-        ) : itemsToRender)].sort((a, b) =>
-            itemSortOrderData[a.id] - itemSortOrderData[b.id]
-        );
+        ).sort((a, b) => itemSortOrderData[a.id] - itemSortOrderData[b.id]);
+
+    const allItemsToRender = [
+        // sorted and filtered selectable items
+        ...sortedAndFilteredItemsToRender,
+
+        // menu item used for creating a token from whatever is in the text input
+        ...(addNewItem
+            ? [{
+                ...addNewItem,
+                leadingVisual: () => ( <PlusIcon /> ),
+                onAction: (item: T, e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
+                    // TODO: clean up this hacky-ness
+                    addNewItem.handleAddItem({...item, id: item.id || uniqueId(), leadingVisual: undefined})
+
+                    if (selectionVariant === 'multiple') {
+                        setInputValue && setInputValue('')
+                        setAutocompleteSuggestion && setAutocompleteSuggestion('')
+                    }
+                }
+            }]
+            : []
+        )]
 
     return (
         <div ref={listContainerRef}>
@@ -304,12 +313,12 @@ function AutocompleteMenu<T extends MandateProps<ItemProps, 'id'>>({
                         </Box>
                     ) : (
                         <>
-                            {sortedAndFilteredItemsToRender.length ? (
+                            {allItemsToRender.length ? (
                                 <ActionList
                                     selectionVariant="multiple"
                                     // TODO: get rid of typecast
                                     // COLEHELP
-                                    items={sortedAndFilteredItemsToRender as ItemProps[]}
+                                    items={allItemsToRender as ItemProps[]}
                                     role="listbox"
                                 />
                             ) : (
