@@ -50,3 +50,27 @@ export const Default = () => {
       />
     )
 };
+
+export const Unstyled = () => {
+  const [tokens, setTokens] = useState(mockTokens)
+  const onTokenRemove: (tokenId: string | number) => void = (tokenId) => {
+      setTokens(tokens.filter(token => token.id !== tokenId))
+  };
+
+  return (
+    <TextInputTokens
+        tokens={tokens}
+        onTokenRemove={onTokenRemove}
+        // TODO: come up with a nicer way to unstyle an input component
+        sx={{
+          'border': '0',
+          'padding': '0',
+          'boxShadow': 'none',
+          ':focus-within': {
+            'border': '0',
+            'boxShadow': 'none',
+          }
+        }}
+    />
+  )
+};

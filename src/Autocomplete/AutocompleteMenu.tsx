@@ -3,17 +3,15 @@ import { ActionList, ItemProps } from '../ActionList'
 import { useAnchoredPosition } from '../hooks'
 import { useFocusZone } from '../hooks/useFocusZone'
 import Overlay, { OverlayProps } from '../Overlay'
-import { ComponentProps } from '../utils/types'
+import { ComponentProps, MandateProps } from '../utils/types'
 import { Box, Spinner } from '../';
 import { registerPortalRoot } from '../Portal'
 import { AutocompleteContext } from './AutocompleteContext'
 import { useCombinedRefs } from '../hooks/useCombinedRefs'
 import { PlusIcon } from '@primer/octicons-react'
 import { uniqueId } from '../utils/uniqueId'
+import { scrollIntoViewingArea } from '../utils/scrollIntoViewingArea'
 
-type MandateProps<T extends {}, K extends keyof T> = Omit<T, K> & {
-    [MK in K]-?: NonNullable<T[MK]>
-}
 type OnAction<T> = (item: T, event: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => void;
 
 const DROPDOWN_PORTAL_CONTAINER_NAME = '__listcontainerportal__';
@@ -37,7 +35,7 @@ function getDefaultItemFilter<T extends MandateProps<ItemProps, 'id'>>(filterVal
 }
 
 // TODO: DRY this out - it's also in FilteredActionList
-function scrollIntoViewingArea(
+function scrollIntoViewingAreaTwo(
     child: HTMLElement,
     container: HTMLElement,
     margin = 8,
@@ -98,8 +96,7 @@ type AutocompleteMenuInternalProps<T extends MandateProps<ItemProps, 'id'>> = {
   /**
    * The IDs of the selected items
    */
-  // TODO: try and eliminate the need for a `selectedItemIds` prop
-  // COLEHELP
+  // NOTE: this diverges from the SelectPanel component API, where we pass an array of objects to the `selected` prop
   selectedItemIds: Array<string | number>
   /**
    * The sort function that is applied to the options in the array passed to the `items` prop after the user closes the menu.
@@ -292,43 +289,39 @@ function AutocompleteMenu<T extends MandateProps<ItemProps, 'id'>>(props: Autoco
         )]
 
     return (
-        <div ref={listContainerRef}>
-            {showMenu && emptyStateText ? (
-                <Overlay
-                    returnFocusRef={inputRef}
-                    portalContainerName={DROPDOWN_PORTAL_CONTAINER_NAME}
-                    preventFocusOnOpen={true}
-                    onClickOutside={closeOptionList}
-                    onEscape={closeOptionList}
-                    ref={combinedOverlayRef as React.RefObject<HTMLDivElement>}
-                    top={position?.top}
-                    left={position?.left}
-                    width={width}
-                    height={height}
-                    maxHeight={maxHeight}
-                >
-                    {loading ? (
-                        <Box p={3} display="flex" justifyContent="center">
-                            <Spinner />
-                        </Box>
-                    ) : (
-                        <>
-                            {allItemsToRender.length ? (
-                                <ActionList
-                                    selectionVariant="multiple"
-                                    // TODO: get rid of typecast
-                                    // COLEHELP
-                                    items={allItemsToRender as ItemProps[]}
-                                    role="listbox"
-                                />
-                            ) : (
-                                <Box p={3}>{emptyStateText}</Box>
-                            )}
-                        </>
-                    )}
-                </Overlay>
-            ) : null}
-        </div>
+        <Overlay
+            returnFocusRef={inputRef}
+            preventFocusOnOpen={true}
+            onClickOutside={closeOptionList}
+            onEscape={closeOptionList}
+            ref={combinedOverlayRef as React.RefObject<HTMLDivElement>}
+            top={position?.top}
+            left={position?.left}
+            width={width}
+            height={height}
+            maxHeight={maxHeight}
+            visibility={showMenu ? 'visible' : 'hidden'}
+        >
+            {loading ? (
+                <Box p={3} display="flex" justifyContent="center">
+                    <Spinner />
+                </Box>
+            ) : (
+                <div ref={listContainerRef}>
+                    {allItemsToRender.length ? (
+                        <ActionList
+                            selectionVariant="multiple"
+                            // TODO: get rid of typecast
+                            // COLEHELP
+                            items={allItemsToRender as ItemProps[]}
+                            role="listbox"
+                        />
+                        ) : (
+                            <Box p={3}>{emptyStateText}</Box>
+                        )}
+                </div>
+            )}
+        </Overlay>
     )
 }
 

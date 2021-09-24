@@ -8,10 +8,11 @@ import {COMMON, get, SystemCommonProps} from './constants'
 import { useCombinedRefs } from './hooks/useCombinedRefs'
 import { useFocusZone } from './hooks/useFocusZone'
 import sx, {SxProp} from './sx'
-import {ComponentProps} from './utils/types'
+import {ComponentProps, MandateProps} from './utils/types'
 import Token, { TokenProps } from './Token/Token'
 import { TokenLabelProps } from './Token/TokenLabel'
 import { TokenProfileProps } from './Token/TokenProfile'
+import { TokenSizeKeys } from './Token/TokenBase'
 
 const sizeVariants = variant({
   variants: {
@@ -72,6 +73,7 @@ type StyledWrapperProps = {
   contrast?: boolean
   variant?: 'small' | 'large'
   maxHeight?: React.CSSProperties['maxHeight']
+  preventTokenWrapping?: boolean
 } & SystemCommonProps &
   WidthProps &
   MinWidthProps &
@@ -92,8 +94,12 @@ const Wrapper = styled.span<StyledWrapperProps>`
   border-radius: ${get('radii.2')};
   outline: none;
   box-shadow: ${get('shadows.shadow.inset')};
-  flex-wrap: wrap;
   gap: 0.25rem;
+  flex-wrap: wrap;
+
+  > * {
+    flex-shrink: 0;
+  }
 
   ${props => {
     if (props.hasIcon) {
@@ -145,9 +151,15 @@ const Wrapper = styled.span<StyledWrapperProps>`
   ${props =>
     props.block &&
     css`
-      display: block;
+      display: flex;
       width: 100%;
     `}
+
+    ${props =>
+      props.preventTokenWrapping && css`
+        align-items: center;
+        flex-wrap: nowrap;
+      `}
 
   // Ensures inputs don't zoom on mobile but are body-font size on desktop
   @media (min-width: ${get('breakpoints.1')}) {
@@ -160,9 +172,8 @@ const Wrapper = styled.span<StyledWrapperProps>`
   ${sizeVariants}
   ${sx};
 `
-
 type AnyTokenProps = Partial<TokenProps & TokenLabelProps & TokenProfileProps>
-type TokenDatum = Omit<AnyTokenProps, 'id'> & { id: number | string; }
+type TokenDatum = MandateProps<AnyTokenProps, 'id' | 'text'>
 
 // TODO: extend TextInput props
 type TextInputWithTokensInternalProps = {
@@ -173,6 +184,8 @@ type TextInputWithTokensInternalProps = {
   onTokenRemove: (tokenId: string | number) => void
   tokenComponent?: React.ComponentType<TokenProps | TokenLabelProps | TokenProfileProps>
   maxHeight?: React.CSSProperties['maxHeight']
+  preventTokenWrapping?: boolean
+  tokenSizeVariant?: TokenSizeKeys
 } & ComponentProps<typeof Wrapper> &
   ComponentProps<typeof Input>
 
@@ -189,6 +202,8 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
       tokens,
       onTokenRemove,
       tokenComponent: TokenComponent,
+      preventTokenWrapping,
+      tokenSizeVariant,
       ...rest},
     ref) => {
     const localInputRef = useRef<HTMLInputElement>(null)
@@ -299,6 +314,7 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
             contrast={contrast}
             sx={sxProp}
             ref={containerRef}
+            preventTokenWrapping={preventTokenWrapping}
             {...wrapperProps}
         >
             <InputWrapper>
@@ -313,15 +329,13 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
             </InputWrapper>
             {tokens?.length && TokenComponent ? (
               tokens.map(({id, ...tokenRest}, i) => (
-                  // TODO: fix this TS error that occurs because `avatarSrc` is required on TokenProfile
-                  // COLEHELP
                   <TokenComponent
                       onFocus={handleTokenFocus(i)}
                       onBlur={handleTokenBlur}
                       onKeyUp={handleTokenKeyUp(id)}
                       isSelected={selectedTokenIdx === i}
                       handleRemove={() => { handleTokenRemove(id) }}
-                      variant="xl"
+                      variant={tokenSizeVariant}
                       tabIndex={0}
                       {...tokenRest}
                   />
@@ -334,7 +348,8 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
 )
 
 TextInputWithTokens.defaultProps = {
-    tokenComponent: Token
+    tokenComponent: Token,
+    tokenSizeVariant: "xl"
 }
 
 TextInputWithTokens.displayName = 'TextInputWithTokens'

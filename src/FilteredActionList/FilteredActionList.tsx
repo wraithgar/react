@@ -11,6 +11,7 @@ import styled from 'styled-components'
 import {get} from '../constants'
 import {useProvidedRefOrCreate} from '../hooks/useProvidedRefOrCreate'
 import useScrollFlash from '../hooks/useScrollFlash'
+import { scrollIntoViewingArea } from '../utils/scrollIntoViewingArea'
 
 export interface FilteredActionListProps extends Partial<Omit<GroupedListProps, keyof ListPropsBase>>, ListPropsBase {
   loading?: boolean
@@ -19,29 +20,6 @@ export interface FilteredActionListProps extends Partial<Omit<GroupedListProps, 
   onFilterChange: (value: string, e: React.ChangeEvent<HTMLInputElement>) => void
   textInputProps?: Partial<Omit<TextInputProps, 'onChange'>>
   inputRef?: React.RefObject<HTMLInputElement>
-}
-
-function scrollIntoViewingArea(
-  child: HTMLElement,
-  container: HTMLElement,
-  margin = 8,
-  behavior: ScrollBehavior = 'smooth'
-) {
-  const {top: childTop, bottom: childBottom} = child.getBoundingClientRect()
-  const {top: containerTop, bottom: containerBottom} = container.getBoundingClientRect()
-
-  const isChildTopAboveViewingArea = childTop < containerTop + margin
-  const isChildBottomBelowViewingArea = childBottom > containerBottom - margin
-
-  if (isChildTopAboveViewingArea) {
-    const scrollHeightToChildTop = childTop - containerTop + container.scrollTop
-    container.scrollTo({behavior, top: scrollHeightToChildTop - margin})
-  } else if (isChildBottomBelowViewingArea) {
-    const scrollHeightToChildBottom = childBottom - containerBottom + container.scrollTop
-    container.scrollTo({behavior, top: scrollHeightToChildBottom + margin})
-  }
-
-  // either completely in view or outside viewing area on both ends, don't scroll
 }
 
 const StyledHeader = styled.div`

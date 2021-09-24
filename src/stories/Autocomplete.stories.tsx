@@ -1,15 +1,15 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Meta } from '@storybook/react'
 
 import { BaseStyles, Box, ThemeProvider } from '..'
 import TextInputTokens from '../TextInputTokens'
 import Autocomplete from '../Autocomplete/Autocomplete'
 import TokenLabel from '../Token/TokenLabel'
-import { getDefaultItemFilter } from '../Autocomplete/AutocompleteMenu'
+import { scrollIntoViewingArea } from '../utils/scrollIntoViewingArea'
 
 type Datum = {
   id: string | number
-  text?: string
+  text: string
   fillColor?: string
   selected?: boolean
 }
@@ -99,6 +99,7 @@ export const Default = () => {
           <Autocomplete.Menu
             items={items}
             selectedItemIds={[]}
+            maxHeight="xsmall"
           />
         </Autocomplete>
     )
@@ -205,39 +206,79 @@ export const MultiSelectAddNewItem = () => {
 }
 
 // TODO: remove this when I'm done testing token select functionality
-// export const TokenLabelSelect = () => {
-//     // TODO: consider migrating this boilerplate to a hook
-//     const [tokens, setTokens] = useState<Datum[]>([])
-//     const selectedTokenIds = tokens.map(token => token.id);
-//     const [selectedItemIds, setSelectedItemIds] = useState<Array<string | number>>(selectedTokenIds);
-//     const onTokenRemove: (tokenId: string | number) => void = (tokenId) => {
-//         setTokens(tokens.filter(token => token.id !== tokenId));
-//         setSelectedItemIds(selectedItemIds.filter(id => id !== tokenId));
-//     };
-//     const onItemSelect: (item: Datum) => void = (item) => {
-//         setTokens([...tokens, item])
-//         setSelectedItemIds([...selectedItemIds, item.id])
-//     };
-//     const onItemDeselect: (item: Datum) => void = (item) => {
-//       onTokenRemove(item.id)
-//       setSelectedItemIds(selectedItemIds.filter(selectedItemId => selectedItemId !== item.id))
-//     };
+export const TokenLabelSelectInTable = () => {
+    // TODO: consider migrating this boilerplate to a hook
+    const scrollContainerRef = useRef<HTMLElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const [tokens, setTokens] = useState<Datum[]>([])
+    const selectedTokenIds = tokens.map(token => token.id);
+    const [selectedItemIds, setSelectedItemIds] = useState<Array<string | number>>(selectedTokenIds);
+    const onTokenRemove: (tokenId: string | number) => void = (tokenId) => {
+        setTokens(tokens.filter(token => token.id !== tokenId));
+        setSelectedItemIds(selectedItemIds.filter(id => id !== tokenId));
+    };
+    const onItemSelect: (item: Datum) => void = (item) => {
+        const {fillColor, text, id} = item;
+        setTokens([...tokens, {fillColor, text, id}])
+        setSelectedItemIds([...selectedItemIds, item.id])
+    };
+    const onItemDeselect: (item: Datum) => void = (item) => {
+      onTokenRemove(item.id)
+      setSelectedItemIds(selectedItemIds.filter(selectedItemId => selectedItemId !== item.id))
+    };
+    const gridItemStyles = {
+      display: "flex",
+      alignItems: "center",
+      flexGrow: 1,
+      flexShrink: 0,
+      flexBasis: "25%",
+      borderRight: "1px solid"
+    };
 
-//     return (
-//         <Autocomplete>
-//           <Autocomplete.Input
-//             as={TextInputTokens}
-//             tokenComponent={TokenLabel}
-//             tokens={tokens}
-//             onTokenRemove={onTokenRemove}
-//           />
-//           <Autocomplete.Menu
-//             items={labelItems}
-//             selectedItemIds={selectedItemIds}
-//             onItemSelect={onItemSelect}
-//             onItemDeselect={onItemDeselect}
-//             selectionVariant="multiple"
-//           />
-//         </Autocomplete>
-//     )
-// };
+    useEffect(() => {
+      if (scrollContainerRef.current && inputRef.current) {
+        scrollIntoViewingArea(inputRef.current, scrollContainerRef.current, 'horizontal', -50, 0)
+      }  
+    }, [tokens]);
+
+    return (
+        <Box
+          display="flex"
+          border="1px solid"
+        >
+          <Box {...gridItemStyles}>table cell 1</Box>
+          <Box {...gridItemStyles}>table cell 2</Box>
+          <Box {...gridItemStyles} minWidth={0} overflowX="scroll" ref={scrollContainerRef as React.RefObject<HTMLDivElement>} >
+            <Autocomplete>
+              <Autocomplete.Input
+                as={TextInputTokens}
+                tokenComponent={TokenLabel}
+                tokens={tokens}
+                onTokenRemove={onTokenRemove}
+                preventTokenWrapping={true}
+                block={true}
+                tokenSizeVariant="md"
+                ref={inputRef}
+                sx={{
+                  'border': '0',
+                  'padding': '0',
+                  'boxShadow': 'none',
+                  ':focus-within': {
+                    'border': '0',
+                    'boxShadow': 'none',
+                  }
+                }}
+              />
+              <Autocomplete.Menu
+                items={labelItems}
+                selectedItemIds={selectedItemIds}
+                onItemSelect={onItemSelect}
+                onItemDeselect={onItemDeselect}
+                selectionVariant="multiple"
+              />
+            </Autocomplete>
+          </Box>
+          <Box {...gridItemStyles} borderWidth={0}>table cell 4</Box>
+        </Box>
+    )
+};

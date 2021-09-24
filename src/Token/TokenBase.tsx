@@ -13,12 +13,13 @@ export const tokenSizes: Record<TokenSizeKeys, number> = {
 
 export const defaultTokenSize = 'md'
 
-export interface TokenBaseProps extends Omit<React.HTMLProps<HTMLSpanElement | HTMLButtonElement | HTMLAnchorElement>, 'size'> {
+export interface TokenBaseProps extends Omit<React.HTMLProps<HTMLSpanElement | HTMLButtonElement | HTMLAnchorElement>, 'size' | 'id'> {
     as?: 'button' | 'a' | 'span'
     handleRemove?: () => void
     isSelected?: boolean
     tabIndex?: number
     text: string
+    id?: number | string
     variant?: TokenSizeKeys
 }
 
