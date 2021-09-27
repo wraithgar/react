@@ -3,9 +3,11 @@ import classnames from 'classnames'
 import React from 'react'
 import styled, {css} from 'styled-components'
 import {maxWidth, MaxWidthProps, minWidth, MinWidthProps, variant, width, WidthProps} from 'styled-system'
+import type * as Polymorphic from "@radix-ui/react-polymorphic";
 import {COMMON, get, SystemCommonProps} from './constants'
 import sx, {SxProp} from './sx'
 import {ComponentProps} from './utils/types'
+import UnstyledTextInput from './_UnstyledTextInput'
 
 const sizeVariants = variant({
   variants: {
@@ -23,19 +25,6 @@ const sizeVariants = variant({
     }
   }
 })
-
-const Input = styled.input`
-  border: 0;
-  font-size: inherit;
-  font-family: inherit;
-  background-color: transparent;
-  -webkit-appearance: none;
-  color: inherit;
-  width: 100%;
-  &:focus {
-    outline: 0;
-  }
-`
 
 type StyledWrapperProps = {
   disabled?: boolean
@@ -125,33 +114,38 @@ type TextInputInternalProps = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   as?: any // This is a band-aid fix until we have better type support for the `as` prop
   icon?: React.ComponentType<{className?: string}>
+  inputComponent?: React.ComponentType<HTMLInputElement>
+  wrapperRef?: React.RefObject<HTMLSpanElement>
 } & ComponentProps<typeof Wrapper> &
-  ComponentProps<typeof Input>
+  ComponentProps<typeof UnstyledTextInput>
 
 // using forwardRef is important so that other components (ex. SelectMenu) can autofocus the input
-const TextInput = React.forwardRef<HTMLInputElement, TextInputInternalProps>(
-  ({icon: IconComponent, contrast, className, block, disabled, theme, sx: sxProp, ...rest}, ref) => {
+const TextInput = React.forwardRef(
+  ({icon: IconComponent, contrast, className, block, disabled, inputComponent: InputComponent, theme, sx: sxProp, wrapperRef, ...rest}, ref) => {
     // this class is necessary to style FilterSearch, plz no touchy!
     const wrapperClasses = classnames(className, 'TextInput-wrapper')
     const wrapperProps = pick(rest)
     const inputProps = omit(rest)
     return (
-      <Wrapper
-        className={wrapperClasses}
-        hasIcon={!!IconComponent}
-        block={block}
-        theme={theme}
-        disabled={disabled}
-        contrast={contrast}
-        sx={sxProp}
-        {...wrapperProps}
-      >
-        {IconComponent && <IconComponent className="TextInput-icon" />}
-        <Input ref={ref} disabled={disabled} {...inputProps} />
-      </Wrapper>
+      <>
+        <Wrapper
+          className={wrapperClasses}
+          hasIcon={!!IconComponent}
+          block={block}
+          theme={theme}
+          disabled={disabled}
+          contrast={contrast}
+          sx={sxProp}
+          ref={wrapperRef}
+          {...wrapperProps}
+        >
+          {IconComponent && <IconComponent className="TextInput-icon" />}
+          <UnstyledTextInput ref={ref} disabled={disabled} {...inputProps} />
+        </Wrapper>
+      </>
     )
   }
-)
+) as Polymorphic.ForwardRefComponent<"input", TextInputInternalProps>
 
 TextInput.defaultProps = {
   type: 'text'
