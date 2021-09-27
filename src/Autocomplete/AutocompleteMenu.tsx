@@ -108,6 +108,10 @@ type AutocompleteMenuInternalProps<T extends MandateProps<ItemProps, 'id'>> = {
    * Whether there can be one item selected from the menu or multiple items selected from the menu
    */
   selectionVariant?: 'single' | 'multiple'
+  /**
+   * The ref of the element that the position of the menu is based on. By default, the menu is positioned based on the text input
+   */
+  menuAnchorRef?: React.RefObject<Element>
 }
 
 function getDefaultOnItemSelectFn<T extends MandateProps<ItemProps, 'id'>>(setInputValueFn?: React.Dispatch<React.SetStateAction<string>>): OnAction<T> {
@@ -147,6 +151,7 @@ function AutocompleteMenu<T extends MandateProps<ItemProps, 'id'>>(props: Autoco
         width,
         height,
         maxHeight,
+        menuAnchorRef,
     } = props;
     const listContainerRef = useRef<HTMLDivElement>(null)
     const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -157,7 +162,7 @@ function AutocompleteMenu<T extends MandateProps<ItemProps, 'id'>>(props: Autoco
         {
             side: 'outside-bottom',
             align: 'start',
-            anchorElementRef: inputRef
+            anchorElementRef: menuAnchorRef ? menuAnchorRef : inputRef
         },
         [showMenu, selectedItemIds]
     )

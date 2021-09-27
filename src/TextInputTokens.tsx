@@ -21,15 +21,35 @@ const InputWrapper = styled.div`
 type AnyTokenProps = Partial<TokenProps & TokenLabelProps & TokenProfileProps>
 type TokenDatum = MandateProps<AnyTokenProps, 'id' | 'text'>
 type TextInputWithTokensInternalProps = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  as?: any // This is a band-aid fix until we have better type support for the `as` prop
-  icon?: React.ComponentType<{className?: string}>
+  /**
+   * The array of tokens to render
+   */
   tokens: TokenDatum[]
+  /**
+   * The function that gets called when a token is removed
+   */
   onTokenRemove: (tokenId: string | number) => void
+  /**
+   * The component used to render each token
+   */
   tokenComponent?: React.ComponentType<TokenProps | TokenLabelProps | TokenProfileProps>
+  /**
+   * The maximum height of the component. If the content in the input exceeds this height,
+   * it will scroll vertically
+   */
   maxHeight?: React.CSSProperties['maxHeight']
+  /**
+   * Whether tokens should render inline horizontally. By default, tokens wrap to new lines.
+   */
   preventTokenWrapping?: boolean
+  /**
+   * The size of the tokens
+   */
   tokenSizeVariant?: TokenSizeKeys
+  /**
+   * Whether the remove buttons should be rendered in the tokens
+   */
+  hideTokenRemoveButtons?: boolean
 } & TextInputProps
 
 // using forwardRef is important so that other components (ex. Autocomplete) can use the ref
@@ -50,6 +70,7 @@ const TextInputWithTokensComponent = React.forwardRef<HTMLInputElement, TextInpu
       tokenComponent: TokenComponent,
       preventTokenWrapping,
       tokenSizeVariant,
+      hideTokenRemoveButtons,
       selectedTokenIdx,
       setSelectedTokenIdx,
       ...rest},
@@ -80,11 +101,8 @@ const TextInputWithTokensComponent = React.forwardRef<HTMLInputElement, TextInpu
     };
 
     const handleInputFocus: FocusEventHandler = (e) => {
-        if (onFocus) {
-            onFocus(e);
-        }
-
-        setSelectedTokenIdx(undefined);
+      onFocus && onFocus(e);  
+      setSelectedTokenIdx(undefined);
     };
     const handleInputKeyDown: KeyboardEventHandler = (e) => {
         if (onKeyDown) {
@@ -138,7 +156,7 @@ const TextInputWithTokensComponent = React.forwardRef<HTMLInputElement, TextInpu
                   onBlur={handleTokenBlur}
                   onKeyUp={handleTokenKeyUp(id)}
                   isSelected={selectedTokenIdx === i}
-                  handleRemove={() => { handleTokenRemove(id) }}
+                  handleRemove={!hideTokenRemoveButtons ? () => { handleTokenRemove(id) } : undefined}
                   variant={tokenSizeVariant}
                   tabIndex={0}
                   {...tokenRest}
@@ -215,7 +233,8 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
 
 TextInputWithTokens.defaultProps = {
     tokenComponent: Token,
-    tokenSizeVariant: "xl"
+    tokenSizeVariant: "xl",
+    hideTokenRemoveButtons: false
 }
 
 TextInputWithTokens.displayName = 'TextInputWithTokens'

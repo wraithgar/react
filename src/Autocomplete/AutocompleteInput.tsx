@@ -21,6 +21,7 @@ const AutocompleteInput = React.forwardRef(
     ({
         as: Component = TextInput,
         onFocus,
+        onBlur,
         onChange,
         onKeyDown,
         onKeyPress,
@@ -40,13 +41,14 @@ const AutocompleteInput = React.forwardRef(
         const combinedInputRef = useCombinedRefs(inputRef, forwardedRef);
         const [highlightRemainingText, setHighlightRemainingText] = useState<boolean>(true);
 
-        const handleInputFocus: FocusEventHandler = () => {
-            if (setShowMenu) {
-                setShowMenu(true);
-            }
+        const handleInputFocus: FocusEventHandler<HTMLInputElement> = (e) => {
+            onFocus && onFocus(e);
+            setShowMenu && setShowMenu(true);
         };
 
-        const handleInputBlur: FocusEventHandler = (e) => {
+        const handleInputBlur: FocusEventHandler<HTMLInputElement> = (e) => {
+            onBlur && onBlur(e);
+
             // HACK: wait a tick and check the focused element before hiding the autocomplete menu
             // this prevents the menu from hiding when the user is clicking an option in the Autoselect.Menu,
             // but still hides the menu when the user blurs the input by tabbing out or clicking somewhere else on the page

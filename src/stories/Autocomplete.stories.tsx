@@ -211,6 +211,7 @@ export const TokenLabelSelectInTable = () => {
     const scrollContainerRef = useRef<HTMLElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const [tokens, setTokens] = useState<Datum[]>([])
+    const [isTokenInputActive, setIsTokenInputActive] = useState<boolean>(false);
     const selectedTokenIds = tokens.map(token => token.id);
     const [selectedItemIds, setSelectedItemIds] = useState<Array<string | number>>(selectedTokenIds);
     const onTokenRemove: (tokenId: string | number) => void = (tokenId) => {
@@ -241,6 +242,18 @@ export const TokenLabelSelectInTable = () => {
       }  
     }, [tokens]);
 
+    const handleCellDoubleClick = () => {
+      inputRef.current?.focus();
+    }
+
+    const activateLabelGridCell = () => {
+      setIsTokenInputActive(true);
+    }
+
+    const deactivateLabelGridCell = () => {
+      setIsTokenInputActive(false);
+    }
+
     return (
         <Box
           display="flex"
@@ -248,7 +261,16 @@ export const TokenLabelSelectInTable = () => {
         >
           <Box {...gridItemStyles}>table cell 1</Box>
           <Box {...gridItemStyles}>table cell 2</Box>
-          <Box {...gridItemStyles} minWidth={0} overflowX="scroll" ref={scrollContainerRef as React.RefObject<HTMLDivElement>} >
+          <Box
+            {...(isTokenInputActive
+              ? {...gridItemStyles, borderRightWidth: 0, boxShadow: '0 0 0 2px #0969da'}
+              : gridItemStyles
+            )}
+            minWidth={0}
+            overflowX="scroll"
+            onDoubleClick={handleCellDoubleClick}
+            ref={scrollContainerRef as React.RefObject<HTMLDivElement>}
+          >
             <Autocomplete>
               <Autocomplete.Input
                 as={TextInputTokens}
@@ -259,6 +281,9 @@ export const TokenLabelSelectInTable = () => {
                 block={true}
                 tokenSizeVariant="md"
                 ref={inputRef}
+                hideTokenRemoveButtons={true}
+                onFocus={activateLabelGridCell}
+                onBlur={deactivateLabelGridCell}
                 sx={{
                   'border': '0',
                   'padding': '0',
@@ -275,6 +300,7 @@ export const TokenLabelSelectInTable = () => {
                 onItemSelect={onItemSelect}
                 onItemDeselect={onItemDeselect}
                 selectionVariant="multiple"
+                menuAnchorRef={scrollContainerRef}
               />
             </Autocomplete>
           </Box>
