@@ -7,12 +7,18 @@ import Autocomplete from '../Autocomplete/Autocomplete'
 import TokenLabel from '../Token/TokenLabel'
 import { scrollIntoViewingArea } from '../utils/scrollIntoViewingArea'
 
+type ItemMetadata = {
+  fillColor: React.CSSProperties['backgroundColor']
+}
+
 type Datum = {
   id: string | number
   text: string
-  fillColor?: string
   selected?: boolean
+  metadata?: ItemMetadata
 }
+
+type TokenDatum = Omit<Datum, 'metadata'> & { fillColor: ItemMetadata['fillColor'] }
 
 function getColorCircle(color: string) {
   return function () {
@@ -47,13 +53,13 @@ const items: Datum[] = [
 ]
 
 const labelItems = [
-  { leadingVisual: getColorCircle('#a2eeef'), text: 'enhancement', id: 1, fillColor: '#a2eeef' },
-  { leadingVisual: getColorCircle('#d73a4a'), text: 'bug', id: 2, fillColor: '#d73a4a' },
-  { leadingVisual: getColorCircle('#0cf478'), text: 'good first issue', id: 3, fillColor: '#0cf478' },
-  { leadingVisual: getColorCircle('#ffd78e'), text: 'design', id: 4, fillColor: '#ffd78e' },
-  { leadingVisual: getColorCircle('#ff0000'), text: 'blocker', id: 5, fillColor: '#ff0000' },
-  { leadingVisual: getColorCircle('#a4f287'), text: 'backend', id: 6, fillColor: '#a4f287' },
-  { leadingVisual: getColorCircle('#8dc6fc'), text: 'frontend', id: 7, fillColor: '#8dc6fc' },
+  { leadingVisual: getColorCircle('#a2eeef'), text: 'enhancement', id: 1, metadata: { fillColor: '#a2eeef' } },
+  { leadingVisual: getColorCircle('#d73a4a'), text: 'bug', id: 2, metadata: { fillColor: '#d73a4a' } },
+  { leadingVisual: getColorCircle('#0cf478'), text: 'good first issue', id: 3, metadata: { fillColor: '#0cf478' } },
+  { leadingVisual: getColorCircle('#ffd78e'), text: 'design', id: 4, metadata: { fillColor: '#ffd78e' } },
+  { leadingVisual: getColorCircle('#ff0000'), text: 'blocker', id: 5, metadata: { fillColor: '#ff0000' } },
+  { leadingVisual: getColorCircle('#a4f287'), text: 'backend', id: 6, metadata: { fillColor: '#a4f287' } },
+  { leadingVisual: getColorCircle('#8dc6fc'), text: 'frontend', id: 7, metadata: { fillColor: '#8dc6fc' } },
 ]
 
 const mockTokens: Datum[] = [
@@ -114,9 +120,9 @@ export const MultiSelectWithTokenInput = () => {
       setTokens(tokens.filter(token => token.id !== tokenId))
       setSelectedItemIds(selectedItemIds.filter(id => id !== tokenId))
   }
-  const onItemSelect: (item: Datum) => void = (item) => {
-      setTokens([...tokens, item])
-      setSelectedItemIds([...selectedItemIds, item.id])
+  const onItemSelect: (item: Datum) => void = ({ text, id }) => {
+    setTokens([...tokens, { text, id }])
+    setSelectedItemIds([...selectedItemIds, id])
   }
   const onItemDeselect: (item: Datum) => void = (item) => {
     onTokenRemove(item.id)
@@ -210,7 +216,7 @@ export const TokenLabelSelectInTable = () => {
     // TODO: consider migrating this boilerplate to a hook
     const scrollContainerRef = useRef<HTMLElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-    const [tokens, setTokens] = useState<Datum[]>([])
+    const [tokens, setTokens] = useState<TokenDatum[]>([])
     const [isTokenInputActive, setIsTokenInputActive] = useState<boolean>(false);
     const selectedTokenIds = tokens.map(token => token.id);
     const [selectedItemIds, setSelectedItemIds] = useState<Array<string | number>>(selectedTokenIds);
@@ -219,8 +225,8 @@ export const TokenLabelSelectInTable = () => {
         setSelectedItemIds(selectedItemIds.filter(id => id !== tokenId));
     };
     const onItemSelect: (item: Datum) => void = (item) => {
-        const {fillColor, text, id} = item;
-        setTokens([...tokens, {fillColor, text, id}])
+        const {metadata, text, id} = item;
+        setTokens([...tokens, {fillColor: metadata?.fillColor, text, id}])
         setSelectedItemIds([...selectedItemIds, item.id])
     };
     const onItemDeselect: (item: Datum) => void = (item) => {

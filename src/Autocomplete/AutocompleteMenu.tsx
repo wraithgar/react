@@ -34,31 +34,9 @@ function getDefaultItemFilter<T extends MandateProps<ItemProps, 'id'>>(filterVal
     }
 }
 
-// TODO: DRY this out - it's also in FilteredActionList
-function scrollIntoViewingAreaTwo(
-    child: HTMLElement,
-    container: HTMLElement,
-    margin = 8,
-    behavior: ScrollBehavior = 'smooth'
-  ) {
-    const {top: childTop, bottom: childBottom} = child.getBoundingClientRect()
-    const {top: containerTop, bottom: containerBottom} = container.getBoundingClientRect()
-  
-    const isChildTopAboveViewingArea = childTop < containerTop + margin
-    const isChildBottomBelowViewingArea = childBottom > containerBottom - margin
-  
-    if (isChildTopAboveViewingArea) {
-      const scrollHeightToChildTop = childTop - containerTop + container.scrollTop
-      container.scrollTo({behavior, top: scrollHeightToChildTop - margin})
-    } else if (isChildBottomBelowViewingArea) {
-      const scrollHeightToChildBottom = childBottom - containerBottom + container.scrollTop
-      container.scrollTo({behavior, top: scrollHeightToChildBottom + margin})
-    }
-  
-    // either completely in view or outside viewing area on both ends, don't scroll
-}
+type AutocompleteItemProps<T = Record<string, any>> = MandateProps<ItemProps, 'id'> & { metadata?: T };
 
-type AutocompleteMenuInternalProps<T extends MandateProps<ItemProps, 'id'>> = {
+type AutocompleteMenuInternalProps<T extends AutocompleteItemProps> = {
   /**
    * A menu item that is used to allow users make a selection that is not available in the array passed to the `items` prop.
    * This menu item gets appended to the end of the list of options.
@@ -126,7 +104,7 @@ function getDefaultOnItemSelectFn<T extends MandateProps<ItemProps, 'id'>>(setIn
     }
 }
 
-function AutocompleteMenu<T extends MandateProps<ItemProps, 'id'>>(props: AutocompleteMenuInternalProps<T> & Pick<OverlayProps, 'width' | 'height' | 'maxHeight'>) {
+function AutocompleteMenu<T extends AutocompleteItemProps>(props: AutocompleteMenuInternalProps<T> & Pick<OverlayProps, 'width' | 'height' | 'maxHeight'>) {
     const {
         activeDescendantRef,
         inputRef,

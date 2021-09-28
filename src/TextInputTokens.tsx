@@ -138,7 +138,7 @@ const TextInputWithTokensComponent = React.forwardRef<HTMLInputElement, TextInpu
 
     return (
       <>
-        <InputWrapper>
+        <InputWrapper key="inputWrapper">
             <UnstyledTextInput
                 ref={ref}
                 disabled={disabled}
@@ -152,6 +152,7 @@ const TextInputWithTokensComponent = React.forwardRef<HTMLInputElement, TextInpu
         {tokens?.length && TokenComponent ? (
           tokens.map(({id, ...tokenRest}, i) => (
               <TokenComponent
+                  key={id}
                   onFocus={handleTokenFocus(i)}
                   onBlur={handleTokenBlur}
                   onKeyUp={handleTokenKeyUp(id)}
