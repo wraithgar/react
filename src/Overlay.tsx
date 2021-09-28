@@ -90,8 +90,6 @@ export type OverlayProps = {
   top: number
   left: number
   portalContainerName?: string
-  // TODO: Check if this is ok to add. Feels hacky
-  // COLEHELP
   preventFocusOnOpen?: boolean
 } & Omit<ComponentProps<typeof StyledOverlay>, 'visibility' | keyof SystemPositionProps>
 

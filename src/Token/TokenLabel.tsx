@@ -1,11 +1,18 @@
-import React from 'react'
+import React, { forwardRef } from 'react'
 import styled from 'styled-components'
 import TokenBase, { TokenBaseProps } from './TokenBase'
 import RemoveTokenButton from './_RemoveTokenButton'
 import tinycolor from 'tinycolor2'
 import { useTheme } from '../ThemeProvider'
 
-const colorModeConfig = {
+interface ColorModeConfig {
+    bgOpacity: number
+    borderThreshold: number
+    borderOpacity: number
+    lightnessThreshold: number
+}
+
+const colorModeConfigs: Record<string, ColorModeConfig> = {
     dark: {
         bgOpacity: 0.18,
         borderThreshold: 0,
@@ -18,7 +25,7 @@ const colorModeConfig = {
         borderOpacity: 1,
         lightnessThreshold: 0.453,
     }
-};
+}
 
 export interface TokenLabelProps extends TokenBaseProps {
     /**
@@ -28,12 +35,12 @@ export interface TokenLabelProps extends TokenBaseProps {
 }
 
 interface LabelStyleProps {
-    bgColor: React.CSSProperties['backgroundColor'];
-    borderColor: React.CSSProperties['borderColor'];
-    textColor: React.CSSProperties['color'];
+    bgColor: React.CSSProperties['backgroundColor']
+    borderColor: React.CSSProperties['borderColor']
+    textColor: React.CSSProperties['color']
 }
 
-const tokenBorderWidthPx = 1;
+const tokenBorderWidthPx = 1
 
 const StyledTokenLabel = styled(TokenBase)<TokenLabelProps & LabelStyleProps>`
   background-color: ${props => props.bgColor};
@@ -45,28 +52,34 @@ const StyledTokenLabel = styled(TokenBase)<TokenLabelProps & LabelStyleProps>`
   overflow: hidden;
   padding-right: ${props => props.handleRemove ? 0 : undefined};
   position: relative;
-`;
+`
 
-// TODO: make this text truncate
 const TokenTextContainer = styled('span')`
+    flex-grow: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
-    z-index: 1;
-`;
+`
 
-const TokenLabel: React.FC<TokenLabelProps> = ({
+const TokenLabel = forwardRef<HTMLElement, TokenLabelProps>(({
+    as,
     fillColor,
+    handleRemove,
+    id,
     isSelected,
-    ...tokenBaseProps
-}) => {
-    const { handleRemove, text, as, variant } = tokenBaseProps;
-    const { colorScheme } = useTheme();
-    // const colorScheme = 'dark';
+    ref,
+    text,
+    variant,
+    ...rest
+}, forwardedRef) => {
+    const { colorScheme } = useTheme()
     const {
         bgOpacity,
         borderOpacity,
         borderThreshold,
         lightnessThreshold
-    } = colorModeConfig[colorScheme || 'light'];
+    } = colorModeConfigs[colorScheme || 'light']
     let bgColor = fillColor;
     let borderColor = fillColor;
     let textColor = '#FFF';
@@ -92,7 +105,7 @@ const TokenLabel: React.FC<TokenLabelProps> = ({
             : 'transparent';
 
         if (isFillColorLight) {
-            textColor = '#000';
+            textColor = '#000'
         }
 
         if (isSelected) {
@@ -104,12 +117,21 @@ const TokenLabel: React.FC<TokenLabelProps> = ({
 
     return (
         <StyledTokenLabel
+            // specific to labels
             fillColor={fillColor}
             bgColor={bgColor}
             borderColor={borderColor}
             textColor={textColor}
+
+            // common token props
+            as={as}
+            handleRemove={handleRemove}
+            id={id?.toString()}
             isSelected={isSelected}
-            {...tokenBaseProps}
+            ref={forwardedRef}
+            text={text}
+            variant={variant}
+            {...rest}
         >
             <TokenTextContainer>{text}</TokenTextContainer>
             {handleRemove ? (
@@ -123,10 +145,10 @@ const TokenLabel: React.FC<TokenLabelProps> = ({
             ) : null}
         </StyledTokenLabel>
     )
-};
+})
 
 TokenLabel.defaultProps = {
-    fillColor: '#999' // TODO: pick a real color
-};
+    fillColor: '#999'
+}
 
-export default TokenLabel;
+export default TokenLabel

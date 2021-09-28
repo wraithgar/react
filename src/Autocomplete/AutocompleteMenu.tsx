@@ -4,7 +4,7 @@ import { useAnchoredPosition } from '../hooks'
 import { useFocusZone } from '../hooks/useFocusZone'
 import Overlay, { OverlayProps } from '../Overlay'
 import { ComponentProps, MandateProps } from '../utils/types'
-import { Box, Spinner } from '../';
+import { Box, Spinner } from '../'
 import { registerPortalRoot } from '../Portal'
 import { AutocompleteContext } from './AutocompleteContext'
 import { useCombinedRefs } from '../hooks/useCombinedRefs'
@@ -12,16 +12,16 @@ import { PlusIcon } from '@primer/octicons-react'
 import { uniqueId } from '../utils/uniqueId'
 import { scrollIntoViewingArea } from '../utils/scrollIntoViewingArea'
 
-type OnAction<T> = (item: T, event: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => void;
+type OnAction<T> = (item: T, event: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => void
 
-const DROPDOWN_PORTAL_CONTAINER_NAME = '__listcontainerportal__';
+const DROPDOWN_PORTAL_CONTAINER_NAME = '__listcontainerportal__'
 
 const getDefaultSortFn = (isItemSelectedFn: (itemId: string | number) => boolean) => 
     (itemIdA: string | number, itemIdB: string | number) => isItemSelectedFn(itemIdA) === isItemSelectedFn(itemIdB)
         ? 0
         : isItemSelectedFn(itemIdA)
             ? -1
-            : 1;
+            : 1
 
 function getDefaultItemFilter<T extends MandateProps<ItemProps, 'id'>>(filterValue: string) {
     return function (item: T, _i: number) {
@@ -34,7 +34,7 @@ function getDefaultItemFilter<T extends MandateProps<ItemProps, 'id'>>(filterVal
     }
 }
 
-type AutocompleteItemProps<T = Record<string, any>> = MandateProps<ItemProps, 'id'> & { metadata?: T };
+type AutocompleteItemProps<T = Record<string, any>> = MandateProps<ItemProps, 'id'> & { metadata?: T }
 
 type AutocompleteMenuInternalProps<T extends AutocompleteItemProps> = {
   /**
@@ -42,7 +42,8 @@ type AutocompleteMenuInternalProps<T extends AutocompleteItemProps> = {
    * This menu item gets appended to the end of the list of options.
    */
   // TODO: rethink this part of the component API. this is kind of weird and confusing to use
-  addNewItem?: Omit<T, 'onAction' | 'leadingVisual' | 'id'> & {handleAddItem: (item: Omit<T, 'onAction' | 'leadingVisual'>) => void} // TODO: Rethink this prop name. It's confusing.
+  // TODO: rethink `addNewItem` prop name
+  addNewItem?: Omit<T, 'onAction' | 'leadingVisual' | 'id'> & {handleAddItem: (item: Omit<T, 'onAction' | 'leadingVisual'>) => void}
   /**
    * The text that appears in the menu when there are no options in the array passed to the `items` prop.
    */
@@ -60,12 +61,10 @@ type AutocompleteMenuInternalProps<T extends AutocompleteItemProps> = {
   /**
    * The function that is called when an item in the list is de-selected
    */
-  // TODO: in the component, pass a default function value
   onItemDeselect?: OnAction<T>
   /**
    * The function that is called when an item in the list is selected
    */
-  // TODO: in the component, pass a default function value
   onItemSelect?: OnAction<T>
   /**
    * Whether the data is loaded for the menu items
@@ -80,8 +79,7 @@ type AutocompleteMenuInternalProps<T extends AutocompleteItemProps> = {
    * The sort function that is applied to the options in the array passed to the `items` prop after the user closes the menu.
    * By default, selected items are sorted to the top after the user closes the menu.
    */
-  // TODO: come up with a better name for this prop. maybe "sortOnCloseFn"
-  selectedSortFn?: (itemIdA: string | number, itemIdB: string | number) => number
+  sortOnCloseFn?: (itemIdA: string | number, itemIdB: string | number) => number
   /**
    * Whether there can be one item selected from the menu or multiple items selected from the menu
    */
@@ -100,7 +98,7 @@ function getDefaultOnItemSelectFn<T extends MandateProps<ItemProps, 'id'>>(setIn
     }
 
     return ({text}) => {
-        console.error(`getDefaultOnItemSelectFn could not be called with ${text} because a function to set the text input was undefined`);
+        console.error(`getDefaultOnItemSelectFn could not be called with ${text} because a function to set the text input was undefined`)
     }
 }
 
@@ -118,7 +116,7 @@ function AutocompleteMenu<T extends AutocompleteItemProps>(props: AutocompleteMe
     const {
         items,
         selectedItemIds,
-        selectedSortFn,
+        sortOnCloseFn,
         onItemSelect = getDefaultOnItemSelectFn(setInputValue),
         onItemDeselect,
         emptyStateText,
@@ -130,11 +128,11 @@ function AutocompleteMenu<T extends AutocompleteItemProps>(props: AutocompleteMe
         height,
         maxHeight,
         menuAnchorRef,
-    } = props;
+    } = props
     const listContainerRef = useRef<HTMLDivElement>(null)
     const scrollContainerRef = useRef<HTMLDivElement>(null)
-    const [highlightedItem, setHighlightedItem] = useState<T>();
-    const [sortedItemIds, setSortedItemIds] = useState<Array<number | string>>(items.map(({id}) => id));
+    const [highlightedItem, setHighlightedItem] = useState<T>()
+    const [sortedItemIds, setSortedItemIds] = useState<Array<number | string>>(items.map(({id}) => id))
 
     const {floatingElementRef, position} = useAnchoredPosition(
         {
@@ -145,47 +143,75 @@ function AutocompleteMenu<T extends AutocompleteItemProps>(props: AutocompleteMe
         [showMenu, selectedItemIds]
     )
 
-    const combinedOverlayRef = useCombinedRefs(scrollContainerRef, floatingElementRef);
+    const combinedOverlayRef = useCombinedRefs(scrollContainerRef, floatingElementRef)
 
     const closeOptionList = () => {
-        if (setShowMenu) {
-            setShowMenu(false);
-        }
+        setShowMenu && setShowMenu(false)
     }
 
     const isItemSelected = (itemId: string | number) => selectedItemIds.includes(itemId)
 
-    const selectableItems = [
-        // selectable tokens
-        ...items.map((selectableItem) => {
-            return ({
-                ...selectableItem,
-                id: selectableItem.id,
-                selected: selectionVariant === 'multiple' ? isItemSelected(selectableItem.id) : undefined,
-                onAction: (item: T, e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
-                    const handleItemSelection = () => {
-                        onItemSelect(item, e)
+    const selectableItems = items.map((selectableItem) => ({
+            ...selectableItem,
+            id: selectableItem.id,
+            selected: selectionVariant === 'multiple' ? isItemSelected(selectableItem.id) : undefined,
+            onAction: (item: T, e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
+                const handleItemSelection = () => {
+                    onItemSelect(item, e)
 
-                        if (selectionVariant === 'multiple') {
-                            setInputValue && setInputValue('')
-                            setAutocompleteSuggestion && setAutocompleteSuggestion('')
-                        }
-                    }
-
-                    if (item.selected) {
-                        onItemDeselect && onItemDeselect(item, e)
-                    } else {
-                        handleItemSelection()
-                    }
-
-                    if (selectionVariant === 'single') {
-                        setShowMenu && setShowMenu(false)
-                        inputRef?.current?.setSelectionRange(inputRef.current.value.length, inputRef.current.value.length)
+                    if (selectionVariant === 'multiple') {
+                        setInputValue && setInputValue('')
+                        setAutocompleteSuggestion && setAutocompleteSuggestion('')
                     }
                 }
-            })}
-        ),
-    ];
+
+                if (item.selected) {
+                    onItemDeselect && onItemDeselect(item, e)
+                } else {
+                    handleItemSelection()
+                }
+
+                if (selectionVariant === 'single') {
+                    setShowMenu && setShowMenu(false)
+                    inputRef?.current?.setSelectionRange(inputRef.current.value.length, inputRef.current.value.length)
+                }
+            }
+        })
+    )
+
+    const itemSortOrderData = sortedItemIds.reduce<Record<string | number, number>>((acc, curr, i) => {
+        acc[curr] = i
+
+        return acc
+    }, {})
+
+    const sortedAndFilteredItemsToRender =
+        selectableItems.filter(
+            (item, i) => filterFn(item, i)
+        ).sort((a, b) => itemSortOrderData[a.id] - itemSortOrderData[b.id])
+
+    const allItemsToRender = [
+        // sorted and filtered selectable items
+        ...sortedAndFilteredItemsToRender,
+
+        // menu item used for creating a token from whatever is in the text input
+        ...(addNewItem
+            ? [{
+                ...addNewItem,
+                leadingVisual: () => ( <PlusIcon /> ),
+                onAction: (item: T, e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
+                    // TODO: make it possible to pass a leadingVisual when using `addNewItem`
+                    addNewItem.handleAddItem({...item, id: item.id || uniqueId(), leadingVisual: undefined})
+
+                    if (selectionVariant === 'multiple') {
+                        setInputValue && setInputValue('')
+                        setAutocompleteSuggestion && setAutocompleteSuggestion('')
+                    }
+                }
+            }]
+            : []
+        )
+    ]
 
     useFocusZone({
         containerRef: listContainerRef,
@@ -199,12 +225,10 @@ function AutocompleteMenu<T extends AutocompleteItemProps>(props: AutocompleteMe
                 activeDescendantRef.current = current || null
             }
             if (current) {
-                const selectedItem = selectableItems.find(item => item.id.toString() === current?.dataset.id);
-                setHighlightedItem(selectedItem)
+                const selectedItem = selectableItems.find(item => item.id.toString() === current?.dataset.id)
 
-                if (setIsMenuDirectlyActivated) {
-                    setIsMenuDirectlyActivated(directlyActivated);
-                }
+                setHighlightedItem(selectedItem)
+                setIsMenuDirectlyActivated && setIsMenuDirectlyActivated(directlyActivated)
             }
 
             if (current && scrollContainerRef.current && directlyActivated) {
@@ -215,61 +239,25 @@ function AutocompleteMenu<T extends AutocompleteItemProps>(props: AutocompleteMe
 
     useEffect(() => {
         if (!setAutocompleteSuggestion) {
-            return;
+            return
         }
 
-        if (highlightedItem?.text?.startsWith(inputValue)) {
-            setAutocompleteSuggestion(highlightedItem.text);
+        if (highlightedItem?.text?.startsWith(inputValue) && !selectedItemIds.includes(highlightedItem.id)) {
+            setAutocompleteSuggestion(highlightedItem.text)
         } else {
-            setAutocompleteSuggestion('');
+            setAutocompleteSuggestion('')
         }
     }, [highlightedItem, inputValue])
 
     useEffect(() => {
         setSortedItemIds(
-            [...sortedItemIds].sort(selectedSortFn ? selectedSortFn : getDefaultSortFn(isItemSelected))
+            [...sortedItemIds].sort(sortOnCloseFn ? sortOnCloseFn : getDefaultSortFn(isItemSelected))
         )
     }, [showMenu])
 
     if (listContainerRef.current) {
         registerPortalRoot(listContainerRef.current, DROPDOWN_PORTAL_CONTAINER_NAME)
     }
-
-    const itemSortOrderData = sortedItemIds.reduce<Record<string | number, number>>((acc, curr, i) => {
-        acc[curr] = i;
-
-        return acc;
-    }, {});
-
-    const sortedAndFilteredItemsToRender =
-        selectableItems.filter(
-            // TODO: get rid of typecast
-            //       w/o it, I get error `assignable to the constraint of type 'T', but 'T' could be instantiated with a different subtype of constraint 'MandateProps<ItemProps, "id">'`
-            // COLEHELP
-            (item, i) => filterFn(item as T, i)
-        ).sort((a, b) => itemSortOrderData[a.id] - itemSortOrderData[b.id]);
-
-    const allItemsToRender = [
-        // sorted and filtered selectable items
-        ...sortedAndFilteredItemsToRender,
-
-        // menu item used for creating a token from whatever is in the text input
-        ...(addNewItem
-            ? [{
-                ...addNewItem,
-                leadingVisual: () => ( <PlusIcon /> ),
-                onAction: (item: T, e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
-                    // TODO: clean up this hacky-ness
-                    addNewItem.handleAddItem({...item, id: item.id || uniqueId(), leadingVisual: undefined})
-
-                    if (selectionVariant === 'multiple') {
-                        setInputValue && setInputValue('')
-                        setAutocompleteSuggestion && setAutocompleteSuggestion('')
-                    }
-                }
-            }]
-            : []
-        )]
 
     return (
         <Overlay
@@ -294,8 +282,8 @@ function AutocompleteMenu<T extends AutocompleteItemProps>(props: AutocompleteMe
                     {allItemsToRender.length ? (
                         <ActionList
                             selectionVariant="multiple"
-                            // TODO: get rid of typecast
-                            // COLEHELP
+                            // have to typecast to `ItemProps` because we have an extra property 
+                            // on `items` for Autocomplete: `metadata`
                             items={allItemsToRender as ItemProps[]}
                             role="listbox"
                         />

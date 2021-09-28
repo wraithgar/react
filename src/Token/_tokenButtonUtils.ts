@@ -52,6 +52,6 @@ export const tokenButtonStyles = css`
     &:active {
         background-color: ${get('colors.fade.fg15')};
     }
-`;
+`
 
-export const getTokenButtonIconSize = (variant?: TokenSizeKeys) => tokenSizes[variant || defaultTokenSize] * 0.75;
+export const getTokenButtonIconSize = (variant?: TokenSizeKeys) => tokenSizes[variant || defaultTokenSize] * 0.75

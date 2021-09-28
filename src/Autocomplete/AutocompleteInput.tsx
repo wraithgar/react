@@ -7,14 +7,14 @@ import React, {
     useEffect,
     useState
 } from 'react'
-import type * as Polymorphic from "@radix-ui/react-polymorphic";
-import { AutocompleteContext } from './AutocompleteContext';
-import TextInput from '../TextInput';
-import { useCombinedRefs } from '../hooks/useCombinedRefs';
-import { ComponentProps } from '../utils/types';
+import type * as Polymorphic from "@radix-ui/react-polymorphic"
+import { AutocompleteContext } from './AutocompleteContext'
+import TextInput from '../TextInput'
+import { useCombinedRefs } from '../hooks/useCombinedRefs'
+import { ComponentProps } from '../utils/types'
 
 type InternalAutocompleteInputProps = {
-    as?: React.ComponentType<any>;
+    as?: React.ComponentType<any>
 }
 
 const AutocompleteInput = React.forwardRef(
@@ -37,54 +37,49 @@ const AutocompleteInput = React.forwardRef(
             setInputValue,
             setShowMenu,
             showMenu,
-        } = useContext(AutocompleteContext);
-        const combinedInputRef = useCombinedRefs(inputRef, forwardedRef);
-        const [highlightRemainingText, setHighlightRemainingText] = useState<boolean>(true);
+        } = useContext(AutocompleteContext)
+        const combinedInputRef = useCombinedRefs(inputRef, forwardedRef)
+        const [highlightRemainingText, setHighlightRemainingText] = useState<boolean>(true)
 
         const handleInputFocus: FocusEventHandler<HTMLInputElement> = (e) => {
-            onFocus && onFocus(e);
-            setShowMenu && setShowMenu(true);
-        };
+            onFocus && onFocus(e)
+            setShowMenu && setShowMenu(true)
+        }
 
         const handleInputBlur: FocusEventHandler<HTMLInputElement> = (e) => {
-            onBlur && onBlur(e);
+            onBlur && onBlur(e)
 
             // HACK: wait a tick and check the focused element before hiding the autocomplete menu
             // this prevents the menu from hiding when the user is clicking an option in the Autoselect.Menu,
             // but still hides the menu when the user blurs the input by tabbing out or clicking somewhere else on the page
             // COLEHELP
             setTimeout(() => {
-                if (setShowMenu && document.activeElement !== combinedInputRef.current) {
-                    setShowMenu(false);
+                if (document.activeElement !== combinedInputRef.current) {
+                    setShowMenu && setShowMenu(false)
                 }
-            }, 0);
-        };
+            }, 0)
+        }
 
         const handleInputChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-            if (onChange) {
-                onChange(e);
-            }
+            onChange && onChange(e)
+            setInputValue && setInputValue(e.currentTarget.value)
 
-            if (setInputValue) {
-                setInputValue(e.currentTarget.value);
-            }
-
-            if (setShowMenu && !showMenu) {
-                setShowMenu(true);
+            if (!showMenu) {
+                setShowMenu && setShowMenu(true)
             }
         }
 
         const handleInputKeyDown: KeyboardEventHandler = (e) => {
             if (e.key === 'Backspace') {
-                setHighlightRemainingText(false);
+                setHighlightRemainingText(false)
             }
-        };
+        }
 
         const handleInputKeyUp: KeyboardEventHandler = (e) => {
             if (e.key === 'Backspace') {
-                setHighlightRemainingText(true);
+                setHighlightRemainingText(true)
             }
-        };
+        }
 
         const onInputKeyPress: KeyboardEventHandler = useCallback(
             event => {
@@ -102,12 +97,12 @@ const AutocompleteInput = React.forwardRef(
 
         useEffect(() => {
             if (!inputRef?.current) {
-                return;
+                return
             }
 
             // resets input value to being empty after a selection has been made
             if (!autocompleteSuggestion) {
-                inputRef.current.value = inputValue;
+                inputRef.current.value = inputValue
             }
 
             // TODO: fix bug where this function prevents `onChange` from being triggered if the highlighted item text
@@ -115,19 +110,19 @@ const AutocompleteInput = React.forwardRef(
             //       e.g.: typing 'tw' highights 'two', but when I 'two', the text input change does not get triggered
             // COLEHELP
             if (highlightRemainingText && autocompleteSuggestion && (inputValue || isMenuDirectlyActivated)) {
-                inputRef.current.value = autocompleteSuggestion;
+                inputRef.current.value = autocompleteSuggestion
 
                 if (autocompleteSuggestion.toLowerCase().indexOf(inputValue.toLowerCase()) === 0) {
-                    inputRef.current.setSelectionRange(inputValue.length, autocompleteSuggestion.length);
+                    inputRef.current.setSelectionRange(inputValue.length, autocompleteSuggestion.length)
                 }
             }
         }, [autocompleteSuggestion, inputValue])
 
         useEffect(() => {
-            if (value && setInputValue) {
-                setInputValue(value.toString());
+            if (value) {
+                setInputValue && setInputValue(value.toString())
             }
-        }, [value]);
+        }, [value])
 
         return (
             <Component
@@ -140,9 +135,9 @@ const AutocompleteInput = React.forwardRef(
                 ref={combinedInputRef}
                 {...props}
             />
-        );
+        )
     }
 ) as Polymorphic.ForwardRefComponent<"input", InternalAutocompleteInputProps>
 
 export type AutocompleteInputProps = ComponentProps<typeof AutocompleteInput>
-export default AutocompleteInput;
+export default AutocompleteInput

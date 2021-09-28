@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { forwardRef } from 'react'
 import styled from 'styled-components'
 import { get } from '../constants'
-import primitives from '@primer/primitives';
+import primitives from '@primer/primitives'
 import { TokenBaseProps, defaultTokenSize, tokenSizes } from './TokenBase'
 import Token from './Token'
 import { Avatar } from '..'
@@ -12,13 +12,15 @@ export interface TokenProfileProps extends TokenBaseProps {
 
 const StyledToken = styled(Token)`
     padding-left: ${get('space.1')};
-`;
+`
 
-const TokenProfile: React.FC<TokenProfileProps> = ({
+const TokenProfile = forwardRef<HTMLElement, TokenProfileProps>(({
     avatarSrc,
+    id,
+    ref,
     variant,
     ...rest
-}) => (
+}, forwardedRef) => (
     <StyledToken
         leadingVisual={() => (
             <Avatar
@@ -27,8 +29,10 @@ const TokenProfile: React.FC<TokenProfileProps> = ({
             />
         )}
         variant={variant}
+        id={id?.toString()}
+        ref={forwardedRef}
         {...rest}
     />
-);
+))
 
-export default TokenProfile;
+export default TokenProfile

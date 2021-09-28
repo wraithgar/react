@@ -94,17 +94,14 @@ export const profileToken = () => (
 
 export const labelToken = () => (
     <ExampleCollectionContainer>
-        <SingleExampleContainer label="Default (no fill color passed)">
-            <TokenLabel text="default" />
-        </SingleExampleContainer>
         <SingleExampleContainer label="Interactive">
             <Box display="flex" sx={{
                 alignItems: 'start',
                 gap: get('space.2'),
             }}>
-                <TokenLabel as="a" href="http://google.com/" text="Link" />
-                <TokenLabel as="button" onClick={() => console.log('clicked')} text="Button" />
-                <TokenLabel as="span" tabIndex={0} onFocus={() => console.log('focused')} text="Focusable Span" />
+                <TokenLabel fillColor="#656BFE" as="a" href="http://google.com/" text="Link" />
+                <TokenLabel fillColor="#656BFE" as="button" onClick={() => console.log('clicked')} text="Button" />
+                <TokenLabel fillColor="#656BFE" as="span" tabIndex={0} onFocus={() => console.log('focused')} text="Focusable Span" />
             </Box>
         </SingleExampleContainer>
         <SingleExampleContainer label="Interactive (#656BFE fill color passed)">

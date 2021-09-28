@@ -1,10 +1,10 @@
 import { XIcon } from '@primer/octicons-react'
 import styled from 'styled-components'
-import { defaultTokenSize, tokenSizes, TokenSizeKeys } from "./TokenBase"
+import { defaultTokenSize } from "./TokenBase"
 import { TokenButtonProps, tokenButtonStyles, variants, getTokenButtonIconSize } from './_tokenButtonUtils'
 
 const RemoveTokenButton = styled.span.attrs<TokenButtonProps>(({borderOffset, parentTokenTag, variant, ...rest}) => {
-    delete rest.children;
+    delete rest.children
 
     return ({
         borderOffset,
@@ -16,10 +16,10 @@ const RemoveTokenButton = styled.span.attrs<TokenButtonProps>(({borderOffset, pa
     ${tokenButtonStyles}
     ${variants}
     transform: ${props => `translate(${props.borderOffset}px, -${props.borderOffset}px)`};
-`;
+`
 
 RemoveTokenButton.defaultProps = {
     variant: defaultTokenSize
 }
 
-export default RemoveTokenButton;
+export default RemoveTokenButton

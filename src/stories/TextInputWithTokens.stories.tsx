@@ -114,6 +114,9 @@ export const Unstyled = () => {
     <TextInputTokens
         tokens={tokens}
         onTokenRemove={onTokenRemove}
+        onChange={(e) => {
+          console.log(e)
+        }}
         // TODO: come up with a nicer way to unstyle an input component
         sx={{
           'border': '0',

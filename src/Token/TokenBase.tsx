@@ -2,14 +2,14 @@ import styled, { css } from 'styled-components'
 import { variant } from 'styled-system'
 import { get } from '../constants'
 
-export type TokenSizeKeys = 'sm' | 'md' | 'lg' | 'xl';
+export type TokenSizeKeys = 'sm' | 'md' | 'lg' | 'xl'
 
 export const tokenSizes: Record<TokenSizeKeys, number> = {
     sm: 16,
     md: 20,
     lg: 24,
     xl: 32,
-};
+}
 
 export const defaultTokenSize = 'md'
 
@@ -23,7 +23,7 @@ export interface TokenBaseProps extends Omit<React.HTMLProps<HTMLSpanElement | H
     variant?: TokenSizeKeys
 }
 
-export const isTokenHoverable = ({as = 'span', onClick, onFocus}: TokenBaseProps) => Boolean(onFocus || onClick || ['a', 'button'].includes(as));
+export const isTokenHoverable = ({as = 'span', onClick, onFocus}: TokenBaseProps) => Boolean(onFocus || onClick || ['a', 'button'].includes(as))
 
 const variants = variant<{fontSize: number, height: string, gap: number, paddingLeft: any, paddingRight: number}, TokenSizeKeys>({
     variants: {
@@ -67,11 +67,11 @@ const TokenBase = styled.span<TokenBaseProps>`
   text-decoration: none;
   white-space: nowrap;
   ${variants}
-`;
+`
 
 TokenBase.defaultProps = {
   as: 'span',
   variant: defaultTokenSize,
-};
+}
 
-export default TokenBase;
+export default TokenBase

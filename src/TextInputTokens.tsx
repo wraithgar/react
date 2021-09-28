@@ -1,4 +1,4 @@
-import React, { FocusEventHandler, KeyboardEventHandler, useRef, useState } from 'react'
+import React, { ComponentPropsWithoutRef, FocusEventHandler, KeyboardEventHandler, useRef, useState } from 'react'
 import {omit} from '@styled-system/props'
 import styled from 'styled-components'
 import { FocusKeys } from './behaviors/focusZone'
@@ -6,8 +6,8 @@ import { useCombinedRefs } from './hooks/useCombinedRefs'
 import { useFocusZone } from './hooks/useFocusZone'
 import {ComponentProps, MandateProps} from './utils/types'
 import Token, { TokenProps } from './Token/Token'
-import { TokenLabelProps } from './Token/TokenLabel'
-import { TokenProfileProps } from './Token/TokenProfile'
+import TokenLabel, { TokenLabelProps } from './Token/TokenLabel'
+import TokenProfile, { TokenProfileProps } from './Token/TokenProfile'
 import { TokenSizeKeys } from './Token/TokenBase'
 import TextInput, { TextInputProps } from './TextInput'
 import { useProvidedRefOrCreate } from './hooks'
@@ -16,7 +16,7 @@ import UnstyledTextInput from './_UnstyledTextInput'
 const InputWrapper = styled.div`
   order: 1;
   flex-grow: 1;
-`;
+`
 
 type AnyTokenProps = Partial<TokenProps & TokenLabelProps & TokenProfileProps>
 type TokenDatum = MandateProps<AnyTokenProps, 'id' | 'text'>
@@ -32,7 +32,7 @@ type TextInputWithTokensInternalProps = {
   /**
    * The component used to render each token
    */
-  tokenComponent?: React.ComponentType<TokenProps | TokenLabelProps | TokenProfileProps>
+  tokenComponent?: React.ComponentType<ComponentPropsWithoutRef<typeof Token> | ComponentPropsWithoutRef<typeof TokenLabel> | ComponentPropsWithoutRef<typeof TokenProfile>>
   /**
    * The maximum height of the component. If the content in the input exceeds this height,
    * it will scroll vertically
@@ -75,48 +75,48 @@ const TextInputWithTokensComponent = React.forwardRef<HTMLInputElement, TextInpu
       setSelectedTokenIdx,
       ...rest},
     externalRef) => {
-    const ref = useProvidedRefOrCreate<HTMLInputElement>(externalRef as React.RefObject<HTMLInputElement>);
+    const ref = useProvidedRefOrCreate<HTMLInputElement>(externalRef as React.RefObject<HTMLInputElement>)
     const { onFocus, onKeyDown, ...inputPropsRest } = omit(rest)
 
     const handleTokenRemove = (tokenId: TokenDatum['id']) => {
-      onTokenRemove(tokenId);
+      onTokenRemove(tokenId)
     }
 
     const handleTokenFocus: (tokenIdx: number) => FocusEventHandler = (tokenIdx) => () => {
-        setSelectedTokenIdx(tokenIdx);
+        setSelectedTokenIdx(tokenIdx)
     }
 
     const handleTokenBlur: FocusEventHandler = () => {
-        setSelectedTokenIdx(undefined);
+        setSelectedTokenIdx(undefined)
     }
 
     const handleTokenKeyUp: (tokenId: TokenDatum['id']) => KeyboardEventHandler = (tokenId) => (e) => {
         if (e.key === 'Backspace') {
-          handleTokenRemove(tokenId);
+          handleTokenRemove(tokenId)
         }
 
         if (e.key === 'Escape') {
-            ref?.current?.focus();
+            ref?.current?.focus()
         }
-    };
+    }
 
     const handleInputFocus: FocusEventHandler = (e) => {
-      onFocus && onFocus(e);  
-      setSelectedTokenIdx(undefined);
-    };
+      onFocus && onFocus(e)  
+      setSelectedTokenIdx(undefined)
+    }
     const handleInputKeyDown: KeyboardEventHandler = (e) => {
         if (onKeyDown) {
-            onKeyDown(e);
+            onKeyDown(e)
         }
 
         if (ref?.current?.value) {
-            return;
+            return
         }
 
-        const lastToken = tokens[tokens.length - 1];
+        const lastToken = tokens[tokens.length - 1]
 
         if (e.key === 'Backspace' && lastToken) {
-            handleTokenRemove(lastToken.id);
+            handleTokenRemove(lastToken.id)
 
             if (ref?.current) {
               // TODO: eliminate the first hack by making changes to the Autocomplete component
@@ -126,15 +126,15 @@ const TextInputWithTokensComponent = React.forwardRef<HTMLInputElement, TextInpu
               // 1. Directly setting `ref.current.value` instead of updating state because the autocomplete 
               //    highlight behavior doesn't work correctly if we update the value with a setState action in onChange
               // 2. Adding an extra space so that when I backspace, it doesn't delete the last letter
-              ref.current.value = `${lastToken.text} `;
+              ref.current.value = `${lastToken.text} `
             }
 
             // HACK: for some reason we need to wait a tick for `.select()` to work
             setTimeout(() => {
-                ref?.current?.select();
-            }, 1);
+                ref?.current?.select()
+            }, 1)
         }
-    };
+    }
 
     return (
       <>
@@ -185,18 +185,18 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
           return undefined
         }
 
-        let nextIndex = selectedTokenIdx + 1;
+        let nextIndex = selectedTokenIdx + 1
 
         if (direction === 'next') {
-          nextIndex += 1;
+          nextIndex += 1
         }
 
         if (direction === 'previous') {
-          nextIndex -= 1;
+          nextIndex -= 1
         }
 
         if (nextIndex > tokens.length || nextIndex < 1) {
-          return combinedInputRef.current || undefined;
+          return combinedInputRef.current || undefined
         }
 
         return containerRef?.current?.children[nextIndex] as HTMLElement
@@ -231,6 +231,8 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
     )
   }
 )
+
+// type TestType = ComponentPropsWithoutRef<typeof Token>
 
 TextInputWithTokens.defaultProps = {
     tokenComponent: Token,

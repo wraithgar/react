@@ -1,10 +1,13 @@
-import React from 'react'
+import React, { forwardRef } from 'react'
 import styled from 'styled-components'
 import { get } from '../constants'
 import TokenBase, { isTokenHoverable, TokenBaseProps } from './TokenBase'
 import RemoveTokenButton from './_RemoveTokenButton'
 
 export interface TokenProps extends TokenBaseProps {
+    /**
+     * A function that renders a component before the token text
+     */
     leadingVisual?: React.FunctionComponent<any>
 }
 
@@ -16,7 +19,8 @@ const DefaultToken = styled(TokenBase)`
     border-style: solid;
     border-width: 1px;
     color: ${props => props.isSelected ? get('colors.fg.default') : get('colors.fg.muted')};
-    padding-right: ${props => (props.handleRemove || props.handleAdd) ? 0 : undefined};
+    max-width: 100%;
+    padding-right: ${props => (props.handleRemove) ? 0 : undefined};
 
     &:hover {
         background-color: ${props => isTokenHoverable(props) ? get('colors.neutral.muted') : undefined};
@@ -25,9 +29,11 @@ const DefaultToken = styled(TokenBase)`
     }
 `;
 
-// TODO: make this text truncate
 const TokenTextContainer = styled('span')`
     flex-grow: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
 `;
 
@@ -36,34 +42,41 @@ const LeadingVisualContainer = styled('span')`
     line-height: 0;
 `;
 
-const Token: React.FC<TokenProps> = ({
-    /**
-     * A function that renders a component before the token text
-     */
+const Token = forwardRef<HTMLAnchorElement | HTMLButtonElement | HTMLSpanElement, TokenProps>(({
+    as,
+    handleRemove,
+    id,
     leadingVisual: LeadingVisual,
-    ...tokenBaseProps
-}) => {
-    const { handleRemove, text, as, variant } = tokenBaseProps;
-
-    return (
-        <DefaultToken {...tokenBaseProps}>
-            {LeadingVisual ? (
-                <LeadingVisualContainer>
-                    <LeadingVisual />
-                </LeadingVisualContainer>
-            ) : null}
-            <TokenTextContainer>{text}</TokenTextContainer>
-            {handleRemove ? (
-                <RemoveTokenButton
-                    borderOffset={tokenBorderWidthPx}
-                    parentTokenTag={as || 'span'}
-                    tabIndex={-1}
-                    onClick={handleRemove}
-                    variant={variant}
-                />
-            ) : null}
-        </DefaultToken>
-    )
-};
+    ref,
+    text,
+    variant,
+    ...resizeTo
+}, forwardedRef) => (
+    <DefaultToken
+        as={as}
+        handleRemove={handleRemove}
+        id={id?.toString()}
+        text={text}
+        ref={forwardedRef}
+        variant={variant}
+        {...resizeTo}
+    >
+        {LeadingVisual ? (
+            <LeadingVisualContainer>
+                <LeadingVisual />
+            </LeadingVisualContainer>
+        ) : null}
+        <TokenTextContainer>{text}</TokenTextContainer>
+        {handleRemove ? (
+            <RemoveTokenButton
+                borderOffset={tokenBorderWidthPx}
+                parentTokenTag={as || 'span'}
+                tabIndex={-1}
+                onClick={handleRemove}
+                variant={variant}
+            />
+        ) : null}
+    </DefaultToken>
+));
 
 export default Token;

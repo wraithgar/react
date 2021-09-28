@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { ChangeEventHandler, useCallback, useEffect, useRef, useState } from 'react'
 import { Meta } from '@storybook/react'
 
 import { BaseStyles, Box, ThemeProvider } from '..'
@@ -172,6 +172,9 @@ export const MultiSelectAddNewItem = () => {
     onTokenRemove(item.id)
     setSelectedItemIds(selectedItemIds.filter(selectedItemId => selectedItemId !== item.id))
   }
+  const handleChange: ChangeEventHandler<HTMLInputElement> = e => {
+    setFilterVal(e.currentTarget.value)
+  };
 
   return (
       <Autocomplete>
@@ -179,9 +182,7 @@ export const MultiSelectAddNewItem = () => {
           as={TextInputTokens}
           tokens={tokens}
           onTokenRemove={onTokenRemove}
-          onChange={e => {
-            setFilterVal(e.currentTarget.value)
-          }}
+          onChange={handleChange}
         />
         <Autocomplete.Menu
           addNewItem={
