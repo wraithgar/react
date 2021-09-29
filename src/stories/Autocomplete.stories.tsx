@@ -101,7 +101,7 @@ export default {
 export const Default = () => {
     return (
       <>
-        <label htmlFor="autocompleteInput" id="autocompleteLabel">Pick an option</label>
+        <Box as="label" display="block" htmlFor="autocompleteInput" id="autocompleteLabel">Pick an option</Box>
         <Autocomplete>
           <Autocomplete.Input id="autocompleteInput" />
           <Autocomplete.Menu
@@ -134,7 +134,7 @@ export const MultiSelectWithTokenInput = () => {
 
   return (
     <>
-      <label htmlFor="autocompleteInput" id="autocompleteLabel">Pick options</label>
+      <Box as="label" display="block" htmlFor="autocompleteInput" id="autocompleteLabel">Pick options</Box>
       <Autocomplete>
         <Autocomplete.Input
           as={TextInputTokens}
@@ -186,7 +186,7 @@ export const MultiSelectAddNewItem = () => {
 
   return (
     <>
-      <label htmlFor="autocompleteInput" id="autocompleteLabel">Pick options</label>
+      <Box as="label" display="block" htmlFor="autocompleteInput" id="autocompleteLabel">Pick options</Box>
       <Autocomplete>
         <Autocomplete.Input
           as={TextInputTokens}

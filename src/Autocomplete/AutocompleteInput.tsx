@@ -126,27 +126,22 @@ const AutocompleteInput = React.forwardRef(
         }, [value])
 
         return (
-            <div
-                // TODO: figure out a nice way to pass these props to the input `Wrapper` component
-                //       instead of adding an additional wrapper div
+            <Component
+                onFocus={handleInputFocus}
+                onBlur={handleInputBlur}
+                onChange={handleInputChange}
+                onKeyDown={handleInputKeyDown}
+                onKeyPress={onInputKeyPress}
+                onKeyUp={handleInputKeyUp}
+                ref={combinedInputRef}
+                aria-controls={`${id}-listbox`}
+                aria-autocomplete="both"
                 role="combobox"
                 aria-expanded={showMenu}
                 aria-haspopup="listbox"
                 aria-owns={`${id}-listbox`}
-            >
-                <Component
-                    onFocus={handleInputFocus}
-                    onBlur={handleInputBlur}
-                    onChange={handleInputChange}
-                    onKeyDown={handleInputKeyDown}
-                    onKeyPress={onInputKeyPress}
-                    onKeyUp={handleInputKeyUp}
-                    ref={combinedInputRef}
-                    aria-controls={`${id}-listbox`}
-                    aria-autocomplete="both"
-                    {...props}
-                />
-            </div>
+                {...props}
+            />
         )
     }
 ) as Polymorphic.ForwardRefComponent<"input", InternalAutocompleteInputProps>
