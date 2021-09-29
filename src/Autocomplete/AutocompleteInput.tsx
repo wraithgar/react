@@ -74,6 +74,11 @@ const AutocompleteInput = React.forwardRef(
             if (e.key === 'Backspace') {
                 setHighlightRemainingText(false)
             }
+
+            if (e.key === 'Escape' && inputRef?.current?.value) {
+                setInputValue && setInputValue('')
+                inputRef.current.value = ''
+            }
         }
 
         const handleInputKeyUp: KeyboardEventHandler = (e) => {
