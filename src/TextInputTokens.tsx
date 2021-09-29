@@ -1,4 +1,4 @@
-import React, { ComponentPropsWithoutRef, FocusEventHandler, KeyboardEventHandler, useRef, useState } from 'react'
+import React, { ComponentPropsWithoutRef, FocusEventHandler, KeyboardEventHandler, useEffect, useRef, useState } from 'react'
 import {omit} from '@styled-system/props'
 import styled from 'styled-components'
 import { FocusKeys } from './behaviors/focusZone'
@@ -49,6 +49,7 @@ type TextInputWithTokensInternalProps = {
   /**
    * Whether the remove buttons should be rendered in the tokens
    */
+  // TODO: confirm whether or not we're comfortable with allowing people to hide that button
   hideTokenRemoveButtons?: boolean
 } & TextInputProps
 
@@ -78,10 +79,6 @@ const TextInputWithTokensComponent = React.forwardRef<HTMLInputElement, TextInpu
     const ref = useProvidedRefOrCreate<HTMLInputElement>(externalRef as React.RefObject<HTMLInputElement>)
     const { onFocus, onKeyDown, ...inputPropsRest } = omit(rest)
 
-    const handleTokenRemove = (tokenId: TokenDatum['id']) => {
-      onTokenRemove(tokenId)
-    }
-
     const handleTokenFocus: (tokenIdx: number) => FocusEventHandler = (tokenIdx) => () => {
         setSelectedTokenIdx(tokenIdx)
     }
@@ -90,11 +87,7 @@ const TextInputWithTokensComponent = React.forwardRef<HTMLInputElement, TextInpu
         setSelectedTokenIdx(undefined)
     }
 
-    const handleTokenKeyUp: (tokenId: TokenDatum['id']) => KeyboardEventHandler = (tokenId) => (e) => {
-        if (e.key === 'Backspace') {
-          handleTokenRemove(tokenId)
-        }
-
+    const handleTokenKeyUp: KeyboardEventHandler = (e) => {
         if (e.key === 'Escape') {
             ref?.current?.focus()
         }
@@ -116,7 +109,7 @@ const TextInputWithTokensComponent = React.forwardRef<HTMLInputElement, TextInpu
         const lastToken = tokens[tokens.length - 1]
 
         if (e.key === 'Backspace' && lastToken) {
-            handleTokenRemove(lastToken.id)
+            onTokenRemove(lastToken.id)
 
             if (ref?.current) {
               // TODO: eliminate the first hack by making changes to the Autocomplete component
@@ -155,9 +148,10 @@ const TextInputWithTokensComponent = React.forwardRef<HTMLInputElement, TextInpu
                   key={id}
                   onFocus={handleTokenFocus(i)}
                   onBlur={handleTokenBlur}
-                  onKeyUp={handleTokenKeyUp(id)}
+                  onKeyUp={handleTokenKeyUp}
                   isSelected={selectedTokenIdx === i}
-                  handleRemove={!hideTokenRemoveButtons ? () => { handleTokenRemove(id) } : undefined}
+                  handleRemove={() => { onTokenRemove(id) }}
+                  hideRemoveButton={hideTokenRemoveButtons}
                   variant={tokenSizeVariant}
                   tabIndex={0}
                   {...tokenRest}
@@ -170,7 +164,7 @@ const TextInputWithTokensComponent = React.forwardRef<HTMLInputElement, TextInpu
 )
 
 const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithTokensInternalProps>(
-  ({tokens, sx: sxProp, ...props}, ref) => {
+  ({tokens, onTokenRemove, sx: sxProp, ...props}, ref) => {
     const localInputRef = useRef<HTMLInputElement>(null)
     const combinedInputRef = useCombinedRefs(localInputRef, ref)
     const [selectedTokenIdx, setSelectedTokenIdx] = useState<number | undefined>()
@@ -178,14 +172,14 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
       focusOutBehavior: 'wrap',
       bindKeys: FocusKeys.ArrowHorizontal | FocusKeys.HomeAndEnd,
       focusableElementFilter: element => {
-        return !(element instanceof HTMLButtonElement)
+        return !(element.getAttributeNames().includes('aria-hidden'))
       },
       getNextFocusable: (direction) => {
         if (!selectedTokenIdx && selectedTokenIdx !== 0) {
           return undefined
         }
 
-        let nextIndex = selectedTokenIdx + 1
+        let nextIndex = selectedTokenIdx + 1 // "+ 1" accounts for the first element: the text input
 
         if (direction === 'next') {
           nextIndex += 1
@@ -203,6 +197,15 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
       },
     }, [selectedTokenIdx])
 
+    const handleTokenRemove = (tokenId: TokenDatum['id']) => {
+      onTokenRemove(tokenId)
+
+      if (selectedTokenIdx) {
+        const nextElementToFocus = containerRef?.current?.children[selectedTokenIdx] as HTMLElement
+        nextElementToFocus.focus()
+      }
+    }
+
     return (
       <TextInput
         ref={combinedInputRef}
@@ -211,6 +214,7 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
         selectedTokenIdx={selectedTokenIdx}
         setSelectedTokenIdx={setSelectedTokenIdx}
         tokens={tokens}
+        onTokenRemove={handleTokenRemove}
         sx={{
           'alignItems': props.preventTokenWrapping ? 'center' : undefined,
           'flexWrap': props.preventTokenWrapping ? 'nowrap' : 'wrap',

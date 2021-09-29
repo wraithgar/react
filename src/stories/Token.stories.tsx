@@ -69,6 +69,16 @@ export const defaultToken = () => (
         <SingleExampleContainer label="w/ handleRemove passed">
             <Token text="Default Token" handleRemove={() => { console.log('remove me') }} />
         </SingleExampleContainer>
+        <SingleExampleContainer label="w/ handleRemove passed and the token is clickable">
+            <Box display="flex" sx={{
+                alignItems: 'start',
+                gap: get('space.2'),
+            }}>
+                <Token as="a" href="http://google.com/" text="Link" handleRemove={() => { console.log('remove me') }} />
+                <Token as="button" onClick={() => console.log('clicked')} text="Button" handleRemove={() => { console.log('remove me') }} />
+                <Token as="span" tabIndex={0} onFocus={() => console.log('focused')} text="Focusable Span" handleRemove={() => { console.log('remove me') }} />
+            </Box>
+        </SingleExampleContainer>
         <SingleExampleContainer label="w/ leadingVisual passed">
             <Token text="Default Token" leadingVisual={() => <VerifiedIcon size={12} />} />
         </SingleExampleContainer>

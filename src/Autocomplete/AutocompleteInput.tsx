@@ -127,6 +127,8 @@ const AutocompleteInput = React.forwardRef(
 
         return (
             <div
+                // TODO: figure out a nice way to pass these props to the input `Wrapper` component
+                //       instead of adding an additional wrapper div
                 role="combobox"
                 aria-expanded={showMenu}
                 aria-haspopup="listbox"

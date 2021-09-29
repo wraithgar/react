@@ -7,6 +7,7 @@ export interface TokenButtonProps {
     borderOffset?: number
     parentTokenTag: 'span' | 'button' | 'a'
     variant?: TokenSizeKeys
+    parentTokenIsInteractive?: boolean
 }
 
 export const variants = variant({
@@ -35,6 +36,9 @@ export const tokenButtonStyles = css`
     font-family: inherit;
     color: currentColor;
     cursor: pointer;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
     user-select: none;
     appearance: none;
     text-decoration: none;

@@ -3,13 +3,14 @@ import styled from 'styled-components'
 import { defaultTokenSize } from "./TokenBase"
 import { TokenButtonProps, tokenButtonStyles, variants, getTokenButtonIconSize } from './_tokenButtonUtils'
 
-const RemoveTokenButton = styled.span.attrs<TokenButtonProps>(({borderOffset, parentTokenTag, variant, ...rest}) => {
+const RemoveTokenButton = styled.span.attrs<TokenButtonProps>(({borderOffset, parentTokenTag, variant, parentTokenIsInteractive, ...rest}) => {
     delete rest.children
 
     return ({
         borderOffset,
-        as: parentTokenTag === 'span' ? 'button' : 'span',
-        tabIndex: -1,
+        as: parentTokenIsInteractive ? 'span' : 'button',
+        tabIndex: parentTokenIsInteractive ? -1 : undefined,
+        'aria-label': !parentTokenIsInteractive ? 'Remove token' : undefined,
         children: <XIcon size={getTokenButtonIconSize(variant)} /> // TODO: figure out how to set `size` using `fontSizes` from Primitives
     })
 })<TokenButtonProps>`

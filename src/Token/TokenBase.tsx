@@ -1,3 +1,4 @@
+import { KeyboardEvent } from 'react';
 import styled, { css } from 'styled-components'
 import { variant } from 'styled-system'
 import { get } from '../constants'
@@ -23,7 +24,12 @@ export interface TokenBaseProps extends Omit<React.HTMLProps<HTMLSpanElement | H
     variant?: TokenSizeKeys
 }
 
-export const isTokenHoverable = ({as = 'span', onClick, onFocus}: TokenBaseProps) => Boolean(onFocus || onClick || ['a', 'button'].includes(as))
+export const isTokenInteractive = ({
+  as = 'span',
+  onClick,
+  onFocus,
+  tabIndex = -1
+}: TokenBaseProps) => Boolean(onFocus || onClick || tabIndex > -1 || ['a', 'button'].includes(as))
 
 const variants = variant<{fontSize: number, height: string, gap: number, paddingLeft: any, paddingRight: number}, TokenSizeKeys>({
     variants: {
@@ -58,10 +64,19 @@ const variants = variant<{fontSize: number, height: string, gap: number, padding
     }
   })
 
-const TokenBase = styled.span<TokenBaseProps>`
+const TokenBase = styled.span.attrs<TokenBaseProps>(({text, handleRemove, onKeyUp}) => ({
+  onKeyUp: (e: KeyboardEvent<HTMLSpanElement | HTMLButtonElement | HTMLAnchorElement>) => {
+    onKeyUp && onKeyUp(e)
+
+    if ((e.key === 'Backspace' || e.key === 'Delete') && handleRemove) {
+      handleRemove()
+    }
+  },
+  'aria-label': handleRemove ? `${text}, press backspace or delete to remove` : undefined
+}))<TokenBaseProps>`
   align-items: center;
   border-radius: 999px;
-  cursor: ${props => isTokenHoverable(props) ? 'pointer' : 'auto'};
+  cursor: ${props => isTokenInteractive(props) ? 'pointer' : 'auto'};
   display: inline-flex;
   font-weight: ${get('fontWeights.bold')};
   text-decoration: none;

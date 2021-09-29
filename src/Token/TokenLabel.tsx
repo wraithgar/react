@@ -1,6 +1,6 @@
-import React, { forwardRef } from 'react'
+import React, { forwardRef, MouseEventHandler } from 'react'
 import styled from 'styled-components'
-import TokenBase, { TokenBaseProps } from './TokenBase'
+import TokenBase, { isTokenInteractive, TokenBaseProps } from './TokenBase'
 import RemoveTokenButton from './_RemoveTokenButton'
 import tinycolor from 'tinycolor2'
 import { useTheme } from '../ThemeProvider'
@@ -32,6 +32,10 @@ export interface TokenLabelProps extends TokenBaseProps {
      * The color that corresponds to the label
      */
     fillColor?: string
+    /**
+     * Whether the remove button should be rendered in the token
+     */
+    hideRemoveButton?: boolean
 }
 
 interface LabelStyleProps {
@@ -50,7 +54,7 @@ const StyledTokenLabel = styled(TokenBase)<TokenLabelProps & LabelStyleProps>`
   box-shadow: ${props => props.isSelected ? `0 0 0 2px ${props.bgColor}` : undefined};
   color: ${props => props.textColor};
   overflow: hidden;
-  padding-right: ${props => props.handleRemove ? 0 : undefined};
+  padding-right: ${props => !props.hideRemoveButton ? 0 : undefined};
   position: relative;
 `
 
@@ -62,17 +66,19 @@ const TokenTextContainer = styled('span')`
     white-space: nowrap;
 `
 
-const TokenLabel = forwardRef<HTMLElement, TokenLabelProps>(({
-    as,
-    fillColor,
-    handleRemove,
-    id,
-    isSelected,
-    ref,
-    text,
-    variant,
-    ...rest
-}, forwardedRef) => {
+const TokenLabel = forwardRef<HTMLElement, TokenLabelProps>((props, forwardedRef) => {
+    const {
+        as,
+        fillColor,
+        handleRemove,
+        id,
+        isSelected,
+        ref,
+        text,
+        variant,
+        hideRemoveButton,
+        ...rest
+    } = props
     const { colorScheme } = useTheme()
     const {
         bgOpacity,
@@ -115,6 +121,12 @@ const TokenLabel = forwardRef<HTMLElement, TokenLabelProps>(({
         }
     }
 
+    const hasMultipleActionTargets = isTokenInteractive(props) && Boolean(handleRemove) && !hideRemoveButton
+    const handleRemoveClick: MouseEventHandler = (e) => {
+        e.stopPropagation()
+        handleRemove && handleRemove()
+    }
+
     return (
         <StyledTokenLabel
             // specific to labels
@@ -125,7 +137,7 @@ const TokenLabel = forwardRef<HTMLElement, TokenLabelProps>(({
 
             // common token props
             as={as}
-            handleRemove={handleRemove}
+            hideRemoveButton={hideRemoveButton || !handleRemove}
             id={id?.toString()}
             isSelected={isSelected}
             ref={forwardedRef}
@@ -134,13 +146,14 @@ const TokenLabel = forwardRef<HTMLElement, TokenLabelProps>(({
             {...rest}
         >
             <TokenTextContainer>{text}</TokenTextContainer>
-            {handleRemove ? (
+            {!hideRemoveButton && handleRemove ? (
                 <RemoveTokenButton
                     borderOffset={tokenBorderWidthPx}
                     parentTokenTag={as || 'span'}
                     tabIndex={-1}
-                    onClick={handleRemove}
+                    onClick={handleRemoveClick}
                     variant={variant}
+                    aria-hidden={hasMultipleActionTargets ? "true" : "false"}
                 />
             ) : null}
         </StyledTokenLabel>
