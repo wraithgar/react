@@ -4,9 +4,8 @@ import {axe, toHaveNoViolations} from 'jest-axe'
 import React from 'react'
 import theme from '../theme'
 import {DropdownMenu, DropdownButton} from '../DropdownMenu'
-import {COMMON} from '../constants'
 import {behavesAsComponent, checkExports} from '../utils/testing'
-import {BaseStyles, ThemeProvider} from '..'
+import {BaseStyles, ThemeProvider, SSRProvider} from '..'
 import {ItemInput} from '../ActionList/List'
 
 expect.extend(toHaveNoViolations)
@@ -18,16 +17,18 @@ function SimpleDropdownMenu(): JSX.Element {
 
   return (
     <ThemeProvider theme={theme}>
-      <BaseStyles>
-        <div id="something-else">X</div>
-        <DropdownMenu
-          items={items}
-          placeholder="Select an Option"
-          selectedItem={selectedItem}
-          onChange={setSelectedItem}
-        />
-        <div id="portal-root"></div>
-      </BaseStyles>
+      <SSRProvider>
+        <BaseStyles>
+          <div id="something-else">X</div>
+          <DropdownMenu
+            items={items}
+            placeholder="Select an Option"
+            selectedItem={selectedItem}
+            onChange={setSelectedItem}
+          />
+          <div id="portal-root"></div>
+        </BaseStyles>
+      </SSRProvider>
     </ThemeProvider>
   )
 }
@@ -39,9 +40,12 @@ describe('DropdownMenu', () => {
 
   behavesAsComponent({
     Component: DropdownMenu,
-    systemPropArray: [COMMON],
     options: {skipAs: true, skipSx: true},
-    toRender: () => <DropdownMenu items={[]} />
+    toRender: () => (
+      <SSRProvider>
+        <DropdownMenu items={[]} />
+      </SSRProvider>
+    )
   })
 
   checkExports('DropdownMenu', {

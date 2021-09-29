@@ -1,8 +1,7 @@
 ---
 title: Theming
+description: Theming in Primer React is made possible by a theme object that defines your application's colors, spacing, fonts, and more.
 ---
-
-Theming in Primer React is made possible by a theme object that defines your application's colors, spacing, fonts, and more.
 
 ## ThemeProvider
 
@@ -67,8 +66,8 @@ const theme = {
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <Box bg="bg.primary"></Box>
-      <Box sx={{bg: 'bg.primary'}}></Box>
+      <Box bg="canvas.default"></Box>
+      <Box sx={{bg: "canvas.default"}}></Box>
     </ThemeProvider>
   )
 }
@@ -85,7 +84,7 @@ import {themeGet} from '@primer/components'
 import styled from 'styled-components'
 
 const Example = styled.div`
-  background-color: ${themeGet('colors.bg.primary')};
+  background-color: ${themeGet("colors.canvas.default")};
 `
 ```
 
@@ -204,8 +203,8 @@ const customTheme = deepmerge(theme, {
     },
     // Add a new scheme
     my_scheme_name: {
-      colors: {...},
-      shadows: {...}
+      colors: {},
+      shadows: {}
     }
   }
 })

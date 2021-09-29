@@ -1,6 +1,5 @@
 import React from 'react'
 import {PointerBox} from '..'
-import {COMMON, LAYOUT, BORDER, FLEX} from '../constants'
 import {render, behavesAsComponent, checkExports} from '../utils/testing'
 import {render as HTMLRender, cleanup} from '@testing-library/react'
 import {axe, toHaveNoViolations} from 'jest-axe'
@@ -8,7 +7,7 @@ import 'babel-polyfill'
 expect.extend(toHaveNoViolations)
 
 describe('PointerBox', () => {
-  behavesAsComponent({Component: PointerBox, systemPropArray: [COMMON, LAYOUT, BORDER, FLEX]})
+  behavesAsComponent({Component: PointerBox})
 
   checkExports('PointerBox', {
     default: PointerBox
@@ -26,10 +25,10 @@ describe('PointerBox', () => {
   })
 
   it('passes the "borderColor" prop to both <BorderBox> and <Caret>', () => {
-    expect(render(<PointerBox borderColor="border.danger" />)).toMatchSnapshot()
+    expect(render(<PointerBox borderColor="danger.emphasis" />)).toMatchSnapshot()
   })
 
   it('passes the "bg" prop to both <BorderBox> and <Caret>', () => {
-    expect(render(<PointerBox bg="bg.danger" />)).toMatchSnapshot()
+    expect(render(<PointerBox bg="danger.subtle" />)).toMatchSnapshot()
   })
 })

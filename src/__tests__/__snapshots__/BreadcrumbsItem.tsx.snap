@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Breadcrumb.Item adds activeClassName={SELECTED_CLASS} when it gets a "to" prop 1`] = `
+exports[`Breadcrumbs.Item adds activeClassName={SELECTED_CLASS} when it gets a "to" prop 1`] = `
 .c0 {
-  color: #0366d6;
+  color: #0969da;
   display: inline-block;
   font-size: 14px;
   -webkit-text-decoration: none;
@@ -15,7 +15,7 @@ exports[`Breadcrumb.Item adds activeClassName={SELECTED_CLASS} when it gets a "t
 }
 
 .c0.selected {
-  color: #24292e;
+  color: #24292f;
   pointer-events: none;
 }
 
@@ -27,9 +27,9 @@ exports[`Breadcrumb.Item adds activeClassName={SELECTED_CLASS} when it gets a "t
 />
 `;
 
-exports[`Breadcrumb.Item renders consistently 1`] = `
+exports[`Breadcrumbs.Item renders consistently 1`] = `
 .c0 {
-  color: #0366d6;
+  color: #0969da;
   display: inline-block;
   font-size: 14px;
   -webkit-text-decoration: none;
@@ -42,7 +42,7 @@ exports[`Breadcrumb.Item renders consistently 1`] = `
 }
 
 .c0.selected {
-  color: #24292e;
+  color: #24292f;
   pointer-events: none;
 }
 
@@ -52,9 +52,9 @@ exports[`Breadcrumb.Item renders consistently 1`] = `
 />
 `;
 
-exports[`Breadcrumb.Item respects the "selected" prop 1`] = `
+exports[`Breadcrumbs.Item respects the "selected" prop 1`] = `
 .c0 {
-  color: #0366d6;
+  color: #0969da;
   display: inline-block;
   font-size: 14px;
   -webkit-text-decoration: none;
@@ -67,7 +67,7 @@ exports[`Breadcrumb.Item respects the "selected" prop 1`] = `
 }
 
 .c0.selected {
-  color: #24292e;
+  color: #24292f;
   pointer-events: none;
 }
 

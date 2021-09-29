@@ -9,22 +9,14 @@ TextInput is a form component to add default styling to the native text input.
 ## Default example
 
 ```jsx live
-<TextInput aria-label="Zipcode" name="zipcode" placeholder="Zipcode" autoComplete="postal-code" />
+<>
+  <TextInput aria-label="Zipcode" name="zipcode" placeholder="Zipcode" autoComplete="postal-code" />
 
-<TextInput  sx={{ml: 4}} aria-label="City" name="city" placeholder="City" contrast />
+  <TextInput sx={{ml: 4}} aria-label="City" name="city" placeholder="City" contrast />
 
-<TextInput sx={{ml: 4}} icon={SearchIcon} aria-label="Zipcode" name="zipcode" placeholder="Find user" autoComplete="postal-code" />
+  <TextInput sx={{ml: 4}} icon={SearchIcon} aria-label="Zipcode" name="zipcode" placeholder="Find user" autoComplete="postal-code" />
+</>
 ```
-
-## System props
-
-<Note variant="warning">
-
-System props are deprecated in all components except [Box](/Box). Please use the [`sx` prop](/overriding-styles) instead.
-
-</Note>
-
-TextInput components get `COMMON` system props. Read our [System Props](/system-props) doc page for a full list of available props.
 
 ## Component props
 

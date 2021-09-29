@@ -1,5 +1,4 @@
 import React from 'react'
-import {LAYOUT, POSITION} from '../constants'
 import {Box, Position, Absolute, Fixed, Relative, Sticky} from '..'
 import {render, behavesAsComponent, checkExports} from '../utils/testing'
 import {render as HTMLRender, cleanup} from '@testing-library/react'
@@ -9,7 +8,7 @@ expect.extend(toHaveNoViolations)
 
 describe('position components', () => {
   describe('Absolute', () => {
-    behavesAsComponent({Component: Absolute, systemPropArray: [LAYOUT, POSITION]})
+    behavesAsComponent({Component: Absolute})
 
     checkExports('Position', {
       default: Position,
@@ -32,7 +31,7 @@ describe('position components', () => {
 
     it('can render other components with the as prop', () => {
       const result = render(
-        <Absolute as={Box} borderWidth="1px" borderStyle="solid" borderColor="border.primary" borderRadius={2} />
+        <Absolute as={Box} borderWidth="1px" borderStyle="solid" borderColor="border.default" borderRadius={2} />
       )
       expect(result).toHaveStyleRule('position', 'absolute')
       expect(result).toHaveStyleRule('border-width', '1px')
@@ -41,7 +40,7 @@ describe('position components', () => {
   })
 
   describe('Fixed', () => {
-    behavesAsComponent({Component: Fixed, systemPropArray: [LAYOUT, POSITION]})
+    behavesAsComponent({Component: Fixed})
 
     it('respects the "as" prop', () => {
       expect(render(<Fixed as="span" />).type).toEqual('span')
@@ -60,7 +59,7 @@ describe('position components', () => {
 
     it('can render other components with the as prop', () => {
       const result = render(
-        <Fixed as={Box} borderWidth="1px" borderStyle="solid" borderColor="border.primary" borderRadius={2} />
+        <Fixed as={Box} borderWidth="1px" borderStyle="solid" borderColor="border.default" borderRadius={2} />
       )
       expect(result).toHaveStyleRule('position', 'fixed')
       expect(result).toHaveStyleRule('border-width', '1px')
@@ -69,7 +68,7 @@ describe('position components', () => {
   })
 
   describe('Relative', () => {
-    behavesAsComponent({Component: Relative, systemPropArray: [LAYOUT, POSITION]})
+    behavesAsComponent({Component: Relative})
 
     it('should have no axe violations', async () => {
       const {container} = HTMLRender(<Relative />)
@@ -84,7 +83,7 @@ describe('position components', () => {
 
     it('can render other components with the as prop', () => {
       const result = render(
-        <Relative as={Box} borderWidth="1px" borderStyle="solid" borderColor="border.primary" borderRadius={2} />
+        <Relative as={Box} borderWidth="1px" borderStyle="solid" borderColor="border.default" borderRadius={2} />
       )
       expect(result).toHaveStyleRule('position', 'relative')
       expect(result).toHaveStyleRule('border-width', '1px')
@@ -93,7 +92,7 @@ describe('position components', () => {
   })
 
   describe('Sticky', () => {
-    behavesAsComponent({Component: Sticky, systemPropArray: [LAYOUT, POSITION]})
+    behavesAsComponent({Component: Sticky})
 
     it('should have no axe violations', async () => {
       const {container} = HTMLRender(<Sticky />)
@@ -108,7 +107,7 @@ describe('position components', () => {
 
     it('can render other components with the as prop', () => {
       const result = render(
-        <Sticky as={Box} borderWidth="1px" borderStyle="solid" borderColor="border.primary" borderRadius={2} />
+        <Sticky as={Box} borderWidth="1px" borderStyle="solid" borderColor="border.default" borderRadius={2} />
       )
       expect(result).toHaveStyleRule('position', 'sticky')
       expect(result).toHaveStyleRule('border-width', '1px')

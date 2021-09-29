@@ -1,5 +1,5 @@
 import {CheckIcon, IconProps} from '@primer/octicons-react'
-import React, {useCallback, useMemo} from 'react'
+import React, {useCallback} from 'react'
 import {get} from '../constants'
 import sx, {SxProp} from '../sx'
 import Truncate from '../Truncate'
@@ -13,7 +13,7 @@ import {
   activeDescendantActivatedIndirectly,
   isActiveDescendantAttribute
 } from '../behaviors/focusZone'
-import {uniqueId} from '../utils/uniqueId'
+import {useSSRSafeId} from '@react-aria/ssr'
 
 /**
  * These colors are not yet in our default theme.  Need to remove this once they are added.
@@ -129,9 +129,9 @@ export interface ItemProps extends Omit<React.ComponentPropsWithoutRef<'div'>, '
 const getItemVariant = (variant = 'default', disabled?: boolean) => {
   if (disabled) {
     return {
-      color: get('colors.text.disabled'),
-      iconColor: get('colors.text.disabled'),
-      annotationColor: get('colors.text.disabled'),
+      color: get('colors.fg.muted'),
+      iconColor: get('colors.fg.muted'),
+      annotationColor: get('colors.fg.muted'),
       hoverCursor: 'default'
     }
   }
@@ -139,16 +139,16 @@ const getItemVariant = (variant = 'default', disabled?: boolean) => {
   switch (variant) {
     case 'danger':
       return {
-        color: get('colors.text.danger'),
-        iconColor: get('colors.icon.danger'),
-        annotationColor: get('colors.text.disabled'),
+        color: get('colors.danger.fg'),
+        iconColor: get('colors.danger.fg'),
+        annotationColor: get('colors.fg.muted'),
         hoverCursor: 'pointer'
       }
     default:
       return {
-        color: 'inherit',
-        iconColor: get('colors.text.secondary'),
-        annotationColor: get('colors.text.secondary'),
+        color: get('colors.fg.default'),
+        iconColor: get('colors.fg.muted'),
+        annotationColor: get('colors.fg.muted'),
         hoverCursor: 'pointer'
       }
   }
@@ -211,7 +211,7 @@ const StyledItem = styled.div<
       width: 100%;
       top: -7px;
       // NB: This 'get' won’t execute if it’s moved into the arrow function below.
-      border: 0 solid ${get('colors.selectMenu.borderSecondary')};
+      border: 0 solid ${get('colors.border.muted')};
       border-top-width: ${({showDivider}) => (showDivider ? `1px` : '0')};
     }
   }
@@ -297,7 +297,7 @@ const TrailingContent = styled(ColoredVisualContainer)`
 `
 
 const DescriptionContainer = styled.span`
-  color: ${get('colors.text.secondary')};
+  color: ${get('colors.fg.muted')};
   font-size: ${get('fontSizes.0')};
   // TODO: When rem-based spacing on a 4px scale lands, replace
   // hardcoded '16px' with '${get('lh-12')}'.
@@ -336,8 +336,8 @@ export function Item(itemProps: Partial<ItemProps> & {item?: ItemInput}): JSX.El
     ...props
   } = itemProps
 
-  const labelId = useMemo(() => uniqueId(), [])
-  const descriptionId = useMemo(() => uniqueId(), [])
+  const labelId = useSSRSafeId()
+  const descriptionId = useSSRSafeId()
 
   const keyPressHandler = useCallback(
     event => {

@@ -1,5 +1,57 @@
 # @primer/components
 
+## 30.0.0
+
+### Major Changes
+
+- [#1448](https://github.com/primer/react/pull/1448) [`1a39fb02`](https://github.com/primer/react/commit/1a39fb0284c5e19324d378629d09a343be4cde05) Thanks [@SferaDev](https://github.com/SferaDev)! - Remove `.Breadcrumb` classname from the root element of the `Breadcrumbs` component. This change shouldn't break anything unless you have styles, scripts, or tests that reference the `.Breadcrumb` classname.
+
+* [#1468](https://github.com/primer/react/pull/1468) [`dc15763c`](https://github.com/primer/react/commit/dc15763c733994ea9baa3475139b9bf3c2111e5b) Thanks [@jfuchs](https://github.com/jfuchs)! - AvatarStack no longer accepts styled props or DOM props
+
+### Minor Changes
+
+- [#1474](https://github.com/primer/react/pull/1474) [`c54156bc`](https://github.com/primer/react/commit/c54156bc43f87370f3e8cb23fd9ebf338b5082e4) Thanks [@colebemis](https://github.com/colebemis)! - Add `light_protanopia` and `dark_protanopia` color blind color schemes
+
+### Patch Changes
+
+- [#1448](https://github.com/primer/react/pull/1448) [`1a39fb02`](https://github.com/primer/react/commit/1a39fb0284c5e19324d378629d09a343be4cde05) Thanks [@SferaDev](https://github.com/SferaDev)! - Rename `Breadcrumb` component to `Breadcrumbs`
+
+* [#1470](https://github.com/primer/react/pull/1470) [`f2e29a08`](https://github.com/primer/react/commit/f2e29a08e2aab9e98a460eb073229933f6ae050b) Thanks [@pksjce](https://github.com/pksjce)! - Fix ActionList.Item color
+
+## 29.1.1
+
+### Patch Changes
+
+- [#1441](https://github.com/primer/react/pull/1441) [`f3f5afb9`](https://github.com/primer/react/commit/f3f5afb9cf91e0ce3ea287351c871eb1559f1fa4) Thanks [@jfuchs](https://github.com/jfuchs)! - Fix type error where `css` is a required prop of some components by excluding storybook stories from TypeScript compilation for builds
+
+* [#1446](https://github.com/primer/react/pull/1446) [`b4e5287c`](https://github.com/primer/react/commit/b4e5287cf1ec75a27e4b78b17425952e85f82f47) Thanks [@colebemis](https://github.com/colebemis)! - Fix filter input spacing in SelectPanel
+
+## 29.1.0
+
+### Minor Changes
+
+- [#1412](https://github.com/primer/react/pull/1412) [`627cd3e9`](https://github.com/primer/react/commit/627cd3e95614ab4347e5acf456dd23588196ec87) Thanks [@colebemis](https://github.com/colebemis)! - Add `dark_high_contrast` color scheme
+
+* [#1412](https://github.com/primer/react/pull/1412) [`627cd3e9`](https://github.com/primer/react/commit/627cd3e95614ab4347e5acf456dd23588196ec87) Thanks [@colebemis](https://github.com/colebemis)! - Add new [functional color variables](https://primer.style/primitives/colors) to the theme object.
+
+  **Tip:** Install [`eslint-plugin-primer-react`](https://primer.style/react/linting) to ensure that you're not using any deprecated color variables.
+
+## 29.0.0
+
+### Major Changes
+
+- [#1414](https://github.com/primer/react/pull/1414) [`f4e1de6d`](https://github.com/primer/react/commit/f4e1de6dbe9d20dfcf2144d879294d189433a810) Thanks [@jfuchs](https://github.com/jfuchs)! - Removed system props support from `<TextInput>` and fixed its type definition.
+
+### Minor Changes
+
+- [#1409](https://github.com/primer/react/pull/1409) [`90b17dd6`](https://github.com/primer/react/commit/90b17dd6447419ce1d661e5399b7ac193836ad1a) Thanks [@jfuchs](https://github.com/jfuchs)! - Use @react-aria/ssr for isomorphic ID generation.
+
+### Patch Changes
+
+- [#1424](https://github.com/primer/react/pull/1424) [`7cf8d8b8`](https://github.com/primer/react/commit/7cf8d8b82a6387b1143c06e090cde8f87b4f3a33) Thanks [@jfuchs](https://github.com/jfuchs)! - Removed irregular styling on Timeline
+
+* [#1403](https://github.com/primer/react/pull/1403) [`65cab2cc`](https://github.com/primer/react/commit/65cab2ccd5eae3dcc5d75cbd1a1fd78a6f78abf7) Thanks [@mathiasbosman](https://github.com/mathiasbosman)! - Fix the Timeline.Item layout
+
 ## 28.5.0
 
 ### Minor Changes
@@ -524,7 +576,7 @@
   import {ThemeProvider} from 'styled-components'
   import {theme} from '@primer/react'
 
-  funciton App(props) {
+  function App(props) {
     return (
       <div>
         <ThemeProvider theme={theme}>

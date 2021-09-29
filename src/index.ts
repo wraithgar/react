@@ -38,8 +38,8 @@ export {default as AvatarStack} from './AvatarStack'
 export type {AvatarStackProps} from './AvatarStack'
 export {default as BranchName} from './BranchName'
 export type {BranchNameProps} from './BranchName'
-export {default as Breadcrumb} from './Breadcrumb'
-export type {BreadcrumbProps, BreadcrumbItemProps} from './Breadcrumb'
+export {default as Breadcrumbs, Breadcrumb} from './Breadcrumbs'
+export type {BreadcrumbsProps, BreadcrumbsItemProps, BreadcrumbProps, BreadcrumbItemProps} from './Breadcrumbs'
 export {
   default as Button,
   ButtonDanger,
@@ -161,3 +161,5 @@ export {default as Truncate} from './Truncate'
 export type {TruncateProps} from './Truncate'
 export {default as UnderlineNav} from './UnderlineNav'
 export type {UnderlineNavProps, UnderlineNavLinkProps} from './UnderlineNav'
+
+export {SSRProvider, useSSRSafeId} from './utils/ssr'

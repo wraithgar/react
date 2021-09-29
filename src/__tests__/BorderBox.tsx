@@ -2,14 +2,13 @@ import React from 'react'
 import theme from '../theme'
 import {BorderBox} from '..'
 import {render, behavesAsComponent, checkExports} from '../utils/testing'
-import {LAYOUT, COMMON, BORDER, FLEX} from '../constants'
 import {render as HTMLRender, cleanup} from '@testing-library/react'
 import {axe, toHaveNoViolations} from 'jest-axe'
 import 'babel-polyfill'
 expect.extend(toHaveNoViolations)
 
 describe('BorderBox', () => {
-  behavesAsComponent({Component: BorderBox, systemPropArray: [LAYOUT, COMMON, BORDER, FLEX]})
+  behavesAsComponent({Component: BorderBox})
 
   checkExports('BorderBox', {
     default: BorderBox
@@ -23,7 +22,7 @@ describe('BorderBox', () => {
   })
 
   it('renders borders', () => {
-    expect(render(<BorderBox borderColor="border.success" />)).toHaveStyleRule(
+    expect(render(<BorderBox borderColor="success.emphasis" />)).toHaveStyleRule(
       'border-color',
       theme.colorSchemes.light.colors.border?.success
     )

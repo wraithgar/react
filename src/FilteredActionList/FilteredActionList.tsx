@@ -1,11 +1,11 @@
-import React, {KeyboardEventHandler, useCallback, useEffect, useMemo, useRef} from 'react'
+import React, {KeyboardEventHandler, useCallback, useEffect, useRef} from 'react'
+import {useSSRSafeId} from '@react-aria/ssr'
 import {GroupedListProps, ListPropsBase} from '../ActionList/List'
 import TextInput, {TextInputProps} from '../TextInput'
 import Box from '../Box'
 import {ActionList} from '../ActionList'
 import Spinner from '../Spinner'
 import {useFocusZone} from '../hooks/useFocusZone'
-import {uniqueId} from '../utils/uniqueId'
 import {useProvidedStateOrCreate} from '../hooks/useProvidedStateOrCreate'
 import styled from 'styled-components'
 import {get} from '../constants'
@@ -23,7 +23,7 @@ export interface FilteredActionListProps extends Partial<Omit<GroupedListProps, 
 }
 
 const StyledHeader = styled.div`
-  box-shadow: 0 1px 0 ${get('colors.border.primary')};
+  box-shadow: 0 1px 0 ${get('colors.border.default')};
   z-index: 1;
 `
 
@@ -51,7 +51,7 @@ export function FilteredActionList({
   const listContainerRef = useRef<HTMLDivElement>(null)
   const inputRef = useProvidedRefOrCreate<HTMLInputElement>(providedInputRef)
   const activeDescendantRef = useRef<HTMLElement>()
-  const listId = useMemo(uniqueId, [])
+  const listId = useSSRSafeId()
   const onInputKeyPress: KeyboardEventHandler = useCallback(
     event => {
       if (event.key === 'Enter' && activeDescendantRef.current) {
@@ -91,7 +91,7 @@ export function FilteredActionList({
   useEffect(() => {
     // if items changed, we want to instantly move active descendant into view
     if (activeDescendantRef.current && scrollContainerRef.current) {
-      scrollIntoViewingArea(activeDescendantRef.current, scrollContainerRef.current, undefined, 'auto')
+      scrollIntoViewingArea(activeDescendantRef.current, scrollContainerRef.current, 'vertical', undefined, undefined, 'auto')
     }
   }, [items])
 
@@ -104,7 +104,7 @@ export function FilteredActionList({
           ref={inputRef}
           block
           width="auto"
-          color="text.primary"
+          color="fg.default"
           value={filterValue}
           onChange={onInputChange}
           onKeyPress={onInputKeyPress}
