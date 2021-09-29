@@ -1,5 +1,5 @@
 import React, { forwardRef, MouseEventHandler } from 'react'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import TokenBase, { isTokenInteractive, TokenBaseProps } from './TokenBase'
 import RemoveTokenButton from './_RemoveTokenButton'
 import tinycolor from 'tinycolor2'
@@ -51,11 +51,29 @@ const StyledTokenLabel = styled(TokenBase)<TokenLabelProps & LabelStyleProps>`
   border-width: ${tokenBorderWidthPx}px;
   border-style: solid;
   border-color: ${props => props.borderColor};
-  box-shadow: ${props => props.isSelected ? `0 0 0 2px ${props.bgColor}` : undefined};
   color: ${props => props.textColor};
-  overflow: hidden;
   padding-right: ${props => !props.hideRemoveButton ? 0 : undefined};
   position: relative;
+
+  ${props => {
+    if (props.isSelected) {
+      return css`
+        &:after {
+            content: '';
+            position: absolute;
+            z-index: 1;
+            top: -2px;
+            right: -2px;
+            bottom: -2px;
+            left: -2px;
+            display: block;
+            pointer-events: none;
+            box-shadow: 0 0 0 2px ${props.bgColor};
+            border-radius: 999px;
+        }
+      `
+    }
+  }}
 `
 
 const TokenTextContainer = styled('span')`
@@ -99,15 +117,15 @@ const TokenLabel = forwardRef<HTMLElement, TokenLabelProps>((props, forwardedRef
             ? tinycolor(fillColor).setAlpha(bgOpacity * 1.2).toRgbString()
             : tinycolor(fillColor).setAlpha(bgOpacity).toRgbString();
         textColor = isSelected
-            ? tinycolor(fillColor).lighten(lightenBy + 8).toString()
+            ? tinycolor(fillColor).lighten(lightenBy + 10).toString()
             : tinycolor(fillColor).lighten(lightenBy).toString();
         borderColor = isSelected
-            ? tinycolor(fillColor).lighten(lightenBy).toRgbString()
+            ? tinycolor(fillColor).lighten(lightenBy + 5).toRgbString()
             : tinycolor(fillColor).lighten(lightenBy).setAlpha(borderOpacity).toRgbString();
     } else {
         const isFillColorDark = perceivedLightness < 0.1;
         borderColor = perceivedLightness >= borderThreshold
-            ? tinycolor(fillColor).darken(25).toString()
+            ? tinycolor(fillColor).darken(30).toString()
             : 'transparent';
 
         if (isFillColorLight) {
@@ -116,8 +134,8 @@ const TokenLabel = forwardRef<HTMLElement, TokenLabelProps>((props, forwardedRef
 
         if (isSelected) {
             bgColor = isFillColorDark
-                ? tinycolor(fillColor).lighten(10).toString()
-                : tinycolor(fillColor).darken(10).toString()
+                ? tinycolor(fillColor).lighten(30).toString()
+                : tinycolor(fillColor).darken(30).toString()
         }
     }
 

@@ -109,9 +109,9 @@ export const labelToken = () => (
                 alignItems: 'start',
                 gap: get('space.2'),
             }}>
-                <TokenLabel fillColor="#656BFE" as="a" href="http://google.com/" text="Link" />
-                <TokenLabel fillColor="#656BFE" as="button" onClick={() => console.log('clicked')} text="Button" />
-                <TokenLabel fillColor="#656BFE" as="span" tabIndex={0} onFocus={() => console.log('focused')} text="Focusable Span" />
+                <TokenLabel as="a" href="http://google.com/" text="Link" />
+                <TokenLabel as="button" onClick={() => console.log('clicked')} text="Button" />
+                <TokenLabel as="span" tabIndex={0} onFocus={() => console.log('focused')} text="Focusable Span" />
             </Box>
         </SingleExampleContainer>
         <SingleExampleContainer label="Interactive (#656BFE fill color passed)">
