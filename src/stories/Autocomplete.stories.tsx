@@ -100,14 +100,17 @@ export default {
 
 export const Default = () => {
     return (
+      <>
+        <label htmlFor="autocompleteInput" id="autocompleteLabel">Pick an option</label>
         <Autocomplete>
-          <Autocomplete.Input />
+          <Autocomplete.Input id="autocompleteInput" />
           <Autocomplete.Menu
             items={items}
             selectedItemIds={[]}
-            maxHeight="xsmall"
+            aria-labelledby="autocompleteLabel"
           />
         </Autocomplete>
+      </>
     )
 }
 
@@ -130,11 +133,14 @@ export const MultiSelectWithTokenInput = () => {
   }
 
   return (
+    <>
+      <label htmlFor="autocompleteInput" id="autocompleteLabel">Pick options</label>
       <Autocomplete>
         <Autocomplete.Input
           as={TextInputTokens}
           tokens={tokens}
           onTokenRemove={onTokenRemove}
+          id="autocompleteInput"
         />
         <Autocomplete.Menu
           items={items}
@@ -142,8 +148,10 @@ export const MultiSelectWithTokenInput = () => {
           onItemSelect={onItemSelect}
           onItemDeselect={onItemDeselect}
           selectionVariant="multiple"
+          aria-labelledby="autocompleteLabel"
         />
       </Autocomplete>
+    </>
   )
 }
 
@@ -177,12 +185,15 @@ export const MultiSelectAddNewItem = () => {
   };
 
   return (
+    <>
+      <label htmlFor="autocompleteInput" id="autocompleteLabel">Pick options</label>
       <Autocomplete>
         <Autocomplete.Input
           as={TextInputTokens}
           tokens={tokens}
           onTokenRemove={onTokenRemove}
           onChange={handleChange}
+          id="autocompleteInput"
         />
         <Autocomplete.Menu
           addNewItem={
@@ -206,9 +217,10 @@ export const MultiSelectAddNewItem = () => {
           onItemSelect={onItemSelect}
           onItemDeselect={onItemDeselect}
           selectionVariant="multiple"
-
+          aria-labelledby="autocompleteLabel"
         />
       </Autocomplete>
+    </>
   )
 }
 
@@ -278,6 +290,24 @@ export const TokenLabelSelectInTable = () => {
             onDoubleClick={handleCellDoubleClick}
             ref={scrollContainerRef as React.RefObject<HTMLDivElement>}
           >
+            <Box
+              as="label"
+              htmlFor="autocompleteInput"
+              id="autocompleteLabel"
+              sx={{
+                // visually hides this label for sighted users
+                position: 'absolute',
+                width: '1px',
+                height: '1px',
+                padding: '0',
+                margin: '-1px',
+                overflow: 'hidden',
+                clip: 'rect(0, 0, 0, 0)',
+                whiteSpace: 'nowrap',
+                borderWidth: '0',
+              }}>
+                Pick labels
+            </Box>
             <Autocomplete>
               <Autocomplete.Input
                 as={TextInputTokens}
@@ -291,6 +321,7 @@ export const TokenLabelSelectInTable = () => {
                 hideTokenRemoveButtons={true}
                 onFocus={activateLabelGridCell}
                 onBlur={deactivateLabelGridCell}
+                id="autocompleteInput"
                 sx={{
                   'border': '0',
                   'padding': '0',
@@ -308,6 +339,7 @@ export const TokenLabelSelectInTable = () => {
                 onItemDeselect={onItemDeselect}
                 selectionVariant="multiple"
                 menuAnchorRef={scrollContainerRef}
+                aria-labelledby="autocompleteLabel"
               />
             </Autocomplete>
           </Box>

@@ -88,7 +88,7 @@ type AutocompleteMenuInternalProps<T extends AutocompleteItemProps> = {
    * The ref of the element that the position of the menu is based on. By default, the menu is positioned based on the text input
    */
   menuAnchorRef?: React.RefObject<Element>
-}
+} & Pick<React.AriaAttributes, 'aria-labelledby'> // TODO: consider making 'aria-labelledby' required
 
 function getDefaultOnItemSelectFn<T extends MandateProps<ItemProps, 'id'>>(setInputValueFn?: React.Dispatch<React.SetStateAction<string>>): OnAction<T> {
     if (setInputValueFn) {
@@ -105,6 +105,7 @@ function getDefaultOnItemSelectFn<T extends MandateProps<ItemProps, 'id'>>(setIn
 function AutocompleteMenu<T extends AutocompleteItemProps>(props: AutocompleteMenuInternalProps<T> & Pick<OverlayProps, 'width' | 'height' | 'maxHeight'>) {
     const {
         activeDescendantRef,
+        id,
         inputRef,
         inputValue = '',
         setAutocompleteSuggestion,
@@ -128,6 +129,7 @@ function AutocompleteMenu<T extends AutocompleteItemProps>(props: AutocompleteMe
         height,
         maxHeight,
         menuAnchorRef,
+        "aria-labelledby": ariaLabelledBy
     } = props
     const listContainerRef = useRef<HTMLDivElement>(null)
     const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -153,6 +155,7 @@ function AutocompleteMenu<T extends AutocompleteItemProps>(props: AutocompleteMe
 
     const selectableItems = items.map((selectableItem) => ({
             ...selectableItem,
+            role: "option",
             id: selectableItem.id,
             selected: selectionVariant === 'multiple' ? isItemSelected(selectableItem.id) : undefined,
             onAction: (item: T, e: React.MouseEvent<HTMLDivElement> | React.KeyboardEvent<HTMLDivElement>) => {
@@ -286,6 +289,8 @@ function AutocompleteMenu<T extends AutocompleteItemProps>(props: AutocompleteMe
                             // on `items` for Autocomplete: `metadata`
                             items={allItemsToRender as ItemProps[]}
                             role="listbox"
+                            id={`${id}-listbox`}
+                            aria-labelledby={ariaLabelledBy}
                         />
                         ) : (
                             <Box p={3}>{emptyStateText}</Box>

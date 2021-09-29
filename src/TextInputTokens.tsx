@@ -232,8 +232,6 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
   }
 )
 
-// type TestType = ComponentPropsWithoutRef<typeof Token>
-
 TextInputWithTokens.defaultProps = {
     tokenComponent: Token,
     tokenSizeVariant: "xl",

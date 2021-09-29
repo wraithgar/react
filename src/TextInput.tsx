@@ -1,4 +1,3 @@
-import {omit, pick} from '@styled-system/props'
 import classnames from 'classnames'
 import React from 'react'
 import styled, {css} from 'styled-components'
@@ -110,39 +109,60 @@ const Wrapper = styled.span<StyledWrapperProps>`
   ${sx};
 `
 
-type TextInputInternalProps = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  as?: any // This is a band-aid fix until we have better type support for the `as` prop
+type NonPassthroughProps = {
+  className?: string
   icon?: React.ComponentType<{className?: string}>
   inputComponent?: React.ComponentType<HTMLInputElement>
   wrapperRef?: React.RefObject<HTMLSpanElement>
-} & ComponentProps<typeof Wrapper> &
-  ComponentProps<typeof UnstyledTextInput>
+} & Pick<
+  ComponentProps<typeof Wrapper>,
+  'block' | 'contrast' | 'disabled' | 'sx' | 'theme' | 'width' | 'maxWidth' | 'minWidth' | 'variant'
+>
+
+type TextInputInternalProps = NonPassthroughProps &
+  // Note: using ComponentProps instead of ComponentPropsWithoutRef here would cause a type issue where `css` is a required prop.
+  Omit<React.ComponentPropsWithoutRef<typeof UnstyledTextInput>, keyof NonPassthroughProps>
+
 
 // using forwardRef is important so that other components (ex. SelectMenu) can autofocus the input
-const TextInput = React.forwardRef(
-  ({icon: IconComponent, contrast, className, block, disabled, inputComponent: InputComponent, theme, sx: sxProp, wrapperRef, ...rest}, ref) => {
+const TextInput = React.forwardRef<HTMLInputElement, TextInputInternalProps>(
+  ({
+    inputComponent: InputComponent,
+    icon: IconComponent,
+    block,
+    className,
+    contrast,
+    disabled,
+    sx: sxProp,
+    theme,
+    width: widthProp,
+    minWidth: minWidthProp,
+    maxWidth: maxWidthProp,
+    variant: variantProp,
+    wrapperRef,
+    ...inputProps
+  }, ref) => {
     // this class is necessary to style FilterSearch, plz no touchy!
     const wrapperClasses = classnames(className, 'TextInput-wrapper')
-    const wrapperProps = pick(rest)
-    const inputProps = omit(rest)
+
     return (
-      <>
-        <Wrapper
-          className={wrapperClasses}
-          hasIcon={!!IconComponent}
-          block={block}
-          theme={theme}
-          disabled={disabled}
-          contrast={contrast}
-          sx={sxProp}
-          ref={wrapperRef}
-          {...wrapperProps}
-        >
-          {IconComponent && <IconComponent className="TextInput-icon" />}
-          <UnstyledTextInput ref={ref} disabled={disabled} {...inputProps} />
-        </Wrapper>
-      </>
+      <Wrapper
+        block={block}
+        className={wrapperClasses}
+        contrast={contrast}
+        disabled={disabled}
+        hasIcon={!!IconComponent}
+        sx={sxProp}
+        theme={theme}
+        width={widthProp}
+        minWidth={minWidthProp}
+        maxWidth={maxWidthProp}
+        variant={variantProp}
+        ref={wrapperRef}
+      >
+        {IconComponent && <IconComponent className="TextInput-icon" />}
+        <UnstyledTextInput ref={ref} disabled={disabled} {...inputProps} />
+      </Wrapper>
     )
   }
 ) as Polymorphic.ForwardRefComponent<"input", TextInputInternalProps>

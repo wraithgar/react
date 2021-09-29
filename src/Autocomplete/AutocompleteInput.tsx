@@ -31,6 +31,7 @@ const AutocompleteInput = React.forwardRef(
         const {
             activeDescendantRef,
             autocompleteSuggestion = '',
+            id,
             inputRef,
             inputValue = '',
             isMenuDirectlyActivated,
@@ -125,16 +126,25 @@ const AutocompleteInput = React.forwardRef(
         }, [value])
 
         return (
-            <Component
-                onFocus={handleInputFocus}
-                onBlur={handleInputBlur}
-                onChange={handleInputChange}
-                onKeyDown={handleInputKeyDown}
-                onKeyPress={onInputKeyPress}
-                onKeyUp={handleInputKeyUp}
-                ref={combinedInputRef}
-                {...props}
-            />
+            <div
+                role="combobox"
+                aria-expanded={showMenu}
+                aria-haspopup="listbox"
+                aria-owns={`${id}-listbox`}
+            >
+                <Component
+                    onFocus={handleInputFocus}
+                    onBlur={handleInputBlur}
+                    onChange={handleInputChange}
+                    onKeyDown={handleInputKeyDown}
+                    onKeyPress={onInputKeyPress}
+                    onKeyUp={handleInputKeyUp}
+                    ref={combinedInputRef}
+                    aria-controls={`${id}-listbox`}
+                    aria-autocomplete="both"
+                    {...props}
+                />
+            </div>
         )
     }
 ) as Polymorphic.ForwardRefComponent<"input", InternalAutocompleteInputProps>
