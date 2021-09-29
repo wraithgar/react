@@ -75,6 +75,7 @@ export function FilteredActionList({
       },
       activeDescendantFocus: inputRef,
       onActiveDescendantChanged: (current, previous, directlyActivated) => {
+        console.log('onActiveDescendantChanged', current?.textContent);
         activeDescendantRef.current = current
 
         if (current && scrollContainerRef.current && directlyActivated) {
