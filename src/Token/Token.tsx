@@ -67,6 +67,7 @@ const Token = forwardRef<HTMLAnchorElement | HTMLButtonElement | HTMLSpanElement
     return (
         <DefaultTokenStyled
             as={as}
+            handleRemove={handleRemove}
             hideRemoveButton={hideRemoveButton || !handleRemove}
             id={id?.toString()}
             text={text}

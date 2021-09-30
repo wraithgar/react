@@ -156,6 +156,7 @@ const TokenLabel = forwardRef<HTMLElement, TokenLabelProps>((props, forwardedRef
             // common token props
             as={as}
             hideRemoveButton={hideRemoveButton || !handleRemove}
+            handleRemove={handleRemove}
             id={id?.toString()}
             isSelected={isSelected}
             ref={forwardedRef}
