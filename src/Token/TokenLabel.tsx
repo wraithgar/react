@@ -125,7 +125,7 @@ const TokenLabel = forwardRef<HTMLElement, TokenLabelProps>((props, forwardedRef
     } else {
         const isFillColorDark = perceivedLightness < 0.1;
         borderColor = perceivedLightness >= borderThreshold
-            ? tinycolor(fillColor).darken(30).toString()
+            ? tinycolor(fillColor).darken(25).toString()
             : 'transparent';
 
         if (isFillColorLight) {
@@ -134,8 +134,13 @@ const TokenLabel = forwardRef<HTMLElement, TokenLabelProps>((props, forwardedRef
 
         if (isSelected) {
             bgColor = isFillColorDark
-                ? tinycolor(fillColor).lighten(30).toString()
-                : tinycolor(fillColor).darken(30).toString()
+                ? tinycolor(fillColor).lighten(10).toString()
+                // TODO: darken more than 10 if the fillColor is really bright and doesn't darken well
+                //       Examples of colors that don't darken well:
+                //       - #a2eeef
+                //       - #ffd78e
+                //       - #a4f287
+                : tinycolor(fillColor).darken(10).toString()
         }
     }
 
