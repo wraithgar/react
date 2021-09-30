@@ -92,6 +92,10 @@ type AutocompleteMenuInternalProps<T extends AutocompleteItemProps> = {
    * Whether the menu should be displayed in an overlay
    */
   preventOverlay?: boolean
+  /**
+   * Props to be spread on the internal `Overlay` component.
+   */
+   overlayProps?: Partial<OverlayProps>
 } & Pick<React.AriaAttributes, 'aria-labelledby'> // TODO: consider making 'aria-labelledby' required
 
 function getDefaultOnItemSelectFn<T extends MandateProps<ItemProps, 'id'>>(setInputValueFn?: React.Dispatch<React.SetStateAction<string>>): OnAction<T> {
@@ -106,7 +110,7 @@ function getDefaultOnItemSelectFn<T extends MandateProps<ItemProps, 'id'>>(setIn
     }
 }
 
-function AutocompleteMenu<T extends AutocompleteItemProps>(props: AutocompleteMenuInternalProps<T> & Pick<OverlayProps, 'width' | 'height' | 'maxHeight'>) {
+function AutocompleteMenu<T extends AutocompleteItemProps>(props: AutocompleteMenuInternalProps<T>) {
     const {
         activeDescendantRef,
         id,
@@ -129,12 +133,10 @@ function AutocompleteMenu<T extends AutocompleteItemProps>(props: AutocompleteMe
         loading,
         selectionVariant,
         filterFn = getDefaultItemFilter(inputValue),
-        width,
-        height,
-        maxHeight,
         menuAnchorRef,
         "aria-labelledby": ariaLabelledBy,
-        preventOverlay
+        preventOverlay,
+        overlayProps
     } = props
     const listContainerRef = useRef<HTMLDivElement>(null)
     const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -306,10 +308,8 @@ function AutocompleteMenu<T extends AutocompleteItemProps>(props: AutocompleteMe
             ref={combinedOverlayRef as React.RefObject<HTMLDivElement>}
             top={position?.top}
             left={position?.left}
-            width={width}
-            height={height}
-            maxHeight={maxHeight}
             visibility={showMenu ? 'visible' : 'hidden'}
+            {...overlayProps}
         >
             <Box height="100%" overflow="auto">
                 {selectionList}
