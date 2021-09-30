@@ -216,7 +216,7 @@ const TextInputWithTokens = React.forwardRef<HTMLInputElement, TextInputWithToke
         tokens={tokens}
         onTokenRemove={handleTokenRemove}
         sx={{
-          'alignItems': props.preventTokenWrapping ? 'center' : undefined,
+          'alignItems': 'center',
           'flexWrap': props.preventTokenWrapping ? 'nowrap' : 'wrap',
           'gap': '0.25rem',
 

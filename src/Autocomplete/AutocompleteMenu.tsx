@@ -88,6 +88,10 @@ type AutocompleteMenuInternalProps<T extends AutocompleteItemProps> = {
    * The ref of the element that the position of the menu is based on. By default, the menu is positioned based on the text input
    */
   menuAnchorRef?: React.RefObject<Element>
+  /**
+   * Whether the menu should be displayed in an overlay
+   */
+  preventOverlay?: boolean
 } & Pick<React.AriaAttributes, 'aria-labelledby'> // TODO: consider making 'aria-labelledby' required
 
 function getDefaultOnItemSelectFn<T extends MandateProps<ItemProps, 'id'>>(setInputValueFn?: React.Dispatch<React.SetStateAction<string>>): OnAction<T> {
@@ -129,7 +133,8 @@ function AutocompleteMenu<T extends AutocompleteItemProps>(props: AutocompleteMe
         height,
         maxHeight,
         menuAnchorRef,
-        "aria-labelledby": ariaLabelledBy
+        "aria-labelledby": ariaLabelledBy,
+        preventOverlay
     } = props
     const listContainerRef = useRef<HTMLDivElement>(null)
     const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -262,20 +267,8 @@ function AutocompleteMenu<T extends AutocompleteItemProps>(props: AutocompleteMe
         registerPortalRoot(listContainerRef.current, DROPDOWN_PORTAL_CONTAINER_NAME)
     }
 
-    return (
-        <Overlay
-            returnFocusRef={inputRef}
-            preventFocusOnOpen={true}
-            onClickOutside={closeOptionList}
-            onEscape={closeOptionList}
-            ref={combinedOverlayRef as React.RefObject<HTMLDivElement>}
-            top={position?.top}
-            left={position?.left}
-            width={width}
-            height={height}
-            maxHeight={maxHeight}
-            visibility={showMenu ? 'visible' : 'hidden'}
-        >
+    const selectionList = (
+        <>
             {loading ? (
                 <Box p={3} display="flex" justifyContent="center">
                     <Spinner />
@@ -297,6 +290,28 @@ function AutocompleteMenu<T extends AutocompleteItemProps>(props: AutocompleteMe
                         )}
                 </div>
             )}
+        </>
+    );
+
+    if (preventOverlay) {
+        return selectionList
+    }
+
+    return (
+        <Overlay
+            returnFocusRef={inputRef}
+            preventFocusOnOpen={true}
+            onClickOutside={closeOptionList}
+            onEscape={closeOptionList}
+            ref={combinedOverlayRef as React.RefObject<HTMLDivElement>}
+            top={position?.top}
+            left={position?.left}
+            width={width}
+            height={height}
+            maxHeight={maxHeight}
+            visibility={showMenu ? 'visible' : 'hidden'}
+        >
+            {selectionList}
         </Overlay>
     )
 }

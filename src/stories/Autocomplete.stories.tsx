@@ -6,6 +6,8 @@ import TextInputTokens from '../TextInputTokens'
 import Autocomplete from '../Autocomplete/Autocomplete'
 import TokenLabel from '../Token/TokenLabel'
 import { scrollIntoViewingArea } from '../utils/scrollIntoViewingArea'
+import { AnchoredOverlay } from '../AnchoredOverlay'
+import { ButtonInvisible } from '../Button'
 
 type ItemMetadata = {
   fillColor: React.CSSProperties['backgroundColor']
@@ -347,3 +349,101 @@ export const TokenLabelSelectInTable = () => {
         </Box>
     )
 };
+
+export const AsTokenSelectPanel = () => {
+  const scrollContainerRef = useRef<HTMLElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [tokens, setTokens] = useState<TokenDatum[]>([])
+  const selectedTokenIds = tokens.map(token => token.id);
+  const [selectedItemIds, setSelectedItemIds] = useState<Array<string | number>>(selectedTokenIds);
+  const onTokenRemove: (tokenId: string | number) => void = (tokenId) => {
+      setTokens(tokens.filter(token => token.id !== tokenId));
+      setSelectedItemIds(selectedItemIds.filter(id => id !== tokenId));
+  };
+  const onItemSelect: (item: Datum) => void = (item) => {
+    const {metadata, text, id} = item;
+    setTokens([...tokens, {fillColor: metadata?.fillColor, text, id}])
+    setSelectedItemIds([...selectedItemIds, item.id])
+  };
+  const onItemDeselect: (item: Datum) => void = (item) => {
+    onTokenRemove(item.id)
+    setSelectedItemIds(selectedItemIds.filter(selectedItemId => selectedItemId !== item.id))
+  };
+
+  const [isOpen, setIsOpen] = useState(false)
+  const handleOpen = () => {
+    setIsOpen(true)
+    inputRef.current && inputRef.current.focus()
+  }
+
+  return (
+    <AnchoredOverlay
+      open={isOpen}
+      onOpen={handleOpen}
+      onClose={() => setIsOpen(false)}
+      width="large"
+      height="auto"
+      focusTrapSettings={{initialFocusRef: inputRef}}
+      side="inside-top"
+      renderAnchor={props => (
+        <ButtonInvisible {...props}>
+          open overlay
+        </ButtonInvisible>
+      )}
+      
+    >
+      <Box
+        as="label"
+        display="block"
+        htmlFor="autocompleteInput"
+        id="autocompleteLabel"
+        sx={{
+          // visually hides this label for sighted users
+          position: 'absolute',
+          width: '1px',
+          height: '1px',
+          padding: '0',
+          margin: '-1px',
+          overflow: 'hidden',
+          clip: 'rect(0, 0, 0, 0)',
+          whiteSpace: 'nowrap',
+          borderWidth: '0',
+        }}
+      >
+        Pick options
+      </Box>
+      <Autocomplete>
+        <Autocomplete.Input
+          as={TextInputTokens}
+          tokenComponent={TokenLabel}
+          tokens={tokens}
+          onTokenRemove={onTokenRemove}
+          block={true}
+          tokenSizeVariant="md"
+          ref={inputRef}
+          hideTokenRemoveButtons={true}
+          id="autocompleteInput"
+          sx={{
+            'border': '0',
+            'padding': '0 16px',
+            'boxShadow': 'none',
+            ':focus-within': {
+              'border': '0',
+              'boxShadow': 'none',
+            }
+          }}
+        />
+        <Autocomplete.Menu
+          preventOverlay
+          items={labelItems}
+          selectedItemIds={selectedItemIds}
+          onItemSelect={onItemSelect}
+          onItemDeselect={onItemDeselect}
+          selectionVariant="multiple"
+          menuAnchorRef={scrollContainerRef}
+          aria-labelledby="autocompleteLabel"
+        />
+        </Autocomplete>
+    </AnchoredOverlay>
+  )
+}
