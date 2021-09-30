@@ -224,7 +224,6 @@ function AutocompleteMenu<T extends AutocompleteItemProps>(props: AutocompleteMe
         },
         activeDescendantFocus: inputRef,
         onActiveDescendantChanged: (current, _previous, directlyActivated) => {
-            console.log('onActiveDescendantChanged', current?.textContent);
             if (activeDescendantRef) {
                 activeDescendantRef.current = current || null
             }
