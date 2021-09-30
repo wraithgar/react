@@ -245,7 +245,7 @@ function AutocompleteMenu<T extends AutocompleteItemProps>(props: AutocompleteMe
                 scrollIntoViewingArea(current, scrollContainerRef.current)
             }
         }
-    })
+    }, [loading])
 
     useEffect(() => {
         if (!setAutocompleteSuggestion) {
