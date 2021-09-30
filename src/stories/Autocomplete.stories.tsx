@@ -101,7 +101,7 @@ export default {
 
 
 export const Default = () => {
-    return (
+  return (
       <>
         <Box as="label" display="block" htmlFor="autocompleteInput" id="autocompleteLabel">Pick an option</Box>
         <Autocomplete>
@@ -382,7 +382,7 @@ export const AsTokenSelectPanel = () => {
       onOpen={handleOpen}
       onClose={() => setIsOpen(false)}
       width="large"
-      height="auto"
+      height="xsmall"
       focusTrapSettings={{initialFocusRef: inputRef}}
       side="inside-top"
       renderAnchor={props => (
@@ -392,57 +392,70 @@ export const AsTokenSelectPanel = () => {
       )}
       
     >
-      <Box
-        as="label"
-        display="block"
-        htmlFor="autocompleteInput"
-        id="autocompleteLabel"
-        sx={{
-          // visually hides this label for sighted users
-          position: 'absolute',
-          width: '1px',
-          height: '1px',
-          padding: '0',
-          margin: '-1px',
-          overflow: 'hidden',
-          clip: 'rect(0, 0, 0, 0)',
-          whiteSpace: 'nowrap',
-          borderWidth: '0',
-        }}
-      >
-        Pick options
-      </Box>
-      <Autocomplete>
-        <Autocomplete.Input
-          as={TextInputTokens}
-          tokenComponent={TokenLabel}
-          tokens={tokens}
-          onTokenRemove={onTokenRemove}
-          block={true}
-          tokenSizeVariant="md"
-          ref={inputRef}
-          hideTokenRemoveButtons={true}
-          id="autocompleteInput"
+        <Box
+          as="label"
+          display="block"
+          htmlFor="autocompleteInput"
+          id="autocompleteLabel"
           sx={{
-            'border': '0',
-            'padding': '0 16px',
-            'boxShadow': 'none',
-            ':focus-within': {
-              'border': '0',
-              'boxShadow': 'none',
-            }
+            // visually hides this label for sighted users
+            position: 'absolute',
+            width: '1px',
+            height: '1px',
+            padding: '0',
+            margin: '-1px',
+            overflow: 'hidden',
+            clip: 'rect(0, 0, 0, 0)',
+            whiteSpace: 'nowrap',
+            borderWidth: '0',
           }}
-        />
-        <Autocomplete.Menu
-          preventOverlay
-          items={labelItems}
-          selectedItemIds={selectedItemIds}
-          onItemSelect={onItemSelect}
-          onItemDeselect={onItemDeselect}
-          selectionVariant="multiple"
-          menuAnchorRef={scrollContainerRef}
-          aria-labelledby="autocompleteLabel"
-        />
+        >
+          Pick options
+        </Box>
+        <Autocomplete>
+          <Box display="flex" flexDirection="column" height="100%">
+            <Box
+              paddingX="3"
+              paddingY="1"
+              borderWidth={0}
+              borderBottomWidth={1}
+              borderColor="border.default"
+              borderStyle="solid"
+            >
+              <Autocomplete.Input
+                as={TextInputTokens}
+                tokenComponent={TokenLabel}
+                tokens={tokens}
+                onTokenRemove={onTokenRemove}
+                block={true}
+                tokenSizeVariant="md"
+                ref={inputRef}
+                hideTokenRemoveButtons={true}
+                id="autocompleteInput"
+                sx={{
+                  'border': '0',
+                  'padding': '0',
+                  'boxShadow': 'none',
+                  ':focus-within': {
+                    'border': '0',
+                    'boxShadow': 'none',
+                  }
+                }}
+              />
+            </Box>
+            <Box overflow="auto" flexGrow={1}>
+              <Autocomplete.Menu
+                preventOverlay
+                items={labelItems}
+                selectedItemIds={selectedItemIds}
+                onItemSelect={onItemSelect}
+                onItemDeselect={onItemDeselect}
+                selectionVariant="multiple"
+                menuAnchorRef={scrollContainerRef}
+                aria-labelledby="autocompleteLabel"
+              />
+            </Box>
+          </Box>
         </Autocomplete>
     </AnchoredOverlay>
   )

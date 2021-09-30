@@ -311,7 +311,9 @@ function AutocompleteMenu<T extends AutocompleteItemProps>(props: AutocompleteMe
             maxHeight={maxHeight}
             visibility={showMenu ? 'visible' : 'hidden'}
         >
-            {selectionList}
+            <Box height="100%" overflow="auto">
+                {selectionList}
+            </Box>
         </Overlay>
     )
 }
