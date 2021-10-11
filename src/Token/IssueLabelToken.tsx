@@ -51,8 +51,6 @@ const IssueLabelToken = forwardRef<HTMLElement, IssueLabelTokenProps>((props, fo
     onClick
   }
   const themeData = useTheme()
-  const {theme} = themeData
-  const colorScheme = theme && getLuminance(theme.colors.canvas.default) < 0.5 ? 'dark' : 'light'
   const hasMultipleActionTargets = isTokenInteractive(props) && Boolean(onRemove) && !hideRemoveButton
   const onRemoveClick: MouseEventHandler = e => {
     e.stopPropagation()
@@ -61,6 +59,10 @@ const IssueLabelToken = forwardRef<HTMLElement, IssueLabelTokenProps>((props, fo
   const labelStyles: CSSObject = useMemo(() => {
     const [r, g, b] = parseToRgba(fillColor)
     const [h, s, l] = parseToHsla(fillColor)
+    const {theme} = themeData
+    const colorScheme = theme && getLuminance(theme.colors.canvas.default) < 0.5 ? 'dark' : 'light'
+
+    console.log('themeData', themeData)
 
     // label hack taken from https://github.com/github/github/blob/master/app/assets/stylesheets/hacks/hx_primer-labels.scss#L43-L108
     // this logic should eventually live in primer/components. Also worthy of note is that the dotcom hack code will be moving to primer/css soon.
@@ -106,9 +108,7 @@ const IssueLabelToken = forwardRef<HTMLElement, IssueLabelTokenProps>((props, fo
           }
         : {})
     }
-  }, [colorScheme, fillColor, isSelected, hideRemoveButton, onRemove])
-
-  console.log('themeData', themeData)
+  }, [fillColor, isSelected, hideRemoveButton, onRemove, themeData])
 
   return (
     <TokenBase
