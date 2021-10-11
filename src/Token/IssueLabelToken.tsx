@@ -52,7 +52,7 @@ const IssueLabelToken = forwardRef<HTMLElement, IssueLabelTokenProps>((props, fo
   }
   const themeData = useTheme()
   const {theme} = themeData
-  const colorScheme = getLuminance(theme?.colors.canvas.default) > 0.5 ? 'light' : 'dark'
+  const colorScheme = theme && getLuminance(theme.colors.canvas.default) < 0.5 ? 'dark' : 'light'
   const hasMultipleActionTargets = isTokenInteractive(props) && Boolean(onRemove) && !hideRemoveButton
   const onRemoveClick: MouseEventHandler = e => {
     e.stopPropagation()
