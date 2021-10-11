@@ -2,7 +2,7 @@ import React, {forwardRef, MouseEventHandler, useMemo} from 'react'
 import {CSSObject} from '@styled-system/css'
 import TokenBase, {defaultTokenSize, isTokenInteractive, TokenBaseProps} from './TokenBase'
 import RemoveTokenButton from './_RemoveTokenButton'
-import {parseToHsla, parseToRgba} from 'color2k'
+import {parseToHsla, parseToRgba, getLuminance} from 'color2k'
 import {useTheme} from '../ThemeProvider'
 import TokenTextContainer from './_TokenTextContainer'
 
@@ -50,7 +50,9 @@ const IssueLabelToken = forwardRef<HTMLElement, IssueLabelTokenProps>((props, fo
     href,
     onClick
   }
-  const {colorScheme} = useTheme()
+  const themeData = useTheme()
+  const {theme} = themeData
+  const colorScheme = getLuminance(theme?.colors.canvas.default) > 0.5 ? 'light' : 'dark'
   const hasMultipleActionTargets = isTokenInteractive(props) && Boolean(onRemove) && !hideRemoveButton
   const onRemoveClick: MouseEventHandler = e => {
     e.stopPropagation()
@@ -105,6 +107,8 @@ const IssueLabelToken = forwardRef<HTMLElement, IssueLabelTokenProps>((props, fo
         : {})
     }
   }, [colorScheme, fillColor, isSelected, hideRemoveButton, onRemove])
+
+  console.log('themeData', themeData)
 
   return (
     <TokenBase
