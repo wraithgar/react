@@ -43,7 +43,6 @@ Array [
   -webkit-align-self: center;
   -ms-flex-item-align: center;
   align-self: center;
-  color: #57606a;
   margin: 0 8px;
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
@@ -155,7 +154,6 @@ Array [
   -webkit-align-self: center;
   -ms-flex-item-align: center;
   align-self: center;
-  color: #57606a;
   margin: 0 8px;
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
@@ -302,7 +300,6 @@ Array [
   -webkit-align-self: center;
   -ms-flex-item-align: center;
   align-self: center;
-  color: #57606a;
   margin: 0 8px;
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
@@ -476,7 +473,6 @@ Array [
 }
 
 .c10 svg {
-  fill: #57606a;
   font-size: 12px;
 }
 
@@ -1047,7 +1043,6 @@ Array [
   -webkit-align-self: center;
   -ms-flex-item-align: center;
   align-self: center;
-  color: #57606a;
   margin: 0 8px;
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
@@ -1715,7 +1710,6 @@ Array [
   -webkit-align-self: center;
   -ms-flex-item-align: center;
   align-self: center;
-  color: #57606a;
   margin: 0 8px;
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
@@ -2383,7 +2377,6 @@ Array [
   -webkit-align-self: center;
   -ms-flex-item-align: center;
   align-self: center;
-  color: #57606a;
   margin: 0 8px;
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;
@@ -3344,7 +3337,6 @@ Array [
   -webkit-align-self: center;
   -ms-flex-item-align: center;
   align-self: center;
-  color: #57606a;
   margin: 0 8px;
   -webkit-flex-shrink: 0;
   -ms-flex-negative: 0;

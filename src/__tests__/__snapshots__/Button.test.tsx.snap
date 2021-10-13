@@ -62,7 +62,6 @@ exports[`Button renders consistently 1`] = `
 }
 
 .c0:disabled {
-  color: #57606a;
   background-color: #f6f8fa;
   border-color: rgba(27,31,36,0.15);
 }
@@ -134,7 +133,6 @@ exports[`Button respects the "disabled" prop 1`] = `
 }
 
 .c0:disabled {
-  color: #57606a;
   background-color: #f6f8fa;
   border-color: rgba(27,31,36,0.15);
 }
@@ -471,10 +469,6 @@ exports[`ButtonInvisible renders correct disabled styles 1`] = `
   opacity: 0.6;
 }
 
-.c0:disabled {
-  color: #57606a;
-}
-
 .c0:focus {
   box-shadow: 0 0 0 3px rgba(9,105,218,0.3);
 }
@@ -788,7 +782,6 @@ exports[`ButtonTableList renders consistently 1`] = `
   display: inline-block;
   padding: 0;
   font-size: 14px;
-  color: #57606a;
   -webkit-text-decoration: none;
   text-decoration: none;
   white-space: nowrap;
@@ -811,7 +804,7 @@ exports[`ButtonTableList renders consistently 1`] = `
 
 .c0:disabled,
 .c0:disabled:hover {
-  color: rgba(#57606a,0.5);
+  color: rgba(,0.5);
   cursor: default;
 }
 

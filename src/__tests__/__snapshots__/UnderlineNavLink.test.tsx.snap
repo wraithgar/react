@@ -23,11 +23,6 @@ exports[`UnderlineNav.Link adds activeClassName={SELECTED_CLASS} when it gets a 
   transition: 0.2s ease;
 }
 
-.c0:hover .UnderlineNav-octicon,
-.c0:focus .UnderlineNav-octicon {
-  color: #57606a;
-}
-
 .c0.selected {
   color: #24292f;
   border-bottom-color: #FD8C73;
@@ -67,11 +62,6 @@ exports[`UnderlineNav.Link renders consistently 1`] = `
   transition: 0.2s ease;
 }
 
-.c0:hover .UnderlineNav-octicon,
-.c0:focus .UnderlineNav-octicon {
-  color: #57606a;
-}
-
 .c0.selected {
   color: #24292f;
   border-bottom-color: #FD8C73;
@@ -107,11 +97,6 @@ exports[`UnderlineNav.Link respects the "selected" prop 1`] = `
   border-bottom-color: rgba(175,184,193,0.2);
   -webkit-transition: 0.2s ease;
   transition: 0.2s ease;
-}
-
-.c0:hover .UnderlineNav-octicon,
-.c0:focus .UnderlineNav-octicon {
-  color: #57606a;
 }
 
 .c0.selected {

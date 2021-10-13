@@ -12,7 +12,7 @@ const ButtonInvisible = styled(ButtonBase)<ButtonBaseProps & ButtonSystemProps &
   box-shadow: none;
 
   &:disabled {
-    color: ${get('colors.fg.muted')};
+    color: ${get('colors.primer.fg.disabled')};
   }
 
   &:focus {

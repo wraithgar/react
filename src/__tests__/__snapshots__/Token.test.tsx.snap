@@ -127,7 +127,6 @@ exports[`Token components AvatarToken renders all sizes 1`] = `
   border-color: rgba(27,31,36,0.15);
   border-style: solid;
   border-width: 1px;
-  color: #57606a;
   max-width: 100%;
   padding-right: 0;
   position: relative;
@@ -335,7 +334,6 @@ exports[`Token components AvatarToken renders all sizes 2`] = `
   border-color: rgba(27,31,36,0.15);
   border-style: solid;
   border-width: 1px;
-  color: #57606a;
   max-width: 100%;
   padding-right: 0;
   position: relative;
@@ -543,7 +541,6 @@ exports[`Token components AvatarToken renders all sizes 3`] = `
   border-color: rgba(27,31,36,0.15);
   border-style: solid;
   border-width: 1px;
-  color: #57606a;
   max-width: 100%;
   padding-right: 0;
   position: relative;
@@ -751,7 +748,6 @@ exports[`Token components AvatarToken renders all sizes 4`] = `
   border-color: rgba(27,31,36,0.15);
   border-style: solid;
   border-width: 1px;
-  color: #57606a;
   max-width: 100%;
   padding-right: 0;
   position: relative;
@@ -900,7 +896,6 @@ exports[`Token components AvatarToken renders consistently 1`] = `
   border-color: rgba(27,31,36,0.15);
   border-style: solid;
   border-width: 1px;
-  color: #57606a;
   max-width: 100%;
   position: relative;
 }
@@ -1171,7 +1166,6 @@ exports[`Token components AvatarToken renders with a remove button 1`] = `
   border-color: rgba(27,31,36,0.15);
   border-style: solid;
   border-width: 1px;
-  color: #57606a;
   max-width: 100%;
   padding-right: 0;
   position: relative;
@@ -2024,7 +2018,6 @@ exports[`Token components IssueLabelToken renders consistently 1`] = `
   border-color: rgba(27,31,36,0.15);
   border-style: solid;
   border-width: 1px;
-  color: #57606a;
   max-width: 100%;
   position: relative;
 }
@@ -2798,7 +2791,6 @@ exports[`Token components Token renders all sizes 1`] = `
   border-color: rgba(27,31,36,0.15);
   border-style: solid;
   border-width: 1px;
-  color: #57606a;
   max-width: 100%;
   padding-right: 0;
   position: relative;
@@ -2964,7 +2956,6 @@ exports[`Token components Token renders all sizes 2`] = `
   border-color: rgba(27,31,36,0.15);
   border-style: solid;
   border-width: 1px;
-  color: #57606a;
   max-width: 100%;
   padding-right: 0;
   position: relative;
@@ -3130,7 +3121,6 @@ exports[`Token components Token renders all sizes 3`] = `
   border-color: rgba(27,31,36,0.15);
   border-style: solid;
   border-width: 1px;
-  color: #57606a;
   max-width: 100%;
   padding-right: 0;
   position: relative;
@@ -3296,7 +3286,6 @@ exports[`Token components Token renders all sizes 4`] = `
   border-color: rgba(27,31,36,0.15);
   border-style: solid;
   border-width: 1px;
-  color: #57606a;
   max-width: 100%;
   padding-right: 0;
   position: relative;
@@ -3414,7 +3403,6 @@ exports[`Token components Token renders consistently 1`] = `
   border-color: rgba(27,31,36,0.15);
   border-style: solid;
   border-width: 1px;
-  color: #57606a;
   max-width: 100%;
   position: relative;
 }
@@ -3584,7 +3572,6 @@ exports[`Token components Token renders with a leadingVisual 1`] = `
   border-color: rgba(27,31,36,0.15);
   border-style: solid;
   border-width: 1px;
-  color: #57606a;
   max-width: 100%;
   position: relative;
 }
@@ -3736,7 +3723,6 @@ exports[`Token components Token renders with a remove button 1`] = `
   border-color: rgba(27,31,36,0.15);
   border-style: solid;
   border-width: 1px;
-  color: #57606a;
   max-width: 100%;
   padding-right: 0;
   position: relative;

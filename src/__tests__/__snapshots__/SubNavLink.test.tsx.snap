@@ -45,11 +45,6 @@ exports[`SubNav.Link adds activeClassName={SELECTED_CLASS} when it gets a "to" p
   transition: 0.2s ease;
 }
 
-.c0:hover .SubNav-octicon,
-.c0:focus .SubNav-octicon {
-  color: #57606a;
-}
-
 .c0.selected {
   color: #ffffff;
   background-color: #0969da;
@@ -112,11 +107,6 @@ exports[`SubNav.Link renders consistently 1`] = `
   transition: 0.2s ease;
 }
 
-.c0:hover .SubNav-octicon,
-.c0:focus .SubNav-octicon {
-  color: #57606a;
-}
-
 .c0.selected {
   color: #ffffff;
   background-color: #0969da;
@@ -175,11 +165,6 @@ exports[`SubNav.Link respects the "selected" prop 1`] = `
   background-color: #f6f8fa;
   -webkit-transition: 0.2s ease;
   transition: 0.2s ease;
-}
-
-.c0:hover .SubNav-octicon,
-.c0:focus .SubNav-octicon {
-  color: #57606a;
 }
 
 .c0.selected {
