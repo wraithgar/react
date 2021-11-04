@@ -23,6 +23,7 @@ import {
 } from 'styled-system'
 import sx, {SxProp} from './sx'
 import {ComponentProps} from './utils/types'
+import {ForwardRefComponent as PolymorphicForwardRefComponent} from '@radix-ui/react-polymorphic'
 
 type StyledBoxProps = SpaceProps &
   ColorProps &
@@ -48,7 +49,7 @@ const Box = styled.div<StyledBoxProps>(
   position,
   shadow,
   sx
-)
+) as PolymorphicForwardRefComponent<'div', StyledBoxProps>
 
 export type BoxProps = ComponentProps<typeof Box>
 export default Box

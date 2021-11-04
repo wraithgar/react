@@ -14,9 +14,10 @@ import sx from './sx'
 type SideNavBaseProps = {
   variant?: 'lightweight' | 'normal'
   bordered?: boolean
+  'aria-label'?: string
 } & ComponentProps<typeof Box>
 
-function SideNavBase({variant, className, bordered, children, ...props}: SideNavBaseProps) {
+function SideNavBase({variant, className, bordered, children, 'aria-label': ariaLabel, ...props}: SideNavBaseProps) {
   const variantClassName = variant === 'lightweight' ? 'lightweight' : 'normal'
   const newClassName = classnames(className, `variant-${variantClassName}`)
 
@@ -32,6 +33,7 @@ function SideNavBase({variant, className, bordered, children, ...props}: SideNav
       borderRadius={2}
       as="nav"
       className={newClassName}
+      aria-label={ariaLabel}
       {...props}
     >
       {children}
