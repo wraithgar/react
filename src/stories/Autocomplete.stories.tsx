@@ -6,6 +6,8 @@ import TextInputTokens from '../TextInputWithTokens'
 import Autocomplete from '../Autocomplete/Autocomplete'
 import {AnchoredOverlay} from '../AnchoredOverlay'
 import {ButtonInvisible} from '../Button'
+import {PublicInteractionTask, InteractionTaskArgs} from 'storybook-addon-performance'
+import {findAllByText, fireEvent} from '@testing-library/dom'
 
 type ItemMetadata = {
   fillColor: React.CSSProperties['backgroundColor']
@@ -79,6 +81,32 @@ export const SingleSelect = () => {
       </Autocomplete>
     </>
   )
+}
+
+const singleSelectInteractionTasks: PublicInteractionTask[] = [
+  {
+    name: 'Open overlay menu',
+    description: 'Open the dropdown on focus of the autocomplete input',
+    run: async ({container, controls}: InteractionTaskArgs): Promise<void> => {
+      const element: HTMLElement | null = container.querySelector('#autocompleteInput')
+      await controls.time(async () => {
+        if (element) {
+          fireEvent.click(element)
+          await findAllByText(document.querySelector('#__primerPortalRoot__'), 'css-in-js')
+        }
+      })
+    }
+  }
+]
+
+SingleSelect.story = {
+  name: 'Single Select',
+  parameters: {
+    performance: {
+      interactions: singleSelectInteractionTasks,
+      allowedGroups: ['client']
+    }
+  }
 }
 
 export const MultiSelect = () => {
